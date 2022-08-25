@@ -12,7 +12,15 @@
 	},
 	"tauri": {
 		"allowlist": {
-			"all": true
+			"fs": {
+				"all": true,
+				"scope": [
+					"$DATA/*"
+				]
+			},
+			"path": {
+				"all": true
+			}
 		},
 		"bundle": {
 			"active": true,

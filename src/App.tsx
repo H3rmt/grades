@@ -1,29 +1,35 @@
-import {useState} from 'react'
-import logo from './logo.svg'
 import './App.css'
+import {AppBar, IconButton, Toolbar, Typography} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import {Component, createRef, MutableRefObject} from "react";
+import Navbar from "./components/navbar/navbar";
 
-function App() {
-	const [count, setCount] = useState(0)
+class App extends Component {
+	private readonly navbar: MutableRefObject<Navbar>;
 
-	return (<div className="App">
-		<header className="App-header">
-			<img src={logo} className="App-logo" alt="logo"/>
-			<p>Hello Vite + React!</p>
-			<p>
-				<button type="button" onClick={() => setCount((count) => count + 1)}>
-					count is: {count}
-				</button>
-			</p>
-			<p>
-				Edit <code>App.tsx</code> and save to test HMR updates.
-			</p>
-			<p>
-				<a className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">Learn React</a>
-				{' | '}
-				<a className="App-link" href="https://vitejs.dev/guide/features.html" target="_blank" rel="noopener noreferrer">Vite Docs</a>
-			</p>
-		</header>
-	</div>)
+	constructor(props: {}) {
+		super(props);
+		// @ts-ignore
+		this.navbar = createRef<Navbar>()
+	}
+
+	render() {
+		return (<div>
+			<AppBar position="fixed">
+				<Toolbar>
+					<IconButton color="inherit" aria-label="open drawer" edge="start">
+						<MenuIcon onClick={() => {
+							this.navbar.current.toggle()
+						}}/>
+					</IconButton>
+					<Typography variant="h5" noWrap component="div" align="center">
+						Responsive drawer
+					</Typography>
+				</Toolbar>
+			</AppBar>
+			<Navbar ref={this.navbar}/>
+		</div>)
+	}
 }
 
 export default App
