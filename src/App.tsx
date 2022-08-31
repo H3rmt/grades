@@ -6,7 +6,7 @@ import React, {ReactElement, useEffect, useState} from "react";
 import Overview from "./Overview/Overview";
 import Analysis from "./Analysis/Analysis";
 import Navbar from "./components/Navbar/Navbar";
-import NewModal from "./components/NewModal/NewModal";
+import NewGradeModal from "./components/NewGradeModal/NewGradeModal";
 
 type Pages = {
 	overview: Page
@@ -60,7 +60,7 @@ const App = () => {
 		<Navbar open={openNav} closeNav={() => {
 			setOpenNav(false)
 		}} setPage={setPage} pages={pages}/>
-		<NewModal open={openModal} closeModal={() => {
+		<NewGradeModal open={openModal} closeModal={() => {
 			setOpenModal(false)
 		}}/>
 		{openPage.page}
