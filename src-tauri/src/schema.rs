@@ -1,11 +1,18 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    grade_types (id) {
+        id -> Integer,
+        name -> Text,
+        color -> Text,
+    }
+}
+
+diesel::table! {
     grades (id) {
         id -> Integer,
         subject -> Integer,
-        #[sql_name = "type"]
-        type_ -> Integer,
+        grade_type -> Integer,
         info -> Nullable<Text>,
     }
 }
@@ -18,19 +25,11 @@ diesel::table! {
     }
 }
 
-diesel::table! {
-    types (id) {
-        id -> Integer,
-        name -> Text,
-        color -> Text,
-    }
-}
-
+diesel::joinable!(grades -> grade_types (grade_type));
 diesel::joinable!(grades -> subjects (subject));
-diesel::joinable!(grades -> types (type_));
 
 diesel::allow_tables_to_appear_in_same_query!(
+    grade_types,
     grades,
     subjects,
-    types,
 );
