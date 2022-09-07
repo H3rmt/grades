@@ -44,10 +44,9 @@ const App = () => {
 	return (<div>
 		<AppBar position="static">
 			<Toolbar>
-				<IconButton color="inherit" aria-label="open drawer" edge="start" size="large">
-					<MenuIcon onClick={() => {
-						setOpenNav(true)
-					}}/>
+				<IconButton color="inherit" aria-label="open drawer" edge="start" size="large" onClick={() => {
+					setOpenNav(true)
+				}}><MenuIcon/>
 				</IconButton>
 				<Typography variant="h5" noWrap component="div" align="left" padding="6px" flexGrow="1">
 					{openPage.name}
