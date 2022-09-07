@@ -4,7 +4,7 @@
 		"beforeBuildCommand": "yarn build",
 		"beforeDevCommand": "yarn dev",
 		"devPath": "http://localhost:3000",
-		"distDir": "../dist"
+		"distDir": "../build"
 	},
 	"package": {
 		"productName": "grades",
@@ -12,8 +12,9 @@
 	},
 	"tauri": {
 		"allowlist": {
+			"all": false,
 			"fs": {
-				"all": true,
+				"writeFile": true,
 				"scope": [
 					"$DATA/*"
 				]
