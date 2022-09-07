@@ -5,8 +5,9 @@ windows_subsystem = "windows"
 
 extern crate core;
 
-use async_std::task::block_on;
 use sea_orm::DatabaseConnection;
+
+use migrations::{Migrator, MigratorTrait};
 
 mod db;
 mod commands;
@@ -41,11 +42,14 @@ mod commands;
 
 pub struct AppState(DatabaseConnection);
 
-fn main() {
-	let connection = block_on(db::establish_connection());
+#[tokio::main]
+async fn main() {
+	tauri::async_runtime::set(tokio::runtime::Handle::current());
+	
+	let connection = db::establish_connection().await;
 	
 	// run all migrations
-//	Migrator::up(connection, None).await;
+	Migrator::up(&connection, None).await.expect("Error running migrations");
 	
 	tauri::Builder::default()
 			.manage(AppState(connection))
