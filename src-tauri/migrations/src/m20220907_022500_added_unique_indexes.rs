@@ -41,6 +41,8 @@ impl MigrationTrait for Migration {
 //					.name("subject_name_index")
 //					.to_owned()
 //		).await
+		
+		// did just not work
 		let sql = "DROP INDEX type_name_index;DROP INDEX subject_name_index;";
 		let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
 		manager.get_connection().execute(stmt).await.map(|_| ())
