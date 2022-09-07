@@ -56,7 +56,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 				type: type,
 				info: "info"
 			})
-		}).then((message) => {
+		}).then(() => {
 			setToastOpen(true)
 			console.log("Created new Grade")
 			setToast("Created new Grade")
@@ -76,17 +76,17 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 							<Grid item xs={6} gap={2} padding={2} paddingTop={0}>
 								<Typography variant="h6" fontWeight="normal" paddingBottom={1.5}>Subject</Typography>
 								<Select value={subject} margin="none" onChange={handleSubjectSelectChange} fullWidth>
-									<MenuItem value={10}>Ten</MenuItem>
-									<MenuItem value={20}>Twenty</MenuItem>
-									<MenuItem value={30}>Thirty</MenuItem>
+									<MenuItem value={1}>Ten</MenuItem>
+									<MenuItem value={2}>Twenty</MenuItem>
+									<MenuItem value={3}>Thirty</MenuItem>
 								</Select>
 							</Grid>
 							<Grid item xs={6} gap={2} padding={2} paddingTop={0}>
 								<Typography variant="h6" fontWeight="normal" paddingBottom={1.5}>Type</Typography>
 								<Select value={type} margin="none" onChange={handleTypeSelectChange} fullWidth>
-									<MenuItem value={10}>FEF</MenuItem>
-									<MenuItem value={20}>FUF</MenuItem>
-									<MenuItem value={30}>GRRR</MenuItem>
+									<MenuItem value={1}>FEF</MenuItem>
+									<MenuItem value={2}>FUF</MenuItem>
+									<MenuItem value={3}>GRRR</MenuItem>
 								</Select>
 							</Grid>
 							<Grid item xs gap={2} padding={2} paddingY={0} marginTop={2}>

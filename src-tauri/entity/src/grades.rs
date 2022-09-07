@@ -3,10 +3,18 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
-#[sea_orm(table_name = "grades")]
+#[derive(Copy, Clone, Default, Debug, DeriveEntity)]
+pub struct Entity;
+
+impl EntityName for Entity {
+    fn table_name(&self) -> &str {
+        "grades"
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, DeriveModel, DeriveActiveModel, Serialize, Deserialize)]
 pub struct Model {
-    #[sea_orm(primary_key)]
+    #[serde(skip_deserializing)]
     pub id: i32,
     pub subject: i32,
     pub r#type: i32,
@@ -14,24 +22,59 @@ pub struct Model {
     pub grade: i32,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+#[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
+pub enum Column {
+    Id,
+    Subject,
+    Type,
+    Info,
+    Grade,
+}
+
+#[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
+pub enum PrimaryKey {
+    Id,
+}
+
+impl PrimaryKeyTrait for PrimaryKey {
+    type ValueType = i32;
+    fn auto_increment() -> bool {
+        true
+    }
+}
+
+#[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::grade_types::Entity",
-        from = "Column::Type",
-        to = "super::grade_types::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Restrict"
-    )]
     GradeTypes,
-    #[sea_orm(
-        belongs_to = "super::subjects::Entity",
-        from = "Column::Subject",
-        to = "super::subjects::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Restrict"
-    )]
     Subjects,
+}
+
+impl ColumnTrait for Column {
+    type EntityName = Entity;
+    fn def(&self) -> ColumnDef {
+        match self {
+            Self::Id => ColumnType::Integer.def(),
+            Self::Subject => ColumnType::Integer.def(),
+            Self::Type => ColumnType::Integer.def(),
+            Self::Info => ColumnType::String(None).def(),
+            Self::Grade => ColumnType::Integer.def(),
+        }
+    }
+}
+
+impl RelationTrait for Relation {
+    fn def(&self) -> RelationDef {
+        match self {
+            Self::GradeTypes => Entity::belongs_to(super::grade_types::Entity)
+                .from(Column::Type)
+                .to(super::grade_types::Column::Id)
+                .into(),
+            Self::Subjects => Entity::belongs_to(super::subjects::Entity)
+                .from(Column::Subject)
+                .to(super::subjects::Column::Id)
+                .into(),
+        }
+    }
 }
 
 impl Related<super::grade_types::Entity> for Entity {
