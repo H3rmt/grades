@@ -1,34 +1,60 @@
-#[macro_use]
-extern crate diesel;
-#[macro_use]
-extern crate diesel_migrations;
+#![cfg_attr(
+all(not(debug_assertions), target_os = "windows"),
+windows_subsystem = "windows"
+)]
 
-use std::sync::Mutex;
+extern crate core;
 
-embed_migrations!("./migrations/");
+use async_std::task::block_on;
+use sea_orm::DatabaseConnection;
 
-struct AppState {
-	count: Mutex<i64>,
-}
+mod db;
+mod commands;
 
-#[tauri::command]
-fn get_count(state: tauri::State<AppState>) -> i64 {
-	state.count.lock().unwrap().clone()
-}
 
-#[tauri::command]
-fn update_count(update: i64, state: tauri::State<AppState>) -> i64 {
-	let mut cnt = state.count.lock().unwrap();
-	*cnt += update;
-	cnt.clone()
-}
+//
+//#[tauri::command]
+//fn todos_list(state: tauri::State<AppState>) -> String {
+//	let con = state.conn.lock().unwrap();
+//	db::todos_list(&con)
+//}
+//
+//#[tauri::command]
+//fn todos_create(title: String, body: String, state: tauri::State<AppState>) -> String {
+//	let conn = state.conn.lock().unwrap();
+//	db::todos_create(&conn, &title, &body).to_string()
+//}
+//
+//#[tauri::command]
+//fn todos_toggle(id: i32, state: tauri::State<AppState>) -> String {
+//	let conn = state.conn.lock().unwrap();
+//	db::todos_toggle(&conn, id)
+//}
+//
+//#[tauri::command]
+//fn todos_delete(id: i32, state: tauri::State<AppState>) -> String {
+//	let conn = state.conn.lock().unwrap();
+//	db::todos_delete(&conn, id);
+//	String::from("")
+//}
+//
+
+pub struct AppState(DatabaseConnection);
 
 fn main() {
-	let state = AppState {
-		count: Default::default(),
-	};
+	let connection = block_on(db::establish_connection());
 	
-	tauri::Builder::default().manage(state).invoke_handler(
-		tauri::generate_handler![get_count,update_count]
-	).run(tauri::generate_context!()).expect("error while running tauri application");
+	// run all migrations
+//	Migrator::up(connection, None).await;
+	
+	tauri::Builder::default()
+			.manage(AppState(connection))
+			.invoke_handler(tauri::generate_handler![
+//            todos_list,
+//            todos_create,
+//            todos_toggle,
+//            todos_delete,
+        ])
+			.run(tauri::generate_context!())
+			.expect("error while running tauri application");
 }
