@@ -8,7 +8,7 @@ publish = false
 
 [lib]
 name = "entity"
-path = "src/lib.rs"
+path = "src/mod.rs"
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
