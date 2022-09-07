@@ -9,22 +9,25 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
 	async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-		manager.create_index(
-			Index::create()
-					.unique()
-					.table(Type::Table)
-					.col(Type::Name)
-					.name("type_name_index")
-					.to_owned(),
-		).await?;
-		manager.create_index(
-			Index::create()
-					.unique()
-					.table(Subject::Table)
-					.col(Subject::Name)
-					.name("subject_name_index")
-					.to_owned(),
-		).await
+		let statement = Index::create()
+				.unique()
+				.table(Type::Table)
+				.col(Type::Name)
+				.name("type_name_index")
+				.to_owned();
+		
+		let statement2 = Index::create()
+				.unique()
+				.table(Subject::Table)
+				.col(Subject::Name)
+				.name("subject_name_index")
+				.to_owned();
+		
+		println!("SQL:{}", statement.to_string(MysqlQueryBuilder));
+		println!("SQL:{}", statement2.to_string(MysqlQueryBuilder));
+		
+		manager.create_index(statement).await?;
+		manager.create_index(statement2).await
 	}
 	
 	async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
@@ -44,6 +47,8 @@ impl MigrationTrait for Migration {
 		
 		// did just not work
 		let sql = "DROP INDEX type_name_index;DROP INDEX subject_name_index;";
+		println!("SQL:{}", sql);
+		
 		let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
 		manager.get_connection().execute(stmt).await.map(|_| ())
 	}

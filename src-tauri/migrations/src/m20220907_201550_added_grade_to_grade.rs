@@ -14,7 +14,9 @@ impl MigrationTrait for Migration {
 						.not_null()
 				)
 				.to_owned();
+		
 		println!("SQL:{}", statement.to_string(MysqlQueryBuilder));
+		
 		manager.alter_table(statement).await
 	}
 	
@@ -30,6 +32,8 @@ impl MigrationTrait for Migration {
 		
 		// sea-orm thinks drop table not supported on SQLite, but it is
 		let sql = "ALTER TABLE `grades` DROP COLUMN `grade`";
+		println!("SQL:{}", sql);
+		
 		let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
 		manager.get_connection().execute(stmt).await.map(|_| ())
 	}
