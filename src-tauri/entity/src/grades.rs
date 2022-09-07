@@ -10,6 +10,7 @@ pub struct Model {
     pub subject: i32,
     pub r#type: i32,
     pub info: String,
+    pub grade: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
