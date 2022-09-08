@@ -38,6 +38,8 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	const [grade, setGrade] = useState(12)
 	const [subject, setSubject] = useState("")
 	const [type, setType] = useState("")
+	const [info, setInfo] = useState("")
+
 
 	const [toast, setToast] = useState<string | undefined>(undefined)
 	const [toastOpen, setToastOpen] = useState(false)
@@ -61,13 +63,17 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		setType(event.target.value)
 	}
 
+	const handleInfoInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+		setInfo(event.target.value)
+	}
+
 	const createGrade = () => {
 		invoke("create_grade_js", {
 			json: JSON.stringify({
 				grade: grade,
 				subject: subject,
 				type: type,
-				info: "info"
+				info: info
 			})
 		}).then(() => {
 			setToastOpen(true)
@@ -124,10 +130,14 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 									})}
 								</Select>
 							</Grid>
-							<Grid item xs gap={2} padding={2} paddingY={0} marginTop={2}>
+							<Grid item xs={6} gap={2} padding={2} paddingY={0} marginTop={2}>
 								<Typography variant="h6" fontWeight="normal" paddingBottom={0}>Grade</Typography>
 								<TextField value={grade} type="number" fullWidth margin="normal" onChange={handleGradeInputChange}/>
 								<Slider value={grade} color="primary" min={0} max={15} onChange={handleGradeSliderChange}/>
+							</Grid>
+							<Grid item xs={6} gap={2} padding={2} paddingY={0} marginTop={2}>
+								<Typography variant="h6" fontWeight="normal" paddingBottom={0}>Info</Typography>
+								<TextField value={info} type="text" fullWidth margin="normal" onChange={handleInfoInputChange}/>
 							</Grid>
 						</Grid>
 					</FormControl>
