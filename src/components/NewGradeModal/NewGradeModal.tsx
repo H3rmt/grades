@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {
 	Alert,
 	AlertTitle,
@@ -22,6 +22,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import "./NewGradleModal.css"
 import {invoke} from "@tauri-apps/api/tauri";
 
+type Subject = {
+	id: number
+	name: string
+	color: string
+}
 
 function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	const [grade, setGrade] = useState(12)
@@ -31,6 +36,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	const [toast, setToast] = useState<string | undefined>(undefined)
 	const [toastOpen, setToastOpen] = useState(false)
 
+	const [subjects, setSubjects] = useState<Array<Subject>>([])
 
 	const handleGradeSliderChange = (event: Event, newValue: number | number[]) => {
 		setGrade(newValue as number);
@@ -68,6 +74,19 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		})
 	}
 
+	const getSubjects = () => {
+		// @ts-ignore
+		invoke("get_subjects_js").then((data: string) => {
+			console.log(data)
+			setSubjects(JSON.parse(data))
+		})
+	}
+
+	useEffect(() => {
+		getSubjects()
+	}, [])
+
+
 	return (<Dialog open={props.open} onClose={props.closeModal}>
 				<DialogTitle>Neue Note</DialogTitle>
 				<DialogContent>
@@ -76,9 +95,9 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 							<Grid item xs={6} gap={2} padding={2} paddingTop={0}>
 								<Typography variant="h6" fontWeight="normal" paddingBottom={1.5}>Subject</Typography>
 								<Select value={subject} margin="none" onChange={handleSubjectSelectChange} fullWidth>
-									<MenuItem value={1}>Ten</MenuItem>
-									<MenuItem value={2}>Twenty</MenuItem>
-									<MenuItem value={3}>Thirty</MenuItem>
+									{subjects.map((subject) => {
+										return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
+									})}
 								</Select>
 							</Grid>
 							<Grid item xs={6} gap={2} padding={2} paddingTop={0}>

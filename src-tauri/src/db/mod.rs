@@ -3,7 +3,7 @@ extern crate dotenv;
 use std::env;
 
 use dotenv::dotenv;
-use sea_orm::{ActiveValue, Database, DatabaseConnection};
+use sea_orm::{ActiveValue, Database, DatabaseConnection, Order, QueryOrder};
 use sea_orm::entity::prelude::*;
 
 use entity::grade_types;
@@ -32,7 +32,13 @@ pub async fn create_grade(db: &DatabaseConnection, subject: i32, r#type: i32, in
 	};
 	
 	let res = grades::Entity::insert(insert).exec(db).await;
-	println!("{:?}", res);
+	println!("created grade:{:?}", res);
 	
 	Ok(())
+}
+
+pub async fn get_subjects(db: &DatabaseConnection) -> Result<Vec<subjects::Model>, DbErr> {
+	subjects::Entity::find()
+			.order_by(subjects::Column::Name, Order::Asc)
+			.all(db).await
 }

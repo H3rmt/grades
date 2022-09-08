@@ -27,7 +27,8 @@ async fn main() {
 	tauri::Builder::default()
 			.manage(AppState(connection))
 			.invoke_handler(tauri::generate_handler![
-				commands::create_grade_js
+				commands::create_grade_js,
+				commands::get_subjects_js
         ])
 			.run(tauri::generate_context!())
 			.expect("error while running tauri application");
