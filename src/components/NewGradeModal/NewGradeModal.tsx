@@ -28,6 +28,12 @@ type Subject = {
 	color: string
 }
 
+type Type = {
+	id: number
+	name: string
+	color: string
+}
+
 function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	const [grade, setGrade] = useState(12)
 	const [subject, setSubject] = useState("")
@@ -37,6 +43,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	const [toastOpen, setToastOpen] = useState(false)
 
 	const [subjects, setSubjects] = useState<Array<Subject>>([])
+	const [types, setTypes] = useState<Array<Type>>([])
 
 	const handleGradeSliderChange = (event: Event, newValue: number | number[]) => {
 		setGrade(newValue as number);
@@ -82,8 +89,17 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		})
 	}
 
+	const getTypes = () => {
+		// @ts-ignore
+		invoke("get_types_js").then((data: string) => {
+			console.log(data)
+			setTypes(JSON.parse(data))
+		})
+	}
+
 	useEffect(() => {
 		getSubjects()
+		getTypes()
 	}, [])
 
 
@@ -103,14 +119,13 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 							<Grid item xs={6} gap={2} padding={2} paddingTop={0}>
 								<Typography variant="h6" fontWeight="normal" paddingBottom={1.5}>Type</Typography>
 								<Select value={type} margin="none" onChange={handleTypeSelectChange} fullWidth>
-									<MenuItem value={1}>FEF</MenuItem>
-									<MenuItem value={2}>FUF</MenuItem>
-									<MenuItem value={3}>GRRR</MenuItem>
+									{types.map((type) => {
+										return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
+									})}
 								</Select>
 							</Grid>
 							<Grid item xs gap={2} padding={2} paddingY={0} marginTop={2}>
 								<Typography variant="h6" fontWeight="normal" paddingBottom={0}>Grade</Typography>
-								{/* TODO correct margin + padding */}
 								<TextField value={grade} type="number" fullWidth margin="normal" onChange={handleGradeInputChange}/>
 								<Slider value={grade} color="primary" min={0} max={15} onChange={handleGradeSliderChange}/>
 							</Grid>

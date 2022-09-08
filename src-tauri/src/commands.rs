@@ -1,7 +1,7 @@
 use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
 
-use crate::db::{create_grade, get_subjects};
+use crate::db::{create_grade, get_subjects, get_types};
 
 use super::AppState;
 
@@ -37,4 +37,18 @@ pub async fn get_subjects_js(state: tauri::State<'_, AppState>) -> Result<String
 	
 	Ok(data)
 }
+
+#[tauri::command]
+pub async fn get_types_js(state: tauri::State<'_, AppState>) -> Result<String, String> {
+	let connection: &DatabaseConnection = &state.0 as &DatabaseConnection;
+	
+	let types = get_types(connection).await.map_err(|e| e.to_string())?;
+	
+	let data = serde_json::to_string(&types).map_err(|e| e.to_string())?;
+	
+	println!("{:?}", data);
+	
+	Ok(data)
+}
+
 
