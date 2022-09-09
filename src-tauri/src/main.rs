@@ -20,6 +20,7 @@ async fn main() {
 	tauri::async_runtime::set(tokio::runtime::Handle::current());
 	
 	db::dirs::create_folder().unwrap();
+	
 	let connection = db::database::establish_connection().await.unwrap();
 	
 	// run all migrations

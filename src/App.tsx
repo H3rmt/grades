@@ -39,7 +39,7 @@ const App = () => {
 		setOpenNav(false)
 	}, [openPage])
 
-	const [openModal, setOpenModal] = React.useState(false);
+	const [openModal, setOpenModal] = useState(false);
 
 	return (<div>
 		<AppBar position="static">
