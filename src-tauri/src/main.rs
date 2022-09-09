@@ -19,7 +19,8 @@ pub struct AppState(DatabaseConnection);
 async fn main() {
 	tauri::async_runtime::set(tokio::runtime::Handle::current());
 	
-	let connection = db::establish_connection().await;
+	db::dirs::create_folder().unwrap();
+	let connection = db::database::establish_connection().await.unwrap();
 	
 	// run all migrations
 	Migrator::up(&connection, None).await.expect("Error running migrations");
