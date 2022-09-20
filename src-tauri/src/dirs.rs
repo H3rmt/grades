@@ -4,8 +4,8 @@ use std::path::PathBuf;
 
 const APPLICATION_NAME: &str = "grades";
 const DB_NAME: &str = "db.db";
-const CONF_NAME: &str = "db.json";
-const CACHE_NAME: &str = "db.json";
+const CONF_NAME: &str = "conf.json";
+const CACHE_NAME: &str = "cache.json";
 
 
 pub fn create_data_folder() -> Result<PathBuf, String> {

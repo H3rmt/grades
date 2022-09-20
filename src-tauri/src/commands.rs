@@ -1,7 +1,9 @@
 use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
 
-use crate::db::database::{create_grade, get_subjects, get_types};
+use crate::db::grades::{create_grade};
+use crate::db::subjects::{get_subjects};
+use crate::db::types::{get_types};
 
 use super::AppState;
 

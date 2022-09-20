@@ -11,6 +11,7 @@ use migrations::{Migrator, MigratorTrait};
 
 mod db;
 mod commands;
+mod dirs;
 
 
 pub struct AppState(DatabaseConnection);
@@ -19,9 +20,7 @@ pub struct AppState(DatabaseConnection);
 async fn main() {
 	tauri::async_runtime::set(tokio::runtime::Handle::current());
 	
-	db::dirs::create_folder().unwrap();
-	
-	let connection = db::database::establish_connection().await.unwrap();
+	let connection = db::database::establish_connection().await.expect("Error connecting to DB");
 	
 	// run all migrations
 	Migrator::up(&connection, None).await.expect("Error running migrations");
