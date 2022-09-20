@@ -1,21 +1,24 @@
-import './App.css'
 import {AppBar, Button, IconButton, Toolbar, Typography} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import MailIcon from "@mui/icons-material/Mail"
+import SettingsIcon from "@mui/icons-material/Settings"
 import React, {ReactElement, useEffect, useState} from "react";
 import Overview from "./Overview/Overview";
 import Analysis from "./Analysis/Analysis";
 import Navbar from "./components/Navbar/Navbar";
 import NewGradeModal from "./components/NewGradeModal/NewGradeModal";
+import Settings from "./Settings/Settings";
 
 type Pages = {
 	overview: Page
 	analysis: Page
+	settings: Page
 }
 
 type Page = {
 	page: ReactElement,
 	name: string,
+	description: string,
 	icon: ReactElement
 }
 
@@ -26,12 +29,20 @@ const App = () => {
 		overview: {
 			page: <Overview/>,
 			name: "Overview",
+			description: "Overview of all grades",
 			icon: <MenuIcon/>
 		},
 		analysis: {
 			page: <Analysis/>,
 			name: "Analysis",
+			description: "Analysis of all grades",
 			icon: <MailIcon/>
+		},
+		settings: {
+			page: <Settings/>,
+			name: "Settings",
+			description: "Change types, subjects, etc.",
+			icon: <SettingsIcon/>
 		}
 	}
 	const [openPage, setPage] = useState(pages.overview)
