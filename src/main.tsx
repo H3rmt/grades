@@ -8,10 +8,10 @@ const darkTheme = createTheme({
 	palette: {
 		mode: 'dark',
 		primary: {
-			main: '#6c7de0'
+			main: '#f50057'
 		},
 		secondary: {
-			main: '#f50057',
+			main: '#6c7de0'
 		},
 	},
 });

@@ -1,4 +1,4 @@
-import {AppBar, Button, IconButton, Toolbar, Typography} from "@mui/material";
+import {AppBar, Box, Button, IconButton, Toolbar, Typography} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import MailIcon from "@mui/icons-material/Mail"
 import SettingsIcon from "@mui/icons-material/Settings"
@@ -52,7 +52,7 @@ const App = () => {
 
 	const [openModal, setOpenModal] = useState(false);
 
-	return (<div>
+	return (<>
 		<AppBar position="static">
 			<Toolbar>
 				<IconButton color="inherit" aria-label="open drawer" edge="start" size="large" onClick={() => {
@@ -62,7 +62,7 @@ const App = () => {
 				<Typography variant="h5" noWrap component="div" align="left" padding="6px" flexGrow="1">
 					{openPage.name}
 				</Typography>
-				<Button color="secondary" variant="contained" onClick={() => {
+				<Button color="primary" variant="contained" onClick={() => {
 					setOpenModal(true)
 				}}>Neue Note</Button>
 			</Toolbar>
@@ -70,11 +70,13 @@ const App = () => {
 		<Navbar open={openNav} closeNav={() => {
 			setOpenNav(false)
 		}} setPage={setPage} pages={pages}/>
+		<Box>
+			{openPage.page}
+		</Box>
 		<NewGradeModal open={openModal} closeModal={() => {
 			setOpenModal(false)
 		}}/>
-		{openPage.page}
-	</div>)
+	</>)
 }
 
 export default App
