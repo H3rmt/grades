@@ -31,6 +31,7 @@ async fn main() {
 				commands::create_grade_js,
 				commands::get_subjects_js,
 				commands::get_types_js,
+				commands::get_grades_js,
         ])
 			.run(tauri::generate_context!())
 			.expect("error while running tauri application");

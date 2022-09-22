@@ -1,6 +1,13 @@
 use sea_orm::{ActiveValue, DatabaseConnection, DbErr};
-use entity::{grade_types, grades, subjects};
 use sea_orm::EntityTrait;
+use sea_orm::QueryOrder;
+
+use entity::{grade_types, grades, subjects};
+
+pub async fn get_grades(db: &DatabaseConnection) -> Result<Vec<grades::Model>, DbErr> {
+	grades::Entity::find()
+			.all(db).await
+}
 
 pub async fn create_grade(db: &DatabaseConnection, subject: i32, r#type: i32, info: String, grade: i32) -> Result<(), DbErr> {
 	let sub_model: Option<subjects::Model> = subjects::Entity::find_by_id(subject).one(db).await?;

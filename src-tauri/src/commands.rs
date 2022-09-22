@@ -71,4 +71,23 @@ pub async fn get_types_js(state: tauri::State<'_, AppState>) -> Result<String, S
 	Ok(data)
 }
 
+#[tauri::command]
+pub async fn get_grades_js(state: tauri::State<'_, AppState>) -> Result<String, String> {
+	let connection: &DatabaseConnection = &state.0 as &DatabaseConnection;
+	
+	let grades = get_grades(connection).await.map_err(|e| {
+		eprintln!("get grades Err: {e}");
+		e.to_string()
+	})?;
+	
+	let data = serde_json::to_string(&grades).map_err(|e| {
+		eprintln!("json get grades Err: {e}");
+		e.to_string()
+	})?;
+	
+	println!("{:?}", data);
+	
+	Ok(data)
+}
+
 
