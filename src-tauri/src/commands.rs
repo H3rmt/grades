@@ -1,7 +1,7 @@
 use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
 
-use crate::db::grades::{create_grade};
+use crate::db::grades::{create_grade, get_grades};
 use crate::db::subjects::{get_subjects};
 use crate::db::types::{get_types};
 
@@ -21,12 +21,12 @@ pub async fn create_grade_js(state: tauri::State<'_, AppState>, json: String) ->
 	println!("json{:#?}", json);
 	
 	let json: GradeJSON = serde_json::from_str(&*json).map_err(|e| {
-		eprintln!("json grad Err: {e}");
+		eprintln!("json create grade Err: {e}");
 		e.to_string()
 	})?;
 	
 	create_grade(connection, json.subject, json.r#type, json.info, json.grade).await.map_err(|e| {
-		eprintln!("create grad Err: {e}");
+		eprintln!("create grade Err: {e}");
 		e.to_string()
 	})?;
 	
@@ -38,12 +38,12 @@ pub async fn get_subjects_js(state: tauri::State<'_, AppState>) -> Result<String
 	let connection: &DatabaseConnection = &state.0 as &DatabaseConnection;
 	
 	let subjects = get_subjects(connection).await.map_err(|e| {
-		eprintln!("get sub Err: {e}");
+		eprintln!("get subjects Err: {e}");
 		e.to_string()
 	})?;
 	
 	let data = serde_json::to_string(&subjects).map_err(|e| {
-		eprintln!("json sub Err: {e}");
+		eprintln!("json get subjects Err: {e}");
 		e.to_string()
 	})?;
 	
@@ -62,7 +62,7 @@ pub async fn get_types_js(state: tauri::State<'_, AppState>) -> Result<String, S
 	})?;
 	
 	let data = serde_json::to_string(&types).map_err(|e| {
-		eprintln!("json type Err: {e}");
+		eprintln!("json get type Err: {e}");
 		e.to_string()
 	})?;
 	
