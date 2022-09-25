@@ -88,25 +88,19 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 			setTypes(data)
 		}).catch(() => {
 			setTypes([])
-			// TODO display error
+			toastMessage("error", "Error loading Types", openToast, closeToast)
 		})
 
-		const action = (id: any) => (<div style={{ gap: 1 }}>
-			<Button variant="contained" color="secondary" onClick={() => {
+		let key: SnackbarKey
 
-			}}>
-				Undo
-			</Button>
-			<Button variant="contained" color="secondary" onClick={() => {
-				closeToast(id)
-			}}>
-				Dismiss
-			</Button>
-		</div>);
+		const undo = () => {
+			console.log("undo", key)
+		}
 
-		let key = openToast(toastMessage("success", "TESTMESSAGE", {
-			action: action
-		}))
+		key = toastMessage("success", "TESTMESSAGE", openToast, closeToast, undo)
+		key = toastMessage("info", "TESTMESSAGE", openToast, closeToast, undo)
+		key = toastMessage("warning", "TESTMESSAGE", openToast, closeToast, undo)
+		key = toastMessage("success", "TESTMESSAGE", openToast, closeToast, undo)
 	}
 
 	useEffect(() => {
