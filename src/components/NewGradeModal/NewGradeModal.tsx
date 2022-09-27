@@ -206,7 +206,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		</DialogContent>
 		<DialogActions>
 			<Button onClick={handleClear} type="submit" variant="outlined" color="secondary">Clear</Button>
-			<Button onClick={() => props.closeModal} type="submit" variant="outlined" color="secondary">Close</Button>
+			<Button onClick={() => props.closeModal()} type="submit" variant="outlined" color="secondary">Close</Button>
 			<Button onClick={handleCreateGrade} type="submit" variant="outlined" color="secondary">Create</Button>
 		</DialogActions>
 	</Dialog>);
