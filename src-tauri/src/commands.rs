@@ -68,7 +68,7 @@ pub async fn get_types_js(state: tauri::State<'_, AppState>) -> Result<String, S
 	
 	println!("{:?}", data);
 	
-	Err("FEFEFEF".into())
+	Err("Fake Error getting Types".into())
 //	Ok(data)
 }
 
