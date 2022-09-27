@@ -53,8 +53,8 @@ const App = () => {
 	const [openModal, setOpenModal] = useState(false);
 
 	return (<>
-		<AppBar position="static">
-			<Toolbar>
+		<AppBar component="nav" enableColorOnDark position="fixed">
+			<Toolbar variant="regular">
 				<IconButton color="inherit" aria-label="open drawer" edge="start" size="large" onClick={() => {
 					setOpenNav(true)
 				}}><MenuIcon/>
@@ -62,7 +62,7 @@ const App = () => {
 				<Typography variant="h5" noWrap component="div" align="left" padding="6px" flexGrow="1">
 					{openPage.name}
 				</Typography>
-				<Button color="primary" variant="contained" onClick={() => {
+				<Button color="secondary" variant="contained" onClick={() => {
 					setOpenModal(true)
 				}}>Neue Note</Button>
 			</Toolbar>
@@ -70,7 +70,8 @@ const App = () => {
 		<Navbar open={openNav} closeNav={() => {
 			setOpenNav(false)
 		}} setPage={setPage} pages={pages}/>
-		<Box>
+		<Box component="main">
+			<Toolbar/>
 			{openPage.page}
 		</Box>
 		<NewGradeModal open={openModal} closeModal={() => {

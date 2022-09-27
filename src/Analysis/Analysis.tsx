@@ -1,8 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 
 function Analysis() {
-	const [open, setOpen] = useState(false);
-
 	return (<div>
 		Analysis<br/>
 		Analysis<br/>
