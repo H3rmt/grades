@@ -1,22 +1,26 @@
 import {OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar} from "notistack";
-import {Button, Paper} from "@mui/material";
-import React from "react";
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Stack} from "@mui/material";
+import React, {useState} from "react";
 
 type variant = "error" | "success" | "warning" | "info"
 
-const toastMessage: (
-		variant: variant,
+function errorToast(
 		message: string,
 		toast: toast,
-		undo?: (id: SnackbarKey) => void,
-		opts?: OptionsObject,
-) => SnackbarKey = (
-		variant: variant,
-		message: string,
-		toast: toast,
-		undo?: (id: SnackbarKey) => void,
+		error: any,
 		opts?: OptionsObject
-) => {
+) {
+	toastMessage("error", message, toast, undefined, error, opts)
+}
+
+function toastMessage(
+		variant: variant,
+		message: string,
+		toast: toast,
+		undo?: (id: SnackbarKey) => void,
+		info?: string,
+		opts?: OptionsObject
+): SnackbarKey {
 	return toast.openToast(message,
 			Object.assign({
 						variant: variant,
@@ -24,7 +28,7 @@ const toastMessage: (
 							vertical: 'bottom',
 							horizontal: 'right'
 						},
-						action: action(variant, toast.closeToast, undo)
+						action: action(variant, toast.closeToast, undo, info)
 					}, opts
 			)
 	)
@@ -40,35 +44,55 @@ const useToast: () => toast = () => {
 	return {openToast: enqueueSnackbar, closeToast: closeSnackbar}
 }
 
-const action: (
+function action(
 		variant: variant,
 		close: (id: SnackbarKey) => void,
-		undo?: (id: SnackbarKey) => void
-) => (id: SnackbarKey) => JSX.Element = (
-		variant: variant,
-		close: (id: SnackbarKey) => void,
-		undo?: (id: SnackbarKey) => void
-) => {
-	return (id: SnackbarKey) =>
-			<div style={{gap: 8, display: "flex"}}>
-				{undo && <Paper elevation={1} variant="outlined">
-					<Button variant="text" color="secondary" onClick={() => {
-						undo(id)
-					}}>Undo
+		undo?: (id: SnackbarKey) => void,
+		info?: string,
+): (id: SnackbarKey) => JSX.Element {
+	return (id: SnackbarKey) => {
+		let [open, setOpen] = useState(false)
+
+		return <Stack direction="row" spacing={2}>
+			{undo && <Paper elevation={1} variant="outlined">
+				<Button variant="text" color="secondary" onClick={() => {
+					undo(id)
+				}}>Undo
+				</Button>
+			</Paper>}
+			{info && <Paper elevation={1} variant="outlined">
+				<Button variant="text" color="secondary" onClick={() => {
+					setOpen(true)
+				}}>Info
+				</Button>
+			</Paper>}
+			<Paper elevation={1} variant="outlined">
+				<Button variant="text" color="secondary" onClick={() => {
+					close(id)
+				}}>Dismiss
+				</Button>
+			</Paper>
+			{open && <Dialog open={true}>
+				<DialogTitle>Info</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						{info}
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button color="secondary" variant="outlined" onClick={() => setOpen(false)}>
+						Close
 					</Button>
-				</Paper>}
-				<Paper elevation={1} variant="outlined">
-					<Button variant="text" color="secondary" onClick={() => {
-						close(id)
-					}}>Dismiss
-					</Button>
-				</Paper>
-			</div>
-};
+				</DialogActions>
+			</Dialog>}
+		</Stack>
+	}
+}
 
 export {
 	toastMessage,
-	useToast
+	useToast,
+	errorToast
 }
 
 export type {
