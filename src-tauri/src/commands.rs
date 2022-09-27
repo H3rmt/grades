@@ -18,7 +18,7 @@ struct GradeJSON {
 #[tauri::command]
 pub async fn create_grade_js(state: tauri::State<'_, AppState>, json: String) -> Result<(), String> {
 	let connection: &DatabaseConnection = &state.0 as &DatabaseConnection;
-	println!("json{:#?}", json);
+	println!("json create grade{:#?}", json);
 	
 	let json: GradeJSON = serde_json::from_str(&*json).map_err(|e| {
 		eprintln!("json create grade Err: {e}");
@@ -68,7 +68,8 @@ pub async fn get_types_js(state: tauri::State<'_, AppState>) -> Result<String, S
 	
 	println!("{:?}", data);
 	
-	Ok(data)
+	Err("FEFEFEF".into())
+//	Ok(data)
 }
 
 #[tauri::command]
