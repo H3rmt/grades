@@ -7,56 +7,56 @@ type variant = "error" | "success" | "warning" | "info"
 const toastMessage: (
 		variant: variant,
 		message: string,
-		open: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey,
-		close: (id: SnackbarKey) => void,
+		toast: toast,
 		undo?: (id: SnackbarKey) => void,
 		opts?: OptionsObject,
 ) => SnackbarKey = (
 		variant: variant,
 		message: string,
-		open: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey,
-		close: (id: SnackbarKey) => void,
-		undo: (id: SnackbarKey) => void = () => {
-		},
-		opts: OptionsObject = {}
+		toast: toast,
+		undo?: (id: SnackbarKey) => void,
+		opts?: OptionsObject
 ) => {
-	return open(message,
+	return toast.openToast(message,
 			Object.assign({
 						variant: variant,
 						anchorOrigin: {
 							vertical: 'bottom',
 							horizontal: 'right'
 						},
-						action: action(variant, close, undo)
+						action: action(variant, toast.closeToast, undo)
 					}, opts
 			)
 	)
 }
 
-const useToast: () => [
-	(message: SnackbarMessage, options?: OptionsObject) => SnackbarKey,
-	(key?: SnackbarKey) => void] = () => {
+type toast = {
+	openToast: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey
+	closeToast: (key?: SnackbarKey) => void
+}
+
+const useToast: () => toast = () => {
 	let {enqueueSnackbar, closeSnackbar} = useSnackbar()
-	return [enqueueSnackbar, closeSnackbar]
+	return {openToast: enqueueSnackbar, closeToast: closeSnackbar}
 }
 
 const action: (
 		variant: variant,
 		close: (id: SnackbarKey) => void,
-		undo: (id: SnackbarKey) => void
+		undo?: (id: SnackbarKey) => void
 ) => (id: SnackbarKey) => JSX.Element = (
 		variant: variant,
 		close: (id: SnackbarKey) => void,
-		undo: (id: SnackbarKey) => void
+		undo?: (id: SnackbarKey) => void
 ) => {
 	return (id: SnackbarKey) =>
 			<div style={{gap: 8, display: "flex"}}>
-				<Paper elevation={1} variant="outlined">
+				{undo && <Paper elevation={1} variant="outlined">
 					<Button variant="text" color="secondary" onClick={() => {
 						undo(id)
 					}}>Undo
 					</Button>
-				</Paper>
+				</Paper>}
 				<Paper elevation={1} variant="outlined">
 					<Button variant="text" color="secondary" onClick={() => {
 						close(id)
@@ -69,4 +69,8 @@ const action: (
 export {
 	toastMessage,
 	useToast
+}
+
+export type {
+	toast
 }

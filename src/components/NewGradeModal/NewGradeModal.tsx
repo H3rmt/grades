@@ -14,11 +14,11 @@ import {
 	TextField,
 	Typography
 } from "@mui/material";
-import {invoke} from "@tauri-apps/api/tauri";
-import {loadTypes} from "./load";
+import {toastMessage, useToast} from "../../utils";
 import {Subject} from "../../entity/subject";
 import {Type} from "../../entity/type";
-import {toastMessage, useToast} from "../../utils";
+import {loadSubjects, loadTypes} from "./load";
+import {createGrade} from "./create";
 
 function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	const [grade, setGrade] = useState(12)
@@ -26,10 +26,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	const [type, setType] = useState("")
 	const [info, setInfo] = useState("")
 
-	const [openToast, closeToast] = useToast()
-
-	const [toast, setToast] = useState<string | undefined>(undefined)
-	const [toastOpen, setToastOpen] = useState(false)
+	const toast = useToast()
 
 	const [subjects, setSubjects] = useState<Array<Subject>>([])
 	const [types, setTypes] = useState<Array<Type>>([])
@@ -54,31 +51,21 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		setInfo(event.target.value)
 	}
 
-	const createGrade = () => {
-		invoke("create_grade_js", {
-			json: JSON.stringify({
-				grade: grade,
-				subject: subject,
-				type: type,
-				info: info
-			})
-		}).then(() => {
-			setToastOpen(true)
-			console.log("Created new Grade")
-			setToast("Created new Grade")
+	const handleCreateGrade = () => {
+		createGrade(grade, subject, type, info).then(() => {
 			props.closeModal()
+			toastMessage("success", "Created Grade", toast)
 		}).catch((error) => {
-			setToastOpen(true)
-			console.error("Error creating Grade: " + error)
-			setToast("Error creating Grade: " + error)
+			toastMessage("error", "Error creating Grade", toast)
 		})
 	}
 
 	const getSubjects = () => {
-		// @ts-ignore
-		invoke("get_subjects_js").then((data: string) => {
-			console.log(data)
-			setSubjects(JSON.parse(data))
+		loadSubjects().then((data) => {
+			setSubjects(data)
+		}).catch(() => {
+			setSubjects([])
+			toastMessage("error", "Error loading Subjects", toast)
 		})
 	}
 
@@ -88,24 +75,15 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 			setTypes(data)
 		}).catch(() => {
 			setTypes([])
-			toastMessage("error", "Error loading Types", openToast, closeToast)
+			toastMessage("error", "Error loading Types", toast)
 		})
-
-		let key: SnackbarKey
-
-		const undo = () => {
-			console.log("undo", key)
-		}
-
-		key = toastMessage("success", "TESTMESSAGE", openToast, closeToast, undo)
-		key = toastMessage("info", "TESTMESSAGE", openToast, closeToast, undo)
-		key = toastMessage("warning", "TESTMESSAGE", openToast, closeToast, undo)
-		key = toastMessage("success", "TESTMESSAGE", openToast, closeToast, undo)
 	}
 
 	useEffect(() => {
-		getSubjects()
-		getTypes()
+		if (props.open) {
+			getSubjects()
+			getTypes()
+		}
 	}, [props.open])
 
 
@@ -133,7 +111,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 					<Grid item xs={6} gap={2} padding={2} paddingY={0} marginTop={2}>
 						<Typography variant="h6" fontWeight="normal" paddingBottom={0}>Grade</Typography>
 						<TextField value={grade} type="number" fullWidth margin="normal" onChange={handleGradeInputChange}/>
-						<Slider value={grade} color="primary" min={0} max={15} onChange={handleGradeSliderChange}/>
+						<Slider value={grade} color="secondary" min={0} max={15} onChange={handleGradeSliderChange}/>
 					</Grid>
 					<Grid item xs={6} gap={2} padding={2} paddingY={0} marginTop={2}>
 						<Typography variant="h6" fontWeight="normal" paddingBottom={0}>Info</Typography>
@@ -143,7 +121,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 			</Paper>
 		</DialogContent>
 		<DialogActions>
-			<Button onClick={createGrade}>Create</Button>
+			<Button onClick={handleCreateGrade} type="submit" variant="outlined" color="secondary">Create</Button>
 		</DialogActions>
 	</Dialog>);
 }
