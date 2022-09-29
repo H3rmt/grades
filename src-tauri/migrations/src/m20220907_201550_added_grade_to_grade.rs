@@ -15,7 +15,7 @@ impl MigrationTrait for Migration {
 				)
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(MysqlQueryBuilder));
+		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
 		
 		manager.alter_table(statement).await
 	}

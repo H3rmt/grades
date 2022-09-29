@@ -23,8 +23,8 @@ impl MigrationTrait for Migration {
 				.name("subject_name_index")
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(MysqlQueryBuilder));
-		println!("SQL:{}", statement2.to_string(MysqlQueryBuilder));
+		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
+		println!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
 		
 		manager.create_index(statement).await?;
 		manager.create_index(statement2).await

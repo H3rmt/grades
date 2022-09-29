@@ -46,8 +46,8 @@ impl MigrationTrait for Migration {
 				)
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(MysqlQueryBuilder));
-		println!("SQL:{}", statement2.to_string(MysqlQueryBuilder));
+		println!("SQL:{}", statement.to_string(SqliteQueryBuilder)); // TODO SQLite .build(DbBackend::MySql) .build(DbBackend::MySql).to_string(),
+		println!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
 		
 		manager.create_table(statement).await?;
 		manager.create_table(statement2).await
@@ -62,8 +62,8 @@ impl MigrationTrait for Migration {
 				.table(Subject::Table)
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(MysqlQueryBuilder));
-		println!("SQL:{}", statement2.to_string(MysqlQueryBuilder));
+		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
+		println!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
 		
 		manager.drop_table(statement).await?;
 		manager.drop_table(statement2).await

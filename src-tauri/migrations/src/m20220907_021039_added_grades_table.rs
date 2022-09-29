@@ -44,7 +44,7 @@ impl MigrationTrait for Migration {
 				)
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(MysqlQueryBuilder));
+		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
 		
 		manager.create_table(statement).await
 	}
@@ -54,7 +54,7 @@ impl MigrationTrait for Migration {
 				.table(Grade::Table)
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(MysqlQueryBuilder));
+		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
 		
 		manager.drop_table(statement).await
 	}
