@@ -81,9 +81,10 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 			setPeriod(old.period)
 			setInfo(old.info)
 			toastMessage("success", "Undid clear Note window", toast, handleClear)
+			closeClear()
 		}
 
-		toastMessage("success", "Cleared create Note window", toast, undo)
+		let closeClear = toastMessage("success", "Cleared create Note window", toast, undo)
 	}
 
 	const handleCreateGrade = () => {
