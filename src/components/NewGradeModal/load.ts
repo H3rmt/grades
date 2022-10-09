@@ -1,6 +1,7 @@
 import {invoke} from "@tauri-apps/api/tauri";
 import {Type} from "../../entity/type";
 import {Subject} from "../../entity/subject";
+import {Period} from "../../entity/period";
 
 function loadTypes(): Promise<Type[]> {
 	// @ts-ignore
@@ -24,7 +25,20 @@ function loadSubjects(): Promise<Subject[]> {
 	})
 }
 
+function loadPeriods(): Promise<Period[]> {
+	// @ts-ignore
+	return invoke("get_periods_js").then((data: string) => {
+		console.log(data)
+		return JSON.parse(data)
+	}).catch((error) => {
+		console.error("Load Subjects", error)
+		throw error
+	})
+}
+
+
 export {
 	loadTypes,
-	loadSubjects
+	loadSubjects,
+	loadPeriods
 }

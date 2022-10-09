@@ -1,6 +1,5 @@
 use sea_orm::{ActiveValue, DatabaseConnection, DbErr};
 use sea_orm::EntityTrait;
-use sea_orm::QueryOrder;
 
 use entity::{grade_types, grades, subjects};
 

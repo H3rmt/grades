@@ -21,7 +21,7 @@ import {
 import {errorToast, toastMessage, useToast} from "../../utils";
 import {Subject} from "../../entity/subject";
 import {Type} from "../../entity/type";
-import {loadSubjects, loadTypes} from "./load";
+import {loadPeriods, loadSubjects, loadTypes} from "./load";
 import {createGrade} from "./create";
 import {Period} from "../../entity/period";
 
@@ -124,25 +124,12 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	}
 
 	const getPeriods = () => {
-		// loadSubjects().then((data) => {
-		// 	setSubjects(data)
-		// }).catch(() => {
-		// 	setSubjects([])
-		// 	toastMessage("error", "Error loading Subjects", toast)
-		// })
-		setPeriods([
-			{
-				from: "12.4.2022",
-				to: "12.8.2022",
-				name: "main",
-				id: 1
-			}, {
-				from: "13.8.2022",
-				to: "26.12.2022",
-				name: "second",
-				id: 2
-			}
-		])
+		loadPeriods().then((data) => {
+			setPeriods(data)
+		}).catch(() => {
+			setPeriods([])
+			toastMessage("error", "Error loading Periods", toast)
+		})
 	}
 
 	const getTypes = () => {
@@ -165,7 +152,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 
 
 	return (<Dialog open={props.open} onClose={props.closeModal} fullWidth maxWidth="md">
-		<DialogTitle>Neue Note</DialogTitle>
+		<DialogTitle>New Grade</DialogTitle>
 		<DialogContent>
 			<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
 				<Grid container spacing={4} padding={2}>
