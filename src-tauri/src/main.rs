@@ -6,6 +6,7 @@ windows_subsystem = "windows"
 extern crate core;
 
 use sea_orm::DatabaseConnection;
+use tauri::Manager;
 
 use migrations::{Migrator, MigratorTrait};
 
