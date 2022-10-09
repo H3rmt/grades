@@ -54,19 +54,19 @@ function action(
 		let [open, setOpen] = useState(false)
 
 		return <Stack direction="row" spacing={2}>
-			{undo && <Paper elevation={1} variant="outlined">
+			{undo && <Paper variant="outlined">
 				<Button variant="text" color="secondary" onClick={() => {
 					undo(id)
 				}}>Undo
 				</Button>
 			</Paper>}
-			{info && <Paper elevation={1} variant="outlined">
+			{info && <Paper variant="outlined">
 				<Button variant="text" color="secondary" onClick={() => {
 					setOpen(true)
 				}}>Info
 				</Button>
 			</Paper>}
-			<Paper elevation={1} variant="outlined">
+			<Paper variant="outlined">
 				<Button variant="text" color="secondary" onClick={() => {
 					close(id)
 				}}>Dismiss
