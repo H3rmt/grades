@@ -8,7 +8,7 @@ pub struct Entity;
 
 impl EntityName for Entity {
     fn table_name(&self) -> &str {
-        "subjects"
+        "periods"
     }
 }
 
@@ -16,14 +16,16 @@ impl EntityName for Entity {
 pub struct Model {
     pub id: i32,
     pub name: String,
-    pub color: String,
+    pub from: String,
+    pub to: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
 pub enum Column {
     Id,
     Name,
-    Color,
+    From,
+    To,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -39,9 +41,7 @@ impl PrimaryKeyTrait for PrimaryKey {
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
-pub enum Relation {
-    Grades,
-}
+pub enum Relation {}
 
 impl ColumnTrait for Column {
     type EntityName = Entity;
@@ -49,22 +49,15 @@ impl ColumnTrait for Column {
         match self {
             Self::Id => ColumnType::Integer.def(),
             Self::Name => ColumnType::String(None).def(),
-            Self::Color => ColumnType::String(None).def(),
+            Self::From => ColumnType::String(None).def(),
+            Self::To => ColumnType::String(None).def(),
         }
     }
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
-        match self {
-            Self::Grades => Entity::has_many(super::grades::Entity).into(),
-        }
-    }
-}
-
-impl Related<super::grades::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Grades.def()
+        panic!("No RelationDef")
     }
 }
 
