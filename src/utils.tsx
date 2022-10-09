@@ -9,8 +9,8 @@ function errorToast(
 		toast: toast,
 		error: any,
 		opts?: OptionsObject
-) {
-	toastMessage("error", message, toast, undefined, error, opts)
+): () => void {
+	return toastMessage("error", message, toast, undefined, error, opts)
 }
 
 function toastMessage(
@@ -20,18 +20,20 @@ function toastMessage(
 		undo?: (id: SnackbarKey) => void,
 		info?: string,
 		opts?: OptionsObject
-): SnackbarKey {
-	return toast.openToast(message,
+): () => void {
+	let key = toast.openToast(message,
 			Object.assign({
 						variant: variant,
 						anchorOrigin: {
 							vertical: 'bottom',
 							horizontal: 'right'
 						},
-						action: action(variant, toast.closeToast, undo, info)
+						action: action(variant, toast.closeToast, undo, info),
+						persist: variant == "error"
 					}, opts
 			)
 	)
+	return () => toast.closeToast(key)
 }
 
 type toast = {
