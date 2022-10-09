@@ -1,10 +1,12 @@
-use sea_orm::{ActiveValue, DatabaseConnection, DbErr};
+use sea_orm::{ActiveValue, DatabaseConnection, DbErr, Order};
 use sea_orm::EntityTrait;
+use sea_orm::QueryOrder;
 
 use entity::{grade_types, grades, subjects};
 
 pub async fn get_grades(db: &DatabaseConnection) -> Result<Vec<grades::Model>, DbErr> {
 	grades::Entity::find()
+			.order_by(grades::Column::Grade, Order::Asc)
 			.all(db).await
 }
 
