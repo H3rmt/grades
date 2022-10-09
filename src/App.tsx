@@ -64,7 +64,7 @@ const App = () => {
 				</Typography>
 				<Button color="secondary" variant="contained" onClick={() => {
 					setOpenModal(true)
-				}}>Neue Note</Button>
+				}}>New Grade</Button>
 			</Toolbar>
 		</AppBar>
 		<Navbar open={openNav} closeNav={() => {

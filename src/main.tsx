@@ -17,7 +17,7 @@ const darkTheme = createTheme({
 	},
 });
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root") as HTMLElement).render(
 		<React.StrictMode>
 			<ThemeProvider theme={darkTheme}>
 				<CssBaseline enableColorScheme/>
