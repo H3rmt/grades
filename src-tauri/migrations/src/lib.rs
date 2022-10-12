@@ -5,6 +5,8 @@ mod m20220907_021039_added_grades_table;
 mod m20220907_022500_added_unique_indexes;
 mod m20220907_201550_added_grade_to_grade;
 mod m20220929_160232_added_periods_table;
+mod m20221012_174650_added_period_to_grade;
+
 
 pub struct Migrator;
 
@@ -17,6 +19,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20220907_022500_added_unique_indexes::Migration),
             Box::new(m20220907_201550_added_grade_to_grade::Migration),
             Box::new(m20220929_160232_added_periods_table::Migration),
-        ]
+            Box::new(m20221012_174650_added_period_to_grade::Migration),
+		]
 	}
 }
