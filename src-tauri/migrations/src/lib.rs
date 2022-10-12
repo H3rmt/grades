@@ -6,6 +6,7 @@ mod m20220907_022500_added_unique_indexes;
 mod m20220907_201550_added_grade_to_grade;
 mod m20220929_160232_added_periods_table;
 mod m20221012_174650_added_period_to_grade;
+mod m20221012_184535_added_not_final_and_count2_to_grade;
 
 
 pub struct Migrator;
@@ -14,12 +15,13 @@ pub struct Migrator;
 impl MigratorTrait for Migrator {
 	fn migrations() -> Vec<Box<dyn MigrationTrait>> {
 		vec![
-            Box::new(m20220906_221454_added_types_and_subjects_tables::Migration),
-            Box::new(m20220907_021039_added_grades_table::Migration),
-            Box::new(m20220907_022500_added_unique_indexes::Migration),
-            Box::new(m20220907_201550_added_grade_to_grade::Migration),
-            Box::new(m20220929_160232_added_periods_table::Migration),
-            Box::new(m20221012_174650_added_period_to_grade::Migration),
+			Box::new(m20220906_221454_added_types_and_subjects_tables::Migration),
+			Box::new(m20220907_021039_added_grades_table::Migration),
+			Box::new(m20220907_022500_added_unique_indexes::Migration),
+			Box::new(m20220907_201550_added_grade_to_grade::Migration),
+			Box::new(m20220929_160232_added_periods_table::Migration),
+			Box::new(m20221012_174650_added_period_to_grade::Migration),
+			Box::new(m20221012_184535_added_not_final_and_count2_to_grade::Migration),
 		]
 	}
 }
