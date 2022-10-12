@@ -25,14 +25,22 @@ import {loadPeriods, loadSubjects, loadTypes} from "./load";
 import {createGrade} from "./create";
 import {Period} from "../../entity/period";
 
+const gradeDefault = 12
+const subjectDefault = ""
+const typeDefault = ""
+const periodDefault = ""
+const infoDefault = ""
+const notFinalDefault = false
+const doubleDefault = false
+
 function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
-	const [grade, setGrade] = useState(12)
-	const [subject, setSubject] = useState("")
-	const [type, setType] = useState("")
-	const [period, setPeriod] = useState("")  // TODO add setting for default value
-	const [info, setInfo] = useState("")
-	const [notFinal, setNotFinal] = useState(false)
-	const [double, setDouble] = useState(false)
+	const [grade, setGrade] = useState(gradeDefault)
+	const [subject, setSubject] = useState(subjectDefault)
+	const [type, setType] = useState(typeDefault)
+	const [period, setPeriod] = useState(periodDefault)
+	const [info, setInfo] = useState(infoDefault)
+	const [notFinal, setNotFinal] = useState(notFinalDefault)
+	const [double, setDouble] = useState(doubleDefault)
 
 	const toast = useToast()
 
@@ -83,13 +91,13 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 			double
 		}
 
-		setGrade(12)
-		setSubject("")
-		setType("")
-		setPeriod("")
-		setInfo("")
-		setNotFinal(false)
-		setDouble(false)
+		setGrade(gradeDefault)
+		setSubject(subjectDefault)
+		setType(typeDefault)
+		setPeriod(periodDefault)
+		setInfo(infoDefault)
+		setNotFinal(notFinalDefault)
+		setDouble(doubleDefault)
 
 		const undo = () => {
 			setGrade(old.grade)
@@ -99,7 +107,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 			setInfo(old.info)
 			setNotFinal(old.notFinal)
 			setDouble(old.double)
-			toastMessage("success", "Undid clear Note window", toast, handleClear)
+			toastMessage("success", "Undid clear Note window", toast)
 			closeClear()
 		}
 
@@ -134,7 +142,6 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	}
 
 	const getTypes = () => {
-		// @ts-ignore
 		loadTypes().then((data) => {
 			setTypes(data)
 		}).catch((error) => {
@@ -153,7 +160,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 
 
 	return (<Dialog open={props.open} onClose={props.closeModal} fullWidth maxWidth="md">
-		<DialogTitle>New Grade</DialogTitle>
+		<DialogTitle variant="h5">New Grade</DialogTitle>
 		<DialogContent>
 			<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
 				<Grid container spacing={4} padding={2}>
@@ -226,7 +233,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		<DialogActions>
 			<Button onClick={handleClear} type="submit" variant="outlined" color="secondary">Clear</Button>
 			<Button onClick={props.closeModal} type="submit" variant="outlined" color="secondary">Close</Button>
-			<Button onClick={handleCreateGrade} type="submit" variant="outlined" color="secondary">Create</Button>
+			<Button onClick={handleCreateGrade} type="submit" variant="outlined" color="success">Create</Button>
 		</DialogActions>
 	</Dialog>);
 }
