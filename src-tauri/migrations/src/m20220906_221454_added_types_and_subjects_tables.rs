@@ -55,10 +55,12 @@ impl MigrationTrait for Migration {
 	
 	async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
 		let statement = Table::drop()
+				.if_exists()
 				.table(Type::Table)
 				.to_owned();
 		
 		let statement2 = Table::drop()
+				.if_exists()
 				.table(Subject::Table)
 				.to_owned();
 		

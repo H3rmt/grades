@@ -51,6 +51,7 @@ impl MigrationTrait for Migration {
 	
 	async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
 		let statement = Table::drop()
+				.if_exists()
 				.table(Grade::Table)
 				.to_owned();
 		
