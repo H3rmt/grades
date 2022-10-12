@@ -15,7 +15,7 @@ type Props<Type extends Data> = {
 };
 
 interface Data {
-	id: string | number
+	id: number
 }
 
 type HeadCell<Type extends Data> = {

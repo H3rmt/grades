@@ -115,7 +115,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	}
 
 	const handleCreateGrade = () => {
-		createGrade(grade, subject, type, info).then(() => {
+		createGrade(grade, subject, type, info, period, notFinal, double).then(() => {
 			props.closeModal()
 			toastMessage("success", "Created Grade", toast)
 		}).catch((error) => {
@@ -230,7 +230,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 				</Grid>
 			</Paper>
 		</DialogContent>
-		<DialogActions>
+		<DialogActions sx={{gap: 0.7}}>
 			<Button onClick={handleClear} type="submit" variant="outlined" color="secondary">Clear</Button>
 			<Button onClick={props.closeModal} type="submit" variant="outlined" color="secondary">Close</Button>
 			<Button onClick={handleCreateGrade} type="submit" variant="outlined" color="success">Create</Button>

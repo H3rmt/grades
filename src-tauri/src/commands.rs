@@ -19,7 +19,7 @@ pub async fn create_grade_js(state: tauri::State<'_, AppState>, json: String) ->
 		format!("Error serialising Grade from JSON: {}", e)
 	})?;
 	
-	create_grade(connection, json.subject, json.r#type, json.info, json.grade).await.map_err(|e| {
+	create_grade(connection, json.subject, json.r#type, json.info, json.grade, json.period, json.not_final, json.double).await.map_err(|e| {
 		eprintln!("create grade Err: {e}");
 		format!("Error creating Grade:{}", e)
 	})?;
