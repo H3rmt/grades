@@ -21,8 +21,8 @@ pub struct Model {
     pub info: String,
     pub grade: i32,
     pub period: i32,
-    pub not_final: i32,
-    pub count2: i32,
+    pub not_final: bool,
+    pub double: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
@@ -34,7 +34,7 @@ pub enum Column {
     Grade,
     Period,
     NotFinal,
-    Count2,
+    Double,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -66,8 +66,8 @@ impl ColumnTrait for Column {
             Self::Info => ColumnType::String(None).def(),
             Self::Grade => ColumnType::Integer.def(),
             Self::Period => ColumnType::Integer.def(),
-            Self::NotFinal => ColumnType::Integer.def(),
-            Self::Count2 => ColumnType::Integer.def(),
+            Self::NotFinal => ColumnType::Boolean.def(),
+            Self::Double => ColumnType::Boolean.def(),
         }
     }
 }

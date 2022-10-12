@@ -17,7 +17,7 @@ impl MigrationTrait for Migration {
 		
 		let statement2 = Table::alter()
 				.table(Grade::Table)
-				.add_column(ColumnDef::new(Grade::Count2)
+				.add_column(ColumnDef::new(Grade::Double)
 						.boolean()
 						.not_null()
 				)
@@ -31,7 +31,7 @@ impl MigrationTrait for Migration {
 	}
 	
 	async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-		let sql = "ALTER TABLE `grades` DROP COLUMN `not_final`;ALTER TABLE `grades` DROP COLUMN `count2`";
+		let sql = "ALTER TABLE `grades` DROP COLUMN `not_final`;ALTER TABLE `grades` DROP COLUMN `double`";
 		println!("SQL:{}", sql);
 		
 		let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
@@ -50,5 +50,5 @@ pub enum Grade {
 	Grade,
 	Period,
 	NotFinal,
-	Count2,
+	Double,
 }
