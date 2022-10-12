@@ -20,6 +20,9 @@ pub struct Model {
     pub r#type: i32,
     pub info: String,
     pub grade: i32,
+    pub period: i32,
+    pub not_final: i32,
+    pub count2: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
@@ -29,6 +32,9 @@ pub enum Column {
     Type,
     Info,
     Grade,
+    Period,
+    NotFinal,
+    Count2,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -45,6 +51,7 @@ impl PrimaryKeyTrait for PrimaryKey {
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
+    Periods,
     GradeTypes,
     Subjects,
 }
@@ -58,6 +65,9 @@ impl ColumnTrait for Column {
             Self::Type => ColumnType::Integer.def(),
             Self::Info => ColumnType::String(None).def(),
             Self::Grade => ColumnType::Integer.def(),
+            Self::Period => ColumnType::Integer.def(),
+            Self::NotFinal => ColumnType::Integer.def(),
+            Self::Count2 => ColumnType::Integer.def(),
         }
     }
 }
@@ -65,6 +75,10 @@ impl ColumnTrait for Column {
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
+            Self::Periods => Entity::belongs_to(super::periods::Entity)
+                .from(Column::Period)
+                .to(super::periods::Column::Id)
+                .into(),
             Self::GradeTypes => Entity::belongs_to(super::grade_types::Entity)
                 .from(Column::Type)
                 .to(super::grade_types::Column::Id)
@@ -74,6 +88,12 @@ impl RelationTrait for Relation {
                 .to(super::subjects::Column::Id)
                 .into(),
         }
+    }
+}
+
+impl Related<super::periods::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Periods.def()
     }
 }
 
