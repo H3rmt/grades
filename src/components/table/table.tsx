@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useState} from "react";
+import {Key, useState} from "react";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
@@ -41,18 +41,19 @@ export function CTable<Type extends Data>(props: Props<Type>) {
 				<Table size="medium">
 					<TableHead sx={{bgcolor: "primary.main"}}>
 						<TableRow>
-							{props.headCells.map((headCell) => (
-									// @ts-ignore
-									<TableCell key={headCell.id} sortDirection={orderBy === headCell.id ? order : false}
-												  sx={{backgroundColor: "inherit"}}>
-										<TableSortLabel
-												active={orderBy === headCell.id}
-												direction={orderBy === headCell.id ? order : 'asc'}
-												onClick={() => handleRequestSort(headCell.id)}>
-											{headCell.label}
-										</TableSortLabel>
-									</TableCell>
-							))}
+							{props.headCells.map((headCell) => {
+								// @ts-ignore
+								let key: Key = headCell.id
+								return <TableCell key={key} sortDirection={orderBy === headCell.id ? order : false}
+														sx={{backgroundColor: "inherit"}}>
+									<TableSortLabel
+											active={orderBy === headCell.id}
+											direction={orderBy === headCell.id ? order : 'asc'}
+											onClick={() => handleRequestSort(headCell.id)}>
+										{headCell.label}
+									</TableSortLabel>
+								</TableCell>
+							})}
 						</TableRow>
 					</TableHead>
 					<TableBody>
