@@ -1,6 +1,7 @@
 import {OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar} from "notistack";
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Stack} from "@mui/material";
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Paper, Stack} from "@mui/material";
 import React, {useState} from "react";
+import CloseIcon from '@mui/icons-material/Close';
 
 type variant = "error" | "success" | "warning" | "info"
 
@@ -55,7 +56,7 @@ function action(
 	return (id: SnackbarKey) => {
 		let [open, setOpen] = useState(false)
 
-		return <Stack direction="row" spacing={2}>
+		return <Stack direction="row" spacing={1.5}>
 			{undo && <Paper variant="outlined">
 				<Button variant="text" color="secondary" onClick={() => {
 					undo(id)
@@ -68,12 +69,10 @@ function action(
 				}}>Info
 				</Button>
 			</Paper>}
-			<Paper variant="outlined">
-				<Button variant="text" color="secondary" onClick={() => {
-					close(id)
-				}}>Dismiss
-				</Button>
-			</Paper>
+			<IconButton color="primary" onClick={() => {
+				close(id)
+			}}><CloseIcon/>
+			</IconButton>
 			{open && <Dialog open={true}>
 				<DialogTitle>Info</DialogTitle>
 				<DialogContent>
