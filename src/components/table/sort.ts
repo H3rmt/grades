@@ -1,4 +1,4 @@
-import {Grade} from "../entity/grade";
+import {Data} from "./table";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
@@ -10,9 +10,9 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	return 0;
 }
 
-type Order = 'asc' | 'desc';
+export type Order = 'asc' | 'desc';
 
-function getComparator<Key extends keyof any>(
+export function getComparator<Type extends Data, Key extends keyof Type>(
 		order: Order,
 		orderBy: Key,
 ): (
@@ -24,7 +24,7 @@ function getComparator<Key extends keyof any>(
 			: (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-function setSort(property: keyof Grade, order: Order, orderBy: keyof Grade): [Order, keyof Grade] {
+export function setSort<Type extends Data>(property: keyof Type, order: Order, orderBy: keyof Type): [Order, keyof Type] {
 	if (orderBy === property) {
 		if (order === 'desc') {
 			// "disable Sort"
@@ -37,11 +37,3 @@ function setSort(property: keyof Grade, order: Order, orderBy: keyof Grade): [Or
 
 	}
 }
-
-export {
-	getComparator,
-	setSort
-};
-export type {
-	Order
-};

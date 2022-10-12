@@ -1,13 +1,7 @@
 import {Grade} from "../entity/grade";
+import {HeadCell} from "../components/table/table";
 
-type HeadCell = {
-	disablePadding: boolean;
-	id: keyof Grade;
-	label: string;
-	numeric: boolean;
-}
-
-const headCells: HeadCell[] = [
+const headCells: HeadCell<Grade>[] = [
 	{
 		id: 'subject',
 		numeric: false,
@@ -37,8 +31,3 @@ const headCells: HeadCell[] = [
 export {
 	headCells
 }
-
-export type {
-	HeadCell
-}
-
