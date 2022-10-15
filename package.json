@@ -6,8 +6,10 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
+
 		"tauri": "tauri dev",
-		"tauri build": "tauri build"
+		"tauri build": "tauri build",
+		"build entity": "cd src-tauri/entity && cargo test"
 	},
 	"dependencies": {
 		"@emotion/react": "11.10.4",
