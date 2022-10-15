@@ -1,7 +1,5 @@
 import {invoke} from "@tauri-apps/api/tauri";
-import {Type} from "../../entity/type";
-import {Subject} from "../../entity/subject";
-import {Period} from "../../entity/period";
+import {Grade, Period, Subject, Type} from "../entity";
 
 function loadTypes(): Promise<Type[]> {
 	// @ts-ignore
@@ -36,9 +34,21 @@ function loadPeriods(): Promise<Period[]> {
 	})
 }
 
+function loadGrades(): Promise<Grade[]> {
+	// @ts-ignore
+	return invoke("get_grades_js").then((data: string) => {
+		console.log(data)
+		return JSON.parse(data)
+	}).catch((error) => {
+		console.error(error)
+		throw error
+	})
+}
+
 
 export {
 	loadTypes,
 	loadSubjects,
-	loadPeriods
+	loadPeriods,
+	loadGrades
 }
