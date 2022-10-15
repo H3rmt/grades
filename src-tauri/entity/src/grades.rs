@@ -2,111 +2,113 @@
 
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 #[derive(Copy, Clone, Default, Debug, DeriveEntity)]
 pub struct Entity;
 
 impl EntityName for Entity {
-    fn table_name(&self) -> &str {
-        "grades"
-    }
+	fn table_name(&self) -> &str {
+		"grades"
+	}
 }
 
-#[derive(Clone, Debug, PartialEq, DeriveModel, DeriveActiveModel, Serialize, Deserialize)]
+#[derive(TS, Clone, Debug, PartialEq, DeriveModel, DeriveActiveModel, Serialize, Deserialize)]
+#[ts(export, export_to = "../../src/entity/grade.ts")]
 pub struct Model {
-    #[serde(skip_deserializing)]
-    pub id: i32,
-    pub subject: i32,
-    pub r#type: i32,
-    pub info: String,
-    pub grade: i32,
-    pub period: i32,
-    pub not_final: bool,
-    pub double: bool,
+	#[serde(skip_deserializing)]
+	pub id: i32,
+	pub subject: i32,
+	pub r#type: i32,
+	pub info: String,
+	pub grade: i32,
+	pub period: i32,
+	pub not_final: bool,
+	pub double: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
 pub enum Column {
-    Id,
-    Subject,
-    Type,
-    Info,
-    Grade,
-    Period,
-    NotFinal,
-    Double,
+	Id,
+	Subject,
+	Type,
+	Info,
+	Grade,
+	Period,
+	NotFinal,
+	Double,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
 pub enum PrimaryKey {
-    Id,
+	Id,
 }
 
 impl PrimaryKeyTrait for PrimaryKey {
-    type ValueType = i32;
-    fn auto_increment() -> bool {
-        true
-    }
+	type ValueType = i32;
+	fn auto_increment() -> bool {
+		true
+	}
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
-    Periods,
-    GradeTypes,
-    Subjects,
+	Periods,
+	GradeTypes,
+	Subjects,
 }
 
 impl ColumnTrait for Column {
-    type EntityName = Entity;
-    fn def(&self) -> ColumnDef {
-        match self {
-            Self::Id => ColumnType::Integer.def(),
-            Self::Subject => ColumnType::Integer.def(),
-            Self::Type => ColumnType::Integer.def(),
-            Self::Info => ColumnType::String(None).def(),
-            Self::Grade => ColumnType::Integer.def(),
-            Self::Period => ColumnType::Integer.def(),
-            Self::NotFinal => ColumnType::Boolean.def(),
-            Self::Double => ColumnType::Boolean.def(),
-        }
-    }
+	type EntityName = Entity;
+	fn def(&self) -> ColumnDef {
+		match self {
+			Self::Id => ColumnType::Integer.def(),
+			Self::Subject => ColumnType::Integer.def(),
+			Self::Type => ColumnType::Integer.def(),
+			Self::Info => ColumnType::String(None).def(),
+			Self::Grade => ColumnType::Integer.def(),
+			Self::Period => ColumnType::Integer.def(),
+			Self::NotFinal => ColumnType::Boolean.def(),
+			Self::Double => ColumnType::Boolean.def(),
+		}
+	}
 }
 
 impl RelationTrait for Relation {
-    fn def(&self) -> RelationDef {
-        match self {
-            Self::Periods => Entity::belongs_to(super::periods::Entity)
-                .from(Column::Period)
-                .to(super::periods::Column::Id)
-                .into(),
-            Self::GradeTypes => Entity::belongs_to(super::grade_types::Entity)
-                .from(Column::Type)
-                .to(super::grade_types::Column::Id)
-                .into(),
-            Self::Subjects => Entity::belongs_to(super::subjects::Entity)
-                .from(Column::Subject)
-                .to(super::subjects::Column::Id)
-                .into(),
-        }
-    }
+	fn def(&self) -> RelationDef {
+		match self {
+			Self::Periods => Entity::belongs_to(super::periods::Entity)
+					.from(Column::Period)
+					.to(super::periods::Column::Id)
+					.into(),
+			Self::GradeTypes => Entity::belongs_to(super::grade_types::Entity)
+					.from(Column::Type)
+					.to(super::grade_types::Column::Id)
+					.into(),
+			Self::Subjects => Entity::belongs_to(super::subjects::Entity)
+					.from(Column::Subject)
+					.to(super::subjects::Column::Id)
+					.into(),
+		}
+	}
 }
 
 impl Related<super::periods::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Periods.def()
-    }
+	fn to() -> RelationDef {
+		Relation::Periods.def()
+	}
 }
 
 impl Related<super::grade_types::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::GradeTypes.def()
-    }
+	fn to() -> RelationDef {
+		Relation::GradeTypes.def()
+	}
 }
 
 impl Related<super::subjects::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Subjects.def()
-    }
+	fn to() -> RelationDef {
+		Relation::Subjects.def()
+	}
 }
 
 impl ActiveModelBehavior for ActiveModel {}
