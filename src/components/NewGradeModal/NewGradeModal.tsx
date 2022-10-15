@@ -42,9 +42,9 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 
 	const toast = useToast()
 
-	const [subjects, setSubjects] = useState<Array<Subject>>([])
-	const [types, setTypes] = useState<Array<Type>>([])
-	const [periods, setPeriods] = useState<Array<Period>>([])
+	const [subjects, setSubjects] = useState<Subject[]>([])
+	const [types, setTypes] = useState<Type[]>([])
+	const [periods, setPeriods] = useState<Period[]>([])
 
 	const handleGradeSliderChange = (event: Event, newValue: number | number[]) => {
 		setGrade(newValue as number);

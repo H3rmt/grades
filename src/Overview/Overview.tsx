@@ -3,9 +3,9 @@ import {useEffect, useState} from 'react';
 import {Grade, Period, Subject, Type} from "../entity";
 import {loadGrades, loadPeriods, loadSubjects, loadTypes} from "../ts/load";
 import {CTable} from "../components/table/table";
-import {header, transform} from "./table";
+import {transform} from "./table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
-import {Button} from "@mui/material";
+import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material";
 import CAppBar from "../ts/CAppBar";
 import {reactSet} from "../ts/utils";
 
@@ -14,11 +14,16 @@ type Props = {
 	setOpenModal: reactSet<boolean>
 }
 
+const periodDefault = ""
+
 export default function Overview(props: Props) {
 	const [grades, setGrades] = useState<Grade[]>([]);
-	const [subjects, setSubjects] = useState<Array<Subject>>([])
-	const [types, setTypes] = useState<Array<Type>>([])
-	const [periods, setPeriods] = useState<Array<Period>>([])
+	const [subjects, setSubjects] = useState<Subject[]>([])
+	const [types, setTypes] = useState<Type[]>([])
+	const [periods, setPeriods] = useState<Period[]>([])
+
+
+	const [period, setPeriod] = useState(periodDefault)
 
 	const toast = useToast()
 
@@ -58,6 +63,10 @@ export default function Overview(props: Props) {
 		})
 	}
 
+	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
+		setPeriod(event.target.value)
+	}
+
 	useEffect(() => {
 		getGrades()
 		getTypes()
@@ -65,17 +74,27 @@ export default function Overview(props: Props) {
 		getSubjects()
 	}, [])
 
-	const data = transform(grades, subjects, types)
-
-	console.log(data)
+	const filteredGrades = grades.filter(grade => grade.period === Number(period))
+	const data = transform(filteredGrades, subjects, types)
 
 	return (<>
 				<CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
-					<Button color="secondary" variant="contained" onClick={() => {
-						props.setOpenModal(true)
-					}}>New Grade</Button>
+					<Stack spacing={2} direction="row">
+						<Select color="secondary" variant="outlined" sx={{padding: 0}} value={period} size="small"
+								  onChange={handlePeriodSelectChange}>
+							{periods.map((period) => {
+								return <MenuItem value={period.id}>
+									{period.name}&nbsp;&nbsp;&nbsp;{period.from} - {period.to}
+								</MenuItem>
+							})}
+						</Select>
+
+						<Button color="secondary" variant="contained" onClick={() => {
+							props.setOpenModal(true)
+						}}>New Grade</Button>
+					</Stack>
 				}/>
-				<CTable headCells={header} data={data}/>
+				<CTable headers={["subject", "type", "grade", "info", "extra"]} data={data}/>
 			</>
 	)
 }

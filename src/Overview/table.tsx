@@ -1,5 +1,5 @@
-import {HeadCell} from "../components/table/table";
 import {Grade, Subject, Type} from "../entity";
+import {ReactElement} from "react";
 
 type TableGrade = {
 	id: number,
@@ -7,28 +7,8 @@ type TableGrade = {
 	type: string,
 	info: string,
 	grade: number,
-	not_final: boolean,
-	double: boolean
+	extra: ReactElement
 }
-
-const header: HeadCell<TableGrade>[] = [
-	{
-		id: 'subject',
-		label: 'Subject',
-	},
-	{
-		id: 'type',
-		label: 'Type',
-	},
-	{
-		id: 'grade',
-		label: 'Grade',
-	},
-	{
-		id: 'info',
-		label: 'Info',
-	}
-];
 
 function transform(grades: Grade[], subjects: Subject[], types: Type[]): TableGrade[] {
 	return grades.map(grade => ({
@@ -37,14 +17,12 @@ function transform(grades: Grade[], subjects: Subject[], types: Type[]): TableGr
 				type: types.find(type => type.id === grade.type)?.name || '--notfound',
 				info: grade.info,
 				grade: grade.grade,
-				not_final: grade.not_final,
-				double: grade.double
+				extra: (<>x2: {grade.double ? <>&#9745;</> : <>&#9744;</>}&nbsp;&nbsp;not_final: {grade.not_final ? <>&#9745;</> : <>&#9744;</>}</>)
 			})
 	)
 }
 
 export {
-	header,
 	transform
 };
 export type {
