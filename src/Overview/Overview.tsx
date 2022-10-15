@@ -74,7 +74,9 @@ export default function Overview(props: Props) {
 		getSubjects()
 	}, [])
 
-	const filteredGrades = grades.filter(grade => grade.period === Number(period))
+	const periodsPlus = periods.concat({id: -1, name: "All", from: "", to: ""})
+
+	const filteredGrades = grades.filter(grade => grade.period === Number(period) || period == "-1")
 	const data = transform(filteredGrades, subjects, types)
 
 	return (<>
@@ -82,9 +84,9 @@ export default function Overview(props: Props) {
 					<Stack spacing={2} direction="row">
 						<Select color="secondary" variant="outlined" sx={{padding: 0}} value={period} size="small"
 								  onChange={handlePeriodSelectChange}>
-							{periods.map((period) => {
+							{periodsPlus.map((period) => {
 								return <MenuItem value={period.id}>
-									{period.name}&nbsp;&nbsp;&nbsp;{period.from} - {period.to}
+									{period.name}&nbsp;&nbsp;&nbsp;{period.from != "" && period.to != "" ? `${period.from} - ${period.to}` : ""}
 								</MenuItem>
 							})}
 						</Select>
