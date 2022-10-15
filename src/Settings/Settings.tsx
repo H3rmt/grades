@@ -1,5 +1,7 @@
 import React from 'react';
 import {CTable, HeadCell} from "../components/table/table";
+import {reactSet} from "../ts/utils";
+import CAppBar from "../ts/CAppBar";
 
 type testdata = {
 	id: number
@@ -7,8 +9,13 @@ type testdata = {
 	other: number
 }
 
-function Analysis() {
-	const testdataA: testdata[] = [
+type Props = {
+	setOpenNav: reactSet<boolean>
+}
+
+
+function Settings(props: Props) {
+	const data: testdata[] = [
 		{
 			id: 1,
 			name: "geg",
@@ -23,19 +30,22 @@ function Analysis() {
 	const header: HeadCell<testdata>[] = [
 		{
 			id: "name",
-			label: "NAME",
-			disablePadding: false,
-			numeric: false
+			label: "NAME"
 		},
 		{
 			id: "other",
-			label: "OTHER",
-			disablePadding: false,
-			numeric: false
+			label: "OTHER"
 		}
 	]
 
-	return <CTable data={testdataA} headCells={header}/>
+	return (
+			<>
+				<CAppBar name="Settings" setOpenNav={props.setOpenNav} other={
+					<></>
+				}/>
+				<CTable headCells={header} data={data}/>
+			</>
+	)
 }
 
-export default Analysis;
+export default Settings;
