@@ -1,33 +1,52 @@
-import {Grade} from "../entity/grade";
 import {HeadCell} from "../components/table/table";
+import {Grade, Subject, Type} from "../entity";
 
-const headCells: HeadCell<Grade>[] = [
+type TableGrade = {
+	id: number,
+	subject: string,
+	type: string,
+	info: string,
+	grade: number,
+	not_final: boolean,
+	double: boolean
+}
+
+const header: HeadCell<TableGrade>[] = [
 	{
 		id: 'subject',
-		numeric: false,
-		disablePadding: false,
 		label: 'Subject',
 	},
 	{
 		id: 'type',
-		numeric: false,
-		disablePadding: false,
 		label: 'Type',
 	},
 	{
 		id: 'grade',
-		numeric: true,
-		disablePadding: false,
 		label: 'Grade',
 	},
 	{
 		id: 'info',
-		numeric: false,
-		disablePadding: false,
 		label: 'Info',
 	}
 ];
 
-export {
-	headCells
+function transform(grades: Grade[], subjects: Subject[], types: Type[]): TableGrade[] {
+	return grades.map(grade => ({
+				id: grade.id,
+				subject: subjects.find(sub => sub.id === grade.subject)?.name || '--notfound--',
+				type: types.find(type => type.id === grade.type)?.name || '--notfound',
+				info: grade.info,
+				grade: grade.grade,
+				not_final: grade.not_final,
+				double: grade.double
+			})
+	)
 }
+
+export {
+	header,
+	transform
+};
+export type {
+	TableGrade
+};

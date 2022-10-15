@@ -18,12 +18,10 @@ import {
 	TextField,
 	Typography
 } from "@mui/material";
-import {errorToast, toastMessage, useToast} from "../../utils";
-import {Subject} from "../../entity/subject";
-import {Type} from "../../entity/type";
-import {loadPeriods, loadSubjects, loadTypes} from "./load";
+import {errorToast, toastMessage, useToast} from "../../ts/toast";
+import {Period, Subject, Type} from "../../entity";
+import {loadPeriods, loadSubjects, loadTypes} from "../../ts/load";
 import {createGrade} from "./create";
-import {Period} from "../../entity/period";
 
 const gradeDefault = 12
 const subjectDefault = ""

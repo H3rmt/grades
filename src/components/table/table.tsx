@@ -12,7 +12,7 @@ import {Table} from "@mui/material";
 type Props<Type extends Data> = {
 	headCells: HeadCell<Type>[]
 	data: Type[]
-};
+}
 
 interface Data {
 	id: number
@@ -20,9 +20,7 @@ interface Data {
 
 type HeadCell<Type extends Data> = {
 	id: keyof Type
-	disablePadding: boolean
 	label: string
-	numeric: boolean
 }
 
 export function CTable<Type extends Data>(props: Props<Type>) {
@@ -43,7 +41,7 @@ export function CTable<Type extends Data>(props: Props<Type>) {
 						<TableRow>
 							{props.headCells.map((headCell) => {
 								// @ts-ignore
-								let key: Key = headCell.id
+								let key: Key = headCell.id as keyof Type
 								return <TableCell key={key} sortDirection={orderBy === headCell.id ? order : false}
 														sx={{backgroundColor: "inherit"}}>
 									<TableSortLabel
