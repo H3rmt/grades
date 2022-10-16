@@ -5,4 +5,5 @@ pub mod prelude;
 pub mod grade_types;
 pub mod grades;
 pub mod periods;
+pub mod setting;
 pub mod subjects;

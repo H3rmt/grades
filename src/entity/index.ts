@@ -2,11 +2,12 @@ import {Model as Grade} from "./grade"
 import {Model as Type} from "./type"
 import {Model as Subject} from "./subject"
 import {Model as Period} from "./period"
-
+import {Model as Setting} from "./setting"
 
 export type {
 	Grade,
 	Type,
 	Subject,
-	Period
+	Period,
+	Setting
 }
