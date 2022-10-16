@@ -58,7 +58,7 @@ const App = () => {
 
 	const SetPage = (page: Page) => {
 		invoke("store_page_in_cache_js", {
-			json: JSON.stringify({"page": page.name})
+			json: JSON.stringify({"name": page.name})
 		}).then(() => {
 			console.log("Stored page in cache")
 		}).catch((error) => {

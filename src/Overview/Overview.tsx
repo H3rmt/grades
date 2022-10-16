@@ -14,7 +14,7 @@ type Props = {
 	setOpenModal: reactSet<boolean>
 }
 
-const periodDefault = ""
+const periodDefault = "-1"
 
 export default function Overview(props: Props) {
 	const [grades, setGrades] = useState<Grade[]>([]);
@@ -74,28 +74,27 @@ export default function Overview(props: Props) {
 		getSubjects()
 	}, [])
 
-	const periodsPlus = periods.concat({id: -1, name: "All", from: "", to: ""})
+	const periodsPlus = [{id: -1, name: "All", from: "", to: ""}].concat(periods)
 
 	const filteredGrades = grades.filter(grade => grade.period === Number(period) || period == "-1")
 	const data = transform(filteredGrades, subjects, types)
 
-	return (<>
-				<CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
-					<Stack spacing={2} direction="row">
-						<Select color="secondary" variant="outlined" sx={{padding: 0}} value={period} size="small"
-								  onChange={handlePeriodSelectChange}>
-							{periodsPlus.map((period) => {
-								return <MenuItem value={period.id}>
-									{period.name}&nbsp;&nbsp;&nbsp;{period.from != "" && period.to != "" ? `${period.from} - ${period.to}` : ""}
-								</MenuItem>
-							})}
-						</Select>
+	return (<><CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
+				<Stack spacing={2} direction="row">
+					<Select color="secondary" variant="outlined" sx={{padding: 0}} value={period} size="small"
+							  onChange={handlePeriodSelectChange}>
+						{periodsPlus.map((period) => {
+							return <MenuItem value={period.id}>
+								{period.name}&nbsp;&nbsp;&nbsp;{period.from != "" && period.to != "" ? `${period.from} - ${period.to}` : ""}
+							</MenuItem>
+						})}
+					</Select>
 
-						<Button color="secondary" variant="contained" onClick={() => {
-							props.setOpenModal(true)
-						}}>New Grade</Button>
-					</Stack>
-				}/>
+					<Button color="secondary" variant="contained" onClick={() => {
+						props.setOpenModal(true)
+					}}>New Grade</Button>
+				</Stack>
+			}/>
 				<CTable headers={["subject", "type", "grade", "info", "extra"]} data={data}/>
 			</>
 	)

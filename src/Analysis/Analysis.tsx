@@ -11,7 +11,7 @@ type Props = {
 
 function Analysis(props: Props) {
 	return (<>
-				<CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
+				<CAppBar name="Analysis" setOpenNav={props.setOpenNav} other={
 					<Button color="secondary" variant="contained" onClick={() => {
 						props.setOpenModal(true)
 					}}>New Grade</Button>
