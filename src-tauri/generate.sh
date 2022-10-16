@@ -2,7 +2,7 @@
 # => run in WSL
 git fetch --all
 git reset --hard HEAD
-echo "DATABASE_URL=sqlite://C:/Users/stemm/AppData/Roaming/grades/db.db" > .env
+echo "DATABASE_URL=sqlite:///home/enrico/grades/src-tauri/db.db" > .env
 touch db.db
 sea-orm-cli migrate -d './migrations/' fresh
 sea-orm-cli generate entity -o ./entity/src/ --with-serde both --expanded-format
