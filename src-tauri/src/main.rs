@@ -5,25 +5,25 @@ windows_subsystem = "windows"
 
 extern crate core;
 
-use sea_orm::DatabaseConnection;
-use tauri::Manager;
+use tokio::sync::Mutex;
 
+use cache::cache::Cache;
 use migrations::{Migrator, MigratorTrait};
 
 mod db;
 mod commands;
 mod dirs;
+mod cache;
 
-
-pub struct AppState(DatabaseConnection);
 
 #[tokio::main]
 async fn main() {
 	tauri::async_runtime::set(tokio::runtime::Handle::current());
 	
 	let connection = db::database::establish_connection().await.expect("Error connecting to DB");
-	
 	Migrator::up(&connection, None).await.expect("Error running migrations");
+	
+	let cache = Mutex::new(cache::init::connect().expect("Error connecting to cache"));
 	
 	tauri::Builder::default()
 //			.setup(|app| {
@@ -35,7 +35,8 @@ async fn main() {
 //				}
 //				Ok(())
 //			})
-			.manage(AppState(connection))
+			.manage(connection)
+			.manage(cache)
 			.invoke_handler(tauri::generate_handler![
 				commands::create_grade_js,
 				commands::get_subjects_js,

@@ -1,19 +1,17 @@
 use sea_orm::DatabaseConnection;
-use serde::{Deserialize, Serialize};
+use tokio::sync::Mutex;
 
-use entity::{grades, setting};
+use entity::grades;
 
-use crate::db::cache::store_page_in_cache;
+use crate::Cache;
+use crate::cache::cache::Page;
 use crate::db::grades::{create_grade, get_grades};
 use crate::db::periods::get_periods;
 use crate::db::subjects::get_subjects;
 use crate::db::types::get_types;
 
-use super::AppState;
-
 #[tauri::command]
-pub async fn create_grade_js(state: tauri::State<'_, AppState>, json: String) -> Result<(), String> {
-	let connection: &DatabaseConnection = &state.0 as &DatabaseConnection;
+pub async fn create_grade_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
 	println!("json create grade: {}", json);
 	
 	let json: grades::Model = serde_json::from_str(&*json).map_err(|e| {
@@ -21,7 +19,7 @@ pub async fn create_grade_js(state: tauri::State<'_, AppState>, json: String) ->
 		format!("Error serialising Grade from JSON: {}", e)
 	})?;
 	
-	create_grade(connection, json.subject, json.r#type, json.info, json.grade, json.period, json.not_final, json.double).await.map_err(|e| {
+	create_grade(&connection, json.subject, json.r#type, json.info, json.grade, json.period, json.not_final, json.double).await.map_err(|e| {
 		eprintln!("create grade Err: {e}");
 		format!("Error creating Grade:{}", e)
 	})?;
@@ -30,10 +28,8 @@ pub async fn create_grade_js(state: tauri::State<'_, AppState>, json: String) ->
 }
 
 #[tauri::command]
-pub async fn get_subjects_js(state: tauri::State<'_, AppState>) -> Result<String, String> {
-	let connection: &DatabaseConnection = &state.0 as &DatabaseConnection;
-	
-	let subjects = get_subjects(connection).await.map_err(|e| {
+pub async fn get_subjects_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {
+	let subjects = get_subjects(&connection).await.map_err(|e| {
 		eprintln!("get subjects Err: {e}");
 		format!("Error getting Subjects from DB: {}", e)
 	})?;
@@ -49,10 +45,8 @@ pub async fn get_subjects_js(state: tauri::State<'_, AppState>) -> Result<String
 }
 
 #[tauri::command]
-pub async fn get_types_js(state: tauri::State<'_, AppState>) -> Result<String, String> {
-	let connection: &DatabaseConnection = &state.0 as &DatabaseConnection;
-	
-	let types = get_types(connection).await.map_err(|e| {
+pub async fn get_types_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {
+	let types = get_types(&connection).await.map_err(|e| {
 		eprintln!("get types Err: {e}");
 		format!("Error getting Types from DB: {}", e)
 	})?;
@@ -68,10 +62,8 @@ pub async fn get_types_js(state: tauri::State<'_, AppState>) -> Result<String, S
 }
 
 #[tauri::command]
-pub async fn get_grades_js(state: tauri::State<'_, AppState>) -> Result<String, String> {
-	let connection: &DatabaseConnection = &state.0 as &DatabaseConnection;
-	
-	let grades = get_grades(connection).await.map_err(|e| {
+pub async fn get_grades_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {
+	let grades = get_grades(&connection).await.map_err(|e| {
 		eprintln!("get grades Err: {e}");
 		format!("Error getting Grades from DB: {}", e)
 	})?;
@@ -88,10 +80,8 @@ pub async fn get_grades_js(state: tauri::State<'_, AppState>) -> Result<String, 
 
 
 #[tauri::command]
-pub async fn get_periods_js(state: tauri::State<'_, AppState>) -> Result<String, String> {
-	let connection: &DatabaseConnection = &state.0 as &DatabaseConnection;
-	
-	let periods = get_periods(connection).await.map_err(|e| {
+pub async fn get_periods_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {
+	let periods = get_periods(&connection).await.map_err(|e| {
 		eprintln!("get periods Err: {e}");
 		format!("Error getting Periods from DB: {}", e)
 	})?;
@@ -106,25 +96,24 @@ pub async fn get_periods_js(state: tauri::State<'_, AppState>) -> Result<String,
 	Ok(data)
 }
 
-#[derive(Deserialize)]
-struct SetPage {
-	page: String,
-}
 
 #[tauri::command]
-pub async fn store_page_in_cache_js(state: tauri::State<'_, AppState>, json: String) -> Result<(), String> {
-	let connection: &DatabaseConnection = &state.0 as &DatabaseConnection;
+pub async fn store_page_in_cache_js(cache: tauri::State<'_, Mutex<Cache>>, json: String) -> Result<(), String> {
 	println!("json set page: {}", json);
 	
-	let json: SetPage = serde_json::from_str(&*json).map_err(|e| {
+	let json: Page = serde_json::from_str(&*json).map_err(|e| {
 		eprintln!("json set page Err: {e}");
 		format!("Error serialising SetPage from JSON: {}", e)
 	})?;
 	
-	store_page_in_cache(connection, json.page).await.map_err(|e| {
-		eprintln!("set Page Err: {e}");
-		format!("Error setting Page:{}", e)
-	})?;
+	{
+		let mut c = cache.lock().await;
+		c.get_mut().page = Some(json);
+		c.save().map_err(|e| {
+			eprintln!("set Page Err: {e}");
+			format!("Error setting Page:{}", e)
+		})?;
+	}
 	
 	Ok(())
 }

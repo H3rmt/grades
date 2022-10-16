@@ -8,7 +8,7 @@ const CONF_NAME: &str = "conf.json";
 const CACHE_NAME: &str = "cache.json";
 
 
-pub fn create_data_folder() -> Result<PathBuf, String> {
+fn create_data_folder() -> Result<PathBuf, String> {
 	let dir_option = dirs::data_dir();
 	let dir = dir_option.ok_or("Unable to get data directory".to_string())?;
 	let app_dir = dir.join(APPLICATION_NAME);
@@ -24,7 +24,7 @@ pub fn create_data_db() -> Result<PathBuf, String> {
 	Ok(db_path)
 }
 
-pub fn create_conf_folder() -> Result<PathBuf, String> {
+fn create_conf_folder() -> Result<PathBuf, String> {
 	let dir_option = dirs::preference_dir();
 	let dir = dir_option.ok_or("Unable to get conf directory".to_string())?;
 	let app_dir = dir.join(APPLICATION_NAME);
@@ -40,7 +40,7 @@ pub fn create_conf_json() -> Result<PathBuf, String> {
 	Ok(conf_path)
 }
 
-pub fn create_cache_folder() -> Result<PathBuf, String> {
+fn create_cache_folder() -> Result<PathBuf, String> {
 	let dir_option = dirs::cache_dir();
 	let dir = dir_option.ok_or("Unable to get cache directory".to_string())?;
 	let app_dir = dir.join(APPLICATION_NAME);
