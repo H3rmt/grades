@@ -1,7 +1,9 @@
 use sea_orm::DatabaseConnection;
+use serde::{Deserialize, Serialize};
 
-use entity::grades;
+use entity::{grades, setting};
 
+use crate::db::cache::store_page_in_cache;
 use crate::db::grades::{create_grade, get_grades};
 use crate::db::periods::get_periods;
 use crate::db::subjects::get_subjects;
@@ -102,6 +104,29 @@ pub async fn get_periods_js(state: tauri::State<'_, AppState>) -> Result<String,
 	println!("json get periods: {}", data);
 	
 	Ok(data)
+}
+
+#[derive(Deserialize)]
+struct SetPage {
+	page: String,
+}
+
+#[tauri::command]
+pub async fn store_page_in_cache_js(state: tauri::State<'_, AppState>, json: String) -> Result<(), String> {
+	let connection: &DatabaseConnection = &state.0 as &DatabaseConnection;
+	println!("json set page: {}", json);
+	
+	let json: SetPage = serde_json::from_str(&*json).map_err(|e| {
+		eprintln!("json set page Err: {e}");
+		format!("Error serialising SetPage from JSON: {}", e)
+	})?;
+	
+	store_page_in_cache(connection, json.page).await.map_err(|e| {
+		eprintln!("set Page Err: {e}");
+		format!("Error setting Page:{}", e)
+	})?;
+	
+	Ok(())
 }
 
 

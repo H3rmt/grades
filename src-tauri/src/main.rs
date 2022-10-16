@@ -26,22 +26,23 @@ async fn main() {
 	Migrator::up(&connection, None).await.expect("Error running migrations");
 	
 	tauri::Builder::default()
-			.setup(|app| {
-				#[cfg(debug_assertions)] // only include this code on debug builds
-				{
-					let window = app.get_window("main").unwrap();
-					window.open_devtools();
-					window.close_devtools();
-				}
-				Ok(())
-			})
+//			.setup(|app| {
+//				#[cfg(debug_assertions)] // only include this code on debug builds
+//				{
+//					let window = app.get_window("main").unwrap();
+//					window.open_devtools();
+//					window.close_devtools();
+//				}
+//				Ok(())
+//			})
 			.manage(AppState(connection))
 			.invoke_handler(tauri::generate_handler![
 				commands::create_grade_js,
 				commands::get_subjects_js,
 				commands::get_types_js,
 				commands::get_grades_js,
-				commands::get_periods_js
+				commands::get_periods_js,
+				commands::store_page_in_cache_js
         ])
 			.run(tauri::generate_context!())
 			.expect("error while running tauri application");

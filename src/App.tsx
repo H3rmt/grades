@@ -8,6 +8,8 @@ import Analysis from "./Analysis/Analysis";
 import Navbar from "./components/Navbar/Navbar";
 import NewGradeModal from "./components/NewGradeModal/NewGradeModal";
 import Settings from "./Settings/Settings";
+import {invoke} from "@tauri-apps/api/tauri";
+import {errorToast, useToast} from "./ts/toast";
 
 type Pages = {
 	overview: Page
@@ -26,6 +28,7 @@ const App = () => {
 	const [openNav, setOpenNav] = useState(false);
 	const [openModal, setOpenModal] = useState(false);
 
+	const toast = useToast()
 
 	const pages: Pages = {
 		overview: {
@@ -53,10 +56,22 @@ const App = () => {
 		setOpenNav(false)
 	}, [openPage])
 
+	const SetPage = (page: Page) => {
+		invoke("store_page_in_cache_js", {
+			json: JSON.stringify({"page": page.name})
+		}).then(() => {
+			console.log("Stored page in cache")
+		}).catch((error) => {
+			console.error("Error storing page in cache", error)
+			errorToast("Error storing page in cache", toast, error)
+		})
+		setPage(page)
+	}
+
 	return (<>
 		<Navbar open={openNav} closeNav={() => {
 			setOpenNav(false)
-		}} setPage={setPage} pages={pages}/>
+		}} setPage={SetPage} pages={pages}/>
 		<Box component="main">
 			{openPage.page}
 		</Box>
