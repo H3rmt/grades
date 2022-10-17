@@ -10,6 +10,7 @@ import NewGradeModal from "./components/NewGradeModal/NewGradeModal";
 import Settings from "./Settings/Settings";
 import {invoke} from "@tauri-apps/api/tauri";
 import {errorToast, useToast} from "./ts/toast";
+import {Page as SPage} from "./entity"
 
 type Pages = {
 	overview: Page
@@ -67,6 +68,22 @@ const App = () => {
 		})
 		setPage(page)
 	}
+
+	const GetPage = () => {
+		// @ts-ignore
+		invoke("get_page_from_cache_js").then((data: string) => {
+			console.log("loaded site from cache", data)
+			let page: SPage = JSON.parse(data)
+			// @ts-ignore
+			setPage(pages[page.name.toLowerCase()])
+		}).catch((error) => {
+			console.error("Error loading site cache", error)
+		})
+	}
+
+	useEffect(() => {
+		GetPage()
+	}, [])
 
 	return (<>
 		<Navbar open={openNav} closeNav={() => {

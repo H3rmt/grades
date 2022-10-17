@@ -89,6 +89,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tokio",
+ "ts-rs",
 ]
 
 [[package]]

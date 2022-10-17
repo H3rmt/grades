@@ -4,7 +4,7 @@ use tokio::sync::Mutex;
 use entity::grades;
 
 use crate::Cache;
-use crate::cache::cache::Page;
+use crate::cache::types::Page;
 use crate::db::grades::{create_grade, get_grades};
 use crate::db::periods::get_periods;
 use crate::db::subjects::get_subjects;
@@ -116,6 +116,27 @@ pub async fn store_page_in_cache_js(cache: tauri::State<'_, Mutex<Cache>>, json:
 	}
 	
 	Ok(())
+}
+
+
+#[tauri::command]
+pub async fn get_page_from_cache_js(cache: tauri::State<'_, Mutex<Cache>>) -> Result<String, String> {
+	let data = {
+		let mut c = cache.lock().await;
+		let page = c.get_mut().page.as_ref().ok_or_else(|| {
+			eprintln!("no site in cache");
+			format!("no site in cache")
+		})?;
+		
+		serde_json::to_string(&page).map_err(|e| {
+			eprintln!("json get periods Err: {e}");
+			format!("Error serialising Periods to JSON: {}", e)
+		})?
+	};
+	
+	println!("json get periods: {}", data);
+	
+	Ok(data)
 }
 
 

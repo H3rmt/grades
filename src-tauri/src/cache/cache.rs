@@ -1,13 +1,10 @@
-use std::{error, fs};
-use std::fs::{File, OpenOptions};
+use std::error;
+use std::fs::OpenOptions;
 use std::io::{Read, Write};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug, Serialize)]
-pub struct Page {
-	pub name: String,
-}
+use super::types::Page;
 
 #[derive(Deserialize, Debug, Serialize, Default)]
 pub struct Data {
@@ -16,18 +13,14 @@ pub struct Data {
 
 #[derive(Debug)]
 pub struct Cache {
-	connection: File,
+	path: String,
 	data: Data,
 }
 
 impl Cache {
 	pub fn connect(path: &str) -> Result<Self, Box<dyn error::Error>> {
-		let file = OpenOptions::new().read(true).write(true).append(false).truncate(true).open(path)?;
-		
-		let file2 = File::create(path)?;
-		
 		let mut cache = Cache {
-			connection: file2,
+			path: path.to_string(),
 			data: Data::default(),
 		};
 		match cache.load() {
@@ -41,8 +34,10 @@ impl Cache {
 	}
 	
 	fn load(&mut self) -> Result<(), Box<dyn error::Error>> {
+		let mut file = OpenOptions::new().read(true).open(self.path.as_str())?;
 		let mut buffer = String::new();
-		self.connection.read_to_string(&mut buffer)?;
+		
+		file.read_to_string(&mut buffer)?;
 		
 		let data: Data = serde_json::from_str(buffer.as_str())?;
 		self.data = data;
@@ -54,9 +49,8 @@ impl Cache {
 	}
 	
 	pub fn save(&mut self) -> Result<(), Box<dyn error::Error>> {
-//		self.connection.set_len(0)?;
-//		fs::remove_file()
-		let _ = self.connection.write(dbg!(serde_json::to_string(&self.data)?).as_bytes());
+		let mut file = OpenOptions::new().write(true).append(false).open(self.path.as_str())?;
+		let _ = file.write(serde_json::to_string(&self.data)?.as_bytes());
 		Ok(())
 	}
 }

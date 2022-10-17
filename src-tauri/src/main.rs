@@ -43,7 +43,8 @@ async fn main() {
 				commands::get_types_js,
 				commands::get_grades_js,
 				commands::get_periods_js,
-				commands::store_page_in_cache_js
+				commands::store_page_in_cache_js,
+				commands::get_page_from_cache_js 
         ])
 			.run(tauri::generate_context!())
 			.expect("error while running tauri application");
