@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react';
 import {Grade, Period, Subject, Type} from "../entity";
 import {loadGrades, loadPeriods, loadSubjects, loadTypes} from "../ts/load";
 import {CTable} from "../components/table/table";
-import {transform} from "./table";
+import {getCols, transform} from "./table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material";
 import CAppBar from "../ts/CAppBar";
@@ -95,7 +95,8 @@ export default function Overview(props: Props) {
 					}}>New Grade</Button>
 				</Stack>
 			}/>
-				<CTable headers={["subject", "type", "grade", "info", "extra"]} data={data}/>
+				{/*// @ts-ignore*/}
+				<CTable data={data} cols={getCols()}/>
 			</>
 	)
 }
