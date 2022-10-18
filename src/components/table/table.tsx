@@ -8,6 +8,7 @@ import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import {getComparator, Order, setSort} from "./sort";
 import {Table} from "@mui/material";
+import {capitalizeFirstLetter} from "../../ts/utils";
 
 type Props<Type extends Data> = {
 	headers?: (keyof Type)[]
@@ -36,10 +37,6 @@ export function CTable<Type extends Data>(props: Props<Type>) {
 		defs = Object.getOwnPropertyNames(props.data[0])
 	} else {
 		defs = props.headers
-	}
-
-	const capitalizeFirstLetter = (str: string) => {
-		return str.charAt(0).toUpperCase() + str.slice(1)
 	}
 
 	return (<TableContainer sx={{overflowY: 'auto'}} component="div">
