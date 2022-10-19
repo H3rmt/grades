@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 const APPLICATION_NAME: &str = "grades";
 const DB_NAME: &str = "db.db";
-const CONF_NAME: &str = "conf.json";
+const CONF_NAME: &str = "conf.toml";
 const CACHE_NAME: &str = "cache.json";
 
 
@@ -33,11 +33,11 @@ fn create_conf_folder() -> Result<PathBuf, String> {
 	Ok(app_dir)
 }
 
-pub fn create_conf_json() -> Result<PathBuf, String> {
+pub fn create_conf_toml() -> Result<PathBuf, String> {
 	let conf_path = create_conf_folder()?.join(CONF_NAME);
 	if !conf_path.exists() {
 		std::fs::write(conf_path.as_path(), b"{}").map_err(|e| e.to_string())?;
-		println!("create conf json: {:?}", conf_path.as_path());
+		println!("create conf toml: {:?}", conf_path.as_path());
 	}
 	Ok(conf_path)
 }

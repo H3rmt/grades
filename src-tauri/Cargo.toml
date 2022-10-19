@@ -24,6 +24,7 @@ dirs = "4.0.0"
 tokio = { version = "1.21.0", features = ["full"] }
 sea-orm = { version = "0.9.2", features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"] }
 ts-rs = "6.1"
+toml = "0.5.9"
 
 entity = { path = "entity" }
 migration = { path = "migrations" }

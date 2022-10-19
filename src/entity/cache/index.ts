@@ -1,4 +1,4 @@
-import {Page as Page} from "./page"
+import {Page} from "./page"
 
 export type {
 	Page,

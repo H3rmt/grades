@@ -14,6 +14,7 @@ mod db;
 mod commands;
 mod dirs;
 mod cache;
+mod config;
 
 
 #[tokio::main]
@@ -24,6 +25,7 @@ async fn main() {
 	Migrator::up(&connection, None).await.expect("Error running migrations");
 	
 	let cache = Mutex::new(cache::init::connect().expect("Error connecting to cache"));
+	let cache = Mutex::new(config::init::connect().expect("Error connecting to config"));
 	
 	tauri::Builder::default()
 //			.setup(|app| {
