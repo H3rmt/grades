@@ -40,7 +40,7 @@ impl Config {
 		
 		file.read_to_string(&mut buffer)?;
 		
-		let data: Data = serde_json::from_str(buffer.as_str())?;
+		let data: Data = toml::from_str(buffer.as_str())?;
 		self.data = data;
 		Ok(())
 	}
@@ -51,7 +51,7 @@ impl Config {
 	
 	pub fn save(&mut self) -> Result<(), Box<dyn error::Error>> {
 		let mut file = OpenOptions::new().write(true).append(false).open(self.path.as_str())?;
-		let _ = file.write(serde_json::to_string(&self.data)?.as_bytes());
+		let _ = file.write(toml::to_string(&self.data)?.as_bytes());
 		Ok(())
 	}
 }

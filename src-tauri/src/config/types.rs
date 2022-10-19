@@ -33,12 +33,12 @@ impl Default for GradeModalDefaults {
 	fn default() -> Self {
 		Self {
 			grade_default: 10,
-			subject_default: "1".to_string(),
+			subject_default: "".to_string(),
 			type_default: "".to_string(),
-			period_default: "2".to_string(),
+			period_default: "".to_string(),
 			info_default: "".to_string(),
 			not_final_default: false,
-			double_default: true,
+			double_default: false,
 		}
 	}
 }

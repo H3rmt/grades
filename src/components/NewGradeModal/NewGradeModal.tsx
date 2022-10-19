@@ -171,9 +171,9 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	let render = grade !== undefined && subject !== undefined && type !== undefined && period !== undefined && info !== undefined && notFinal !== undefined && double !== undefined
 			&& subjects.length > 0 && types.length > 0 && periods.length > 0 && noteRange !== undefined
 
-	console.warn(grade, subject, type, period, info, double, notFinal, noteRange, defaults)
-	console.warn(subjects, types, periods)
-	console.warn(render)
+	// console.warn(grade, subject, type, period, info, double, notFinal, noteRange, defaults)
+	// console.warn(subjects, types, periods)
+	// console.warn(render)
 
 	return (<Dialog open={props.open} onClose={props.closeModal} fullWidth maxWidth="md">
 		<DialogTitle variant="h5">New Grade</DialogTitle>
