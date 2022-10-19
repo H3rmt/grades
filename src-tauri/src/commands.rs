@@ -5,6 +5,7 @@ use entity::grades;
 
 use crate::Cache;
 use crate::cache::types::Page;
+use crate::config::config::Config;
 use crate::db::grades::{create_grade, get_grades};
 use crate::db::periods::get_periods;
 use crate::db::subjects::get_subjects;
@@ -125,7 +126,7 @@ pub async fn get_page_from_cache_js(cache: tauri::State<'_, Mutex<Cache>>) -> Re
 		let mut c = cache.lock().await;
 		let page = c.get_mut().page.as_ref().ok_or_else(|| {
 			eprintln!("no site in cache");
-			format!("no site in cache")
+			"no site in cache".to_string()
 		})?;
 		
 		serde_json::to_string(&page).map_err(|e| {
@@ -140,4 +141,37 @@ pub async fn get_page_from_cache_js(cache: tauri::State<'_, Mutex<Cache>>) -> Re
 }
 
 
+#[tauri::command]
+pub async fn get_note_rage_js(config: tauri::State<'_, Mutex<Config>>) -> Result<String, String> {
+	let data = {
+		let mut c = config.lock().await;
+		let note_range = &c.get_mut().note_range;
+		
+		serde_json::to_string(&note_range).map_err(|e| {
+			eprintln!("json no get_note_rage_js found: {e}");
+			format!("no get_note_rage_js found: {}", e)
+		})?
+	};
+	
+	println!("json get get_note_rage_js: {}", data);
+	
+	Ok(data)
+}
 
+
+#[tauri::command]
+pub async fn get_grade_modal_defaults(config: tauri::State<'_, Mutex<Config>>) -> Result<String, String> {
+	let data = {
+		let mut c = config.lock().await;
+		let grade_modal_defaults = &c.get_mut().grade_modal_defaults;
+		
+		serde_json::to_string(&grade_modal_defaults).map_err(|e| {
+			eprintln!("json no grade_modal_defaults found: {e}");
+			format!("no grade_modal_defaults found: {}", e)
+		})?
+	};
+	
+	println!("json get grade_modal_defaults: {}", data);
+	
+	Ok(data)
+}

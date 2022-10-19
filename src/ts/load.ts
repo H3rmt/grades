@@ -1,9 +1,9 @@
 import {invoke} from "@tauri-apps/api/tauri";
 import {Grade, Period, Subject, Type} from "../entity";
 
-function loadTypes(): Promise<Type[]> {
+async function loadTypes(): Promise<Type[]> {
 	// @ts-ignore
-	return invoke("get_types_js").then((data: string) => {
+	return await invoke("get_types_js").then((data: string) => {
 		console.log(data)
 		return JSON.parse(data)
 	}).catch((error) => {
@@ -12,9 +12,9 @@ function loadTypes(): Promise<Type[]> {
 	})
 }
 
-function loadSubjects(): Promise<Subject[]> {
+async function loadSubjects(): Promise<Subject[]> {
 	// @ts-ignore
-	return invoke("get_subjects_js").then((data: string) => {
+	return await invoke("get_subjects_js").then((data: string) => {
 		console.log(data)
 		return JSON.parse(data)
 	}).catch((error) => {
@@ -23,9 +23,9 @@ function loadSubjects(): Promise<Subject[]> {
 	})
 }
 
-function loadPeriods(): Promise<Period[]> {
+async function loadPeriods(): Promise<Period[]> {
 	// @ts-ignore
-	return invoke("get_periods_js").then((data: string) => {
+	return await invoke("get_periods_js").then((data: string) => {
 		console.log(data)
 		return JSON.parse(data)
 	}).catch((error) => {
@@ -34,9 +34,9 @@ function loadPeriods(): Promise<Period[]> {
 	})
 }
 
-function loadGrades(): Promise<Grade[]> {
+async function loadGrades(): Promise<Grade[]> {
 	// @ts-ignore
-	return invoke("get_grades_js").then((data: string) => {
+	return await invoke("get_grades_js").then((data: string) => {
 		console.log(data)
 		return JSON.parse(data)
 	}).catch((error) => {

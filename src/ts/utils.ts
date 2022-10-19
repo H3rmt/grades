@@ -1,6 +1,10 @@
-import {Dispatch, SetStateAction} from "react";
+import {Dispatch, SetStateAction, useState} from "react";
 
 type reactSet<T> = Dispatch<SetStateAction<T>>
+
+function nullableUseState<T>() {
+	return useState<T | undefined>(undefined)
+}
 
 function capitalizeFirstLetter(str: string) {
 	return str.charAt(0).toUpperCase() + str.slice(1)
@@ -16,5 +20,6 @@ export type {
 
 export {
 	capitalizeFirstLetter,
-	map
+	map,
+	nullableUseState
 }

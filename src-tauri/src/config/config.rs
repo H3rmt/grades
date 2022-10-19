@@ -4,11 +4,12 @@ use std::io::{Read, Write};
 
 use serde::{Deserialize, Serialize};
 
-use crate::config::types::NoteRange;
+use crate::config::types::{GradeModalDefaults, NoteRange};
 
 #[derive(Deserialize, Debug, Serialize, Default)]
 pub struct Data {
-	pub note_rage: NoteRange,
+	pub note_range: NoteRange,
+	pub grade_modal_defaults: GradeModalDefaults,
 }
 
 #[derive(Debug)]

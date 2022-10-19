@@ -22,23 +22,21 @@ import {errorToast, toastMessage, useToast} from "../../ts/toast";
 import {Period, Subject, Type} from "../../entity";
 import {loadPeriods, loadSubjects, loadTypes} from "../../ts/load";
 import {createGrade} from "./create";
-
-const gradeDefault = 12
-const subjectDefault = ""
-const typeDefault = ""
-const periodDefault = ""
-const infoDefault = ""
-const notFinalDefault = false
-const doubleDefault = false
+import {GradeModalDefaults, NoteRange} from "../../entity/config";
+import {loadDefaults, loadNoteRange} from "./loadDefaults";
+import {nullableUseState} from '../../ts/utils';
 
 function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
-	const [grade, setGrade] = useState(gradeDefault)
-	const [subject, setSubject] = useState(subjectDefault)
-	const [type, setType] = useState(typeDefault)
-	const [period, setPeriod] = useState(periodDefault)
-	const [info, setInfo] = useState(infoDefault)
-	const [notFinal, setNotFinal] = useState(notFinalDefault)
-	const [double, setDouble] = useState(doubleDefault)
+	const [grade, setGrade] = nullableUseState<number>()
+	const [subject, setSubject] = nullableUseState<string>()
+	const [type, setType] = nullableUseState<string>()
+	const [period, setPeriod] = nullableUseState<string>()
+	const [info, setInfo] = nullableUseState<string>()
+	const [notFinal, setNotFinal] = nullableUseState<boolean>()
+	const [double, setDouble] = nullableUseState<boolean>()
+
+	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
+	const [defaults, setDefaults] = nullableUseState<GradeModalDefaults>()
 
 	const toast = useToast()
 
@@ -51,7 +49,8 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	};
 
 	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setGrade(Math.max(Math.min(Number(event.target.value), 15), 0));
+		// @ts-ignore
+		setGrade(Math.max(Math.min(Number(event.target.value), noteRange?.to), noteRange?.from));
 	};
 
 	const handleSubjectSelectChange = (event: SelectChangeEvent) => {
@@ -78,24 +77,71 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		setDouble(event.target.checked)
 	}
 
-	const handleClear = () => {
-		let old = {
-			grade,
-			subject,
-			type,
-			period,
-			info,
-			notFinal,
-			double
-		}
+	const handleCreateGrade = async () => {
+		// @ts-ignore
+		await createGrade(grade, subject, type, info, period, notFinal, double).then(() => {
+			props.closeModal()
+			toastMessage("success", "Created Grade", toast)
+		}).catch((error) => {
+			errorToast("Error creating Grade", toast, error)
+		})
+	}
 
-		setGrade(gradeDefault)
-		setSubject(subjectDefault)
-		setType(typeDefault)
-		setPeriod(periodDefault)
-		setInfo(infoDefault)
-		setNotFinal(notFinalDefault)
-		setDouble(doubleDefault)
+	const getSubjects = async () => {
+		await loadSubjects().then((data) => {
+			setSubjects(data)
+		}).catch((error) => {
+			errorToast("Error loading Subjects", toast, error)
+		})
+	}
+
+	const getPeriods = async () => {
+		await loadPeriods().then((data) => {
+			setPeriods(data)
+		}).catch(() => {
+			toastMessage("error", "Error loading Periods", toast)
+		})
+	}
+
+	const getTypes = async () => {
+		await loadTypes().then((data) => {
+			setTypes(data)
+		}).catch((error) => {
+			errorToast("Error loading Types", toast, error)
+		})
+	}
+
+	const getNoteRange = async () => {
+		await loadNoteRange().then((data) => {
+			setNoteRange(data)
+		}).catch((error) => {
+			errorToast("Error loading Note Range", toast, error)
+		})
+	}
+
+	const getDefaults = async () => {
+		await loadDefaults().then((data) => {
+			setDefaults(data)
+			setDefault(data)
+		}).catch((error) => {
+			errorToast("Error loading Modal defaults", toast, error)
+		})
+	}
+
+	const setDefault = (defaults: GradeModalDefaults) => {
+		setGrade(defaults?.grade_default)
+		setSubject(defaults?.subject_default)
+		setType(defaults?.type_default)
+		setPeriod(defaults?.period_default)
+		setInfo(defaults?.info_default)
+		setDouble(defaults?.double_default)
+		setNotFinal(defaults?.not_final_default)
+	}
+
+	const handleClear = async () => {
+		let old = {grade, subject, type, period, info, notFinal, double}
+		// @ts-ignore
+		setDefault(defaults)
 
 		const undo = () => {
 			setGrade(old.grade)
@@ -112,121 +158,96 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		let closeClear = toastMessage("success", "Cleared create Note window", toast, undo)
 	}
 
-	const handleCreateGrade = () => {
-		createGrade(grade, subject, type, info, period, notFinal, double).then(() => {
-			props.closeModal()
-			toastMessage("success", "Created Grade", toast)
-		}).catch((error) => {
-			errorToast("Error creating Grade", toast, error)
-		})
-	}
-
-	const getSubjects = () => {
-		loadSubjects().then((data) => {
-			setSubjects(data)
-		}).catch((error) => {
-			setSubjects([])
-			errorToast("Error loading Subjects", toast, error)
-		})
-	}
-
-	const getPeriods = () => {
-		loadPeriods().then((data) => {
-			setPeriods(data)
-		}).catch(() => {
-			setPeriods([])
-			toastMessage("error", "Error loading Periods", toast)
-		})
-	}
-
-	const getTypes = () => {
-		loadTypes().then((data) => {
-			setTypes(data)
-		}).catch((error) => {
-			setTypes([])
-			errorToast("Error loading Types", toast, error)
-		})
-	}
-
 	useEffect(() => {
-		if (props.open) {
-			getSubjects()
-			getTypes()
-			getPeriods()
-		}
-	}, [props.open])
+		Promise.all([
+			getSubjects(),
+			getTypes(),
+			getPeriods(),
+			getNoteRange(),
+			getDefaults()
+		])
+	}, [])
 
+	let render = grade !== undefined && subject !== undefined && type !== undefined && period !== undefined && info !== undefined && notFinal !== undefined && double !== undefined
+			&& subjects.length > 0 && types.length > 0 && periods.length > 0 && noteRange !== undefined
+
+	console.warn(grade, subject, type, period, info, double, notFinal, noteRange, defaults)
+	console.warn(subjects, types, periods)
+	console.warn(render)
 
 	return (<Dialog open={props.open} onClose={props.closeModal} fullWidth maxWidth="md">
 		<DialogTitle variant="h5">New Grade</DialogTitle>
 		<DialogContent>
-			<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
-				<Grid container spacing={4} padding={2}>
-					<Grid item xs={12} sm={6} lg={4}>
-						<Stack spacing={2}>
-							<Typography variant="h6" fontWeight="normal">Subject</Typography>
-							<Select value={subject} margin="none" fullWidth onChange={handleSubjectSelectChange}>
-								{subjects.map((subject) => {
-									return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
-								})}
-							</Select>
-						</Stack>
-					</Grid>
-					<Grid item xs={12} sm={6} lg={4}>
-						<Stack spacing={2}>
-							<Typography variant="h6" fontWeight="normal">Type</Typography>
-							<Select value={type} margin="none" fullWidth onChange={handleTypeSelectChange}>
-								{types.map((type) => {
-									return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
-								})}
-							</Select>
-						</Stack>
-					</Grid>
-					<Grid item xs={12} sm={6} lg={4}>
-						<Stack spacing={2}>
-							<Typography variant="h6" fontWeight="normal">Period</Typography>
-							<Select value={period} margin="none" fullWidth onChange={handlePeriodSelectChange}>
-								{periods.map((period) => {
-									return <MenuItem value={period.id}>
-										<Stack>
-											{period.name}
-											<br/>
-											<Typography variant="overline">{period.from} - {period.to}</Typography>
-										</Stack>
-									</MenuItem>
-								})}
-							</Select>
-						</Stack>
-					</Grid>
-					<Grid item xs={12} sm={6} lg={12}>
-						<Stack spacing={2}>
-							<Typography variant="h6" fontWeight="normal">Grade</Typography>
-							<TextField value={grade} type="number" fullWidth margin="none" onChange={handleGradeInputChange}/>
-							<Slider value={grade} color="secondary" min={0} max={15} onChange={handleGradeSliderChange}/>
-						</Stack>
-					</Grid>
-					<Grid item xs={12} sm={8} lg={9}>
-						<Stack spacing={2} height={1}>
-							<Typography variant="h6" fontWeight="normal">Info</Typography>
-							<TextField multiline minRows={2} value={info} type="text" fullWidth margin="none"
-										  onChange={handleInfoInputChange}/>
-						</Stack>
-					</Grid>
-					<Grid item xs={12} sm={4} lg={3}>
-						<Stack spacing={1.5} height={1}> {/*spacing={1.5} to compensate margin of 1. Checkbox*/}
-							<Typography variant="h6" fontWeight="normal">Extra</Typography>
-							<FormGroup>
-								<FormControlLabel control={
-									<Checkbox color="secondary" checked={notFinal} onChange={handleNotFinalCheckboxChange}/>
-								} label="Not Final"/>
-								<FormControlLabel control={
-									<Checkbox color="secondary" checked={double} onChange={handleDoubleCheckboxChange}/>
-								} label="Count x2"/>
-							</FormGroup>
-						</Stack>
-					</Grid>
-				</Grid>
-			</Paper>
+			{render && (
+					<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
+						<Grid container spacing={4} padding={2}>
+							<Grid item xs={12} sm={6} lg={4}>
+								<Stack spacing={2}>
+									<Typography variant="h6" fontWeight="normal">Subject</Typography>
+									<Select value={subject} margin="none" fullWidth onChange={handleSubjectSelectChange}>
+										{subjects.map((subject) => {
+											return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
+										})}
+									</Select>
+								</Stack>
+							</Grid>
+							<Grid item xs={12} sm={6} lg={4}>
+								<Stack spacing={2}>
+									<Typography variant="h6" fontWeight="normal">Type</Typography>
+									<Select value={type} margin="none" fullWidth onChange={handleTypeSelectChange}>
+										{types.map((type) => {
+											return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
+										})}
+									</Select>
+								</Stack>
+							</Grid>
+							<Grid item xs={12} sm={6} lg={4}>
+								<Stack spacing={2}>
+									<Typography variant="h6" fontWeight="normal">Period</Typography>
+									<Select value={period} margin="none" fullWidth onChange={handlePeriodSelectChange}>
+										{periods.map((period) => {
+											return <MenuItem value={period.id}>
+												<Stack>
+													{period.name}
+													<br/>
+													<Typography variant="overline">{period.from} - {period.to}</Typography>
+												</Stack>
+											</MenuItem>
+										})}
+									</Select>
+								</Stack>
+							</Grid>
+							<Grid item xs={12} sm={6} lg={12}>
+								<Stack spacing={2}>
+									<Typography variant="h6" fontWeight="normal">Grade</Typography>
+									<TextField value={grade} type="number" fullWidth margin="none" onChange={handleGradeInputChange}/>
+									<Slider value={grade} color="secondary" min={noteRange?.from} max={noteRange?.to}
+											  onChange={handleGradeSliderChange}/>
+								</Stack>
+							</Grid>
+							<Grid item xs={12} sm={8} lg={9}>
+								<Stack spacing={2} height={1}>
+									<Typography variant="h6" fontWeight="normal">Info</Typography>
+									<TextField multiline minRows={2} value={info} type="text" fullWidth margin="none"
+												  onChange={handleInfoInputChange}/>
+								</Stack>
+							</Grid>
+							<Grid item xs={12} sm={4} lg={3}>
+								<Stack spacing={1.5} height={1}> {/*spacing={1.5} to compensate margin of 1. Checkbox*/}
+									<Typography variant="h6" fontWeight="normal">Extra</Typography>
+									<FormGroup>
+										<FormControlLabel control={
+											<Checkbox color="secondary" checked={notFinal} onChange={handleNotFinalCheckboxChange}/>
+										} label="Not Final"/>
+										<FormControlLabel control={
+											<Checkbox color="secondary" checked={double} onChange={handleDoubleCheckboxChange}/>
+										} label="Count x2"/>
+									</FormGroup>
+								</Stack>
+							</Grid>
+						</Grid>
+					</Paper>)
+			}
 		</DialogContent>
 		<DialogActions sx={{gap: 0.7}}>
 			<Button onClick={handleClear} type="submit" variant="outlined" color="secondary">Clear</Button>
