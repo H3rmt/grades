@@ -80,7 +80,7 @@ export default function Overview(props: Props) {
 	const data = transform(filteredGrades, subjects, types)
 
 	return (<><CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
-				<Stack spacing={2} direction="row">
+				<Stack spacing={2} direction="row" alignItems="start">
 					<Select color="secondary" variant="outlined" sx={{padding: 0}} value={period} size="small"
 							  onChange={handlePeriodSelectChange}>
 						{periodsPlus.map((period) => {

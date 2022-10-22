@@ -58,13 +58,13 @@ function action(
 
 		return <Stack direction="row" spacing={1.5}>
 			{undo && <Paper variant="outlined">
-				<Button variant="text" color="secondary" onClick={() => {
+				<Button color="secondary" onClick={() => {
 					undo(id)
 				}}>Undo
 				</Button>
 			</Paper>}
 			{info && <Paper variant="outlined">
-				<Button variant="text" color="secondary" onClick={() => {
+				<Button color="secondary" onClick={() => {
 					setOpen(true)
 				}}>Info
 				</Button>

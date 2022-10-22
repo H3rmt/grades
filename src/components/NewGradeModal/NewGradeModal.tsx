@@ -159,13 +159,11 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	}
 
 	useEffect(() => {
-		Promise.all([
-			getSubjects(),
-			getTypes(),
-			getPeriods(),
-			getNoteRange(),
-			getDefaults()
-		])
+		getSubjects()
+		getTypes()
+		getPeriods()
+		getNoteRange()
+		getDefaults()
 	}, [])
 
 	let render = grade !== undefined && subject !== undefined && type !== undefined && period !== undefined && info !== undefined && notFinal !== undefined && double !== undefined
