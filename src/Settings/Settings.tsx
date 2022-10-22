@@ -1,6 +1,6 @@
 import React from 'react';
+import CAppBar from '../components/AppBar/CAppBar';
 import {reactSet} from "../ts/utils";
-import CAppBar from "../ts/CAppBar";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -8,7 +8,6 @@ type Props = {
 
 
 function Settings(props: Props) {
-
 
 
 	return (

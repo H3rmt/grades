@@ -1,7 +1,7 @@
 import React from 'react';
 import {reactSet} from "../ts/utils";
-import CAppBar from "../ts/CAppBar";
 import {Button} from "@mui/material";
+import CAppBar from "../components/AppBar/CAppBar";
 
 type Props = {
 	setOpenNav: reactSet<boolean>

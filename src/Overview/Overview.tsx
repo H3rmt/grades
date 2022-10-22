@@ -6,8 +6,8 @@ import {CTable} from "../components/table/table";
 import {getCols, transform} from "./table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material";
-import CAppBar from "../ts/CAppBar";
 import {reactSet} from "../ts/utils";
+import CAppBar from "../components/AppBar/CAppBar";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
