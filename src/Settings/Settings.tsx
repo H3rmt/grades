@@ -61,8 +61,7 @@ function Settings(props: Props) {
 					<Grid item xs={12} sm={12} md={6} xl={4}>
 						<SettingsBox title="Types" top={
 							<Button color="secondary" variant="contained" size="small">Add</Button>
-						}>
-							<CTable data={types} cols={getTypeCols()}/>
+						}><CTable data={types} cols={getTypeCols()}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={4}>
@@ -76,7 +75,7 @@ function Settings(props: Props) {
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small">Add</Button>
 						}>
-							<CTable data={periods} cols={getPeriodCols()}/>
+							<CTable data={periods} cols={getPeriodCols()} delete={(row) => console.log(row)}/>
 						</SettingsBox>
 					</Grid>
 				</Grid>

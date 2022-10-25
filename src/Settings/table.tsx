@@ -1,29 +1,29 @@
-import {cols, format} from "../components/table/table";
+import {cols, Column} from "../components/table/table";
 import {Period, Subject, Type} from "../entity";
 
-const getTypeCols: () => cols<Type> = () => new Map<keyof Type, format<Type> | undefined>(
+const getTypeCols: () => cols<Type> = () => new Map<keyof Type, Column<Type>>(
 		[[
-			"name", undefined
+			"name", {sort: true}
 		], [
-			"color", undefined
+			"color", {sort: true}
 		]]
 )
 
-const getSubjectCols: () => cols<Subject> = () => new Map<keyof Subject, format<Subject> | undefined>(
+const getSubjectCols: () => cols<Subject> = () => new Map<keyof Subject, Column<Subject>>(
 		[[
-			"name", undefined
+			"name", {sort: true}
 		], [
-			"color", undefined
+			"color", {sort: true}
 		]]
 )
 
-const getPeriodCols: () => cols<Period> = () => new Map<keyof Period, format<Period> | undefined>(
+const getPeriodCols: () => cols<Period> = () => new Map<keyof Period, Column<Period>>(
 		[[
-			"name", undefined
+			"name", {sort: true}
 		], [
-			"from", undefined
+			"from", {sort: true}
 		], [
-			"to", undefined
+			"to", {sort: true}
 		]]
 )
 

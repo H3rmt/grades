@@ -8,6 +8,8 @@ import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material";
 import {reactSet} from "../ts/utils";
 import CAppBar from "../components/AppBar/CAppBar";
+import {createGrade} from "../components/NewGradeModal/create";
+import {deleteGrade} from "./delete";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -67,6 +69,16 @@ export default function Overview(props: Props) {
 		setPeriod(event.target.value)
 	}
 
+	const handleDeleteGrade = async (id: number) => {
+		// @tas-ignore
+		await deleteGrade(id).then(() => {
+			toastMessage("success", "Deleted Grade", toast)
+			// Todo: reload grades, add redo
+		}).catch((error) => {
+			errorToast("Error deleting Grade", toast, error)
+		})
+	}
+
 	useEffect(() => {
 		getGrades()
 		getTypes()
@@ -95,8 +107,7 @@ export default function Overview(props: Props) {
 					}}>New Grade</Button>
 				</Stack>
 			}/>
-				{/*// @ts-ignore*/}
-				<CTable data={data} cols={getCols()}/>
+				<CTable data={data} cols={getCols()} delete={(id) => handleDeleteGrade(id)}/>
 			</>
 	)
 }

@@ -1,5 +1,5 @@
 import {Grade, Subject, Type} from "../entity";
-import {cols, format} from "../components/table/table";
+import {cols, Column} from "../components/table/table";
 import {Typography} from "@mui/material";
 import {map} from "../ts/utils";
 
@@ -12,21 +12,34 @@ type CustomGrade = {
 	extra: [boolean, boolean],
 }
 
-const getCols: () => cols<CustomGrade> = () => new Map<keyof CustomGrade, format<CustomGrade> | undefined>(
+const getCols: () => cols<CustomGrade> = () => new Map<keyof CustomGrade, Column<CustomGrade>>(
 		[[
-			"grade",
-			grade => <Typography
-					color={`rgb(${map(grade as number, 0, 15, 230, 40)},${map(grade as number, 0, 15, 40, 230)},0)`}>{grade}</Typography>
+			"grade", {
+				sort: true,
+				format: grade => <Typography
+						color={`rgb(${map(grade as number, 0, 15, 230, 40)},${map(grade as number, 0, 15, 40, 230)},0)`}>{grade}</Typography>
+			}
 		], [
-			"subject", undefined
+			"subject", {
+				sort: true
+			}
 		], [
-			"type", undefined
+			"type", {
+				sort: true
+			}
 		], [
-			"info", undefined
+			"info", {
+				sort: true
+			}
 		], [
-			"extra", extra => (<>x2: {(extra as boolean[])[0] ? <>&#9745;</> : <>&#9744;</>}&nbsp;&nbsp;not_final: {(extra as boolean[])[1] as boolean ? <>&#9745;</> : <>&#9744;</>}</>)
+			"extra", {
+				sort: false,
+				format: extra => (<>x2:&nbsp;{(extra as boolean[])[0] ? <>&#9745;</> : <>&#9744;</>}&nbsp;&nbsp;not_final:&nbsp;{(extra as boolean[])[1] as boolean ? <>&#9745;</> : <>&#9744;</>}</>)
+			}
 		], [
-			"id", undefined
+			"id", {
+				sort: true
+			}
 		]]
 )
 

@@ -6,19 +6,26 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import {getComparator, Order, setSort} from "./sort";
-import {Table} from "@mui/material";
+import { IconButton, Table} from "@mui/material";
 import {capitalizeFirstLetter} from "../../ts/utils";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 type Props<Row extends IRow> = {
 	data: Row[]
 	cols: cols<Row>
+	delete?: (row: number) => void
 }
 
 interface IRow {
 	id: number
 }
 
-type cols<Row> = Map<keyof Row, format<Row> | undefined>
+interface Column<Row> {
+	format?: format<Row>
+	sort: boolean
+}
+
+type cols<Row> = Map<keyof Row, Column<Row>>
 
 type format<Row> = (data: Row[keyof Row]) => ReactNode | Row[keyof Row]
 
@@ -36,15 +43,19 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 				<Table size="medium">
 					<TableHead sx={{bgcolor: "primary.main"}}>
 						<TableRow>
-							{Array.from(props.cols.keys()).filter(col => col != "id").map((col) => {
-								return <TableCell key={col as Key} sortDirection={orderBy === col ? order : false}
+							<TableCell key="actions" padding="checkbox">
+							</TableCell>
+							{Array.from(props.cols.entries()).filter(col => col[0] != "id").map(([key, col]) => {
+								return <TableCell key={key as Key} sortDirection={orderBy === key ? order : false}
 														sx={{backgroundColor: "inherit"}}>
-									<TableSortLabel
-											active={orderBy === col}
-											direction={orderBy === col ? order : 'asc'}
-											onClick={() => handleRequestSort(col)}>
-										{col as ReactNode || capitalizeFirstLetter(col as string)}
-									</TableSortLabel>
+									{
+										col.sort ? <TableSortLabel
+												active={orderBy === key}
+												direction={orderBy === key ? order : 'asc'}
+												onClick={() => handleRequestSort(key)}>
+											{capitalizeFirstLetter(key as string)}
+										</TableSortLabel> : capitalizeFirstLetter(key as string)
+									}
 								</TableCell>
 							})}
 						</TableRow>
@@ -52,10 +63,15 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 					<TableBody>
 						{props.data.slice().sort(getComparator<Row>(order, orderBy)).map((grade) => {
 							return <TableRow hover key={grade.id}>
-								{Array.from(props.cols.entries()).filter(col => col[0] != "id").map((entry: [keyof Row, format<Row> | undefined]) => {
-									const [key, format] = entry
-									let f = format ?? ((t) => t)
-									return <TableCell>{f(grade[key]) as ReactNode}</TableCell>
+								<TableCell>
+									<IconButton  color="secondary" onClick={() => props.delete && props?.delete(grade.id)}>
+										<DeleteIcon/>
+									</IconButton >
+								</TableCell>
+								{Array.from(props.cols.entries()).filter(col => col[0] != "id").map((entry: [keyof Row, Column<Row>]) => {
+									const [key, row] = entry
+									let format = row.format ?? ((t) => t)
+									return <TableCell key={key as Key}>{format(grade[key]) as ReactNode}</TableCell>
 								})}
 							</TableRow>;
 						})}
@@ -68,5 +84,6 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 export type {
 	IRow,
 	cols,
+	Column,
 	format
 }
