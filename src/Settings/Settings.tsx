@@ -8,6 +8,7 @@ import {loadPeriods, loadSubjects, loadTypes} from "../ts/load";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
+import {createPeriod} from "./create";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -47,6 +48,10 @@ function Settings(props: Props) {
 		})
 	}
 
+	const handlePeriodAdd = async () => {
+		await createPeriod()
+	}
+
 	useEffect(() => {
 		getTypes()
 		getPeriods()
@@ -61,7 +66,8 @@ function Settings(props: Props) {
 					<Grid item xs={12} sm={12} md={6} xl={4}>
 						<SettingsBox title="Types" top={
 							<Button color="secondary" variant="contained" size="small">Add</Button>
-						}><CTable data={types} cols={getTypeCols()}/>
+						}>
+							<CTable data={types} cols={getTypeCols()}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={4}>
@@ -73,9 +79,10 @@ function Settings(props: Props) {
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={4}>
 						<SettingsBox title="Periods" top={
-							<Button color="secondary" variant="contained" size="small">Add</Button>
+							<Button color="secondary" variant="contained" size="small" onClick={() => handlePeriodAdd()}>Add</Button>
 						}>
-							<CTable data={periods} cols={getPeriodCols()} delete={(row) => console.log(row)}/>
+							<CTable data={periods} cols={getPeriodCols()} delete={(id) => console.log(id)}
+									  edit={(id) => console.log(id)}/>
 						</SettingsBox>
 					</Grid>
 				</Grid>

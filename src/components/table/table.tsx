@@ -6,14 +6,16 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import {getComparator, Order, setSort} from "./sort";
-import { IconButton, Table} from "@mui/material";
+import {IconButton, Stack, Table} from "@mui/material";
 import {capitalizeFirstLetter} from "../../ts/utils";
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 type Props<Row extends IRow> = {
 	data: Row[]
 	cols: cols<Row>
 	delete?: (row: number) => void
+	edit?: (row: number) => void
 }
 
 interface IRow {
@@ -64,9 +66,14 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 						{props.data.slice().sort(getComparator<Row>(order, orderBy)).map((grade) => {
 							return <TableRow hover key={grade.id}>
 								<TableCell>
-									<IconButton  color="secondary" onClick={() => props.delete && props?.delete(grade.id)}>
-										<DeleteIcon/>
-									</IconButton >
+									<Stack direction="row">
+										<IconButton  color="error" onClick={() => props.delete && props?.delete(grade.id)}>
+											<DeleteIcon/>
+										</IconButton >
+										<IconButton  color="default" onClick={() => props.edit && props?.edit(grade.id)}>
+											<EditIcon/>
+										</IconButton >
+									</Stack>
 								</TableCell>
 								{Array.from(props.cols.entries()).filter(col => col[0] != "id").map((entry: [keyof Row, Column<Row>]) => {
 									const [key, row] = entry

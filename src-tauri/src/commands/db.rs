@@ -1,9 +1,9 @@
 use sea_orm::DatabaseConnection;
 
-use entity::grades;
+use entity::{grades, periods};
 
 use crate::db::grades::{create_grade, delete_grade, get_grades};
-use crate::db::periods::get_periods;
+use crate::db::periods::{create_period, get_periods};
 use crate::db::subjects::get_subjects;
 use crate::db::types::get_types;
 use crate::Delete;
@@ -107,6 +107,24 @@ pub async fn delete_grade_js(connection: tauri::State<'_, DatabaseConnection>, j
 	delete_grade(&connection, json.id).await.map_err(|e| {
 		eprintln!("delete grade Err: {e}");
 		format!("Error deleting Grade:{}", e)
+	})?;
+	
+	Ok(())
+}
+
+
+#[tauri::command]
+pub async fn create_period_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
+	println!("json create grade: {}", json);
+	
+	let json: periods::Model = serde_json::from_str(&*json).map_err(|e| {
+		eprintln!("json create period Err: {e}");
+		format!("Error serialising Period from JSON: {}", e)
+	})?;
+	
+	create_period(&connection, json.name, json.from, json.to).await.map_err(|e| {
+		eprintln!("create period Err: {e}");
+		format!("Error creating Period:{}", e)
 	})?;
 	
 	Ok(())
