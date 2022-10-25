@@ -9,6 +9,7 @@ import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {createPeriod} from "./create";
+import {createData} from "../components/table/util";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -67,22 +68,21 @@ function Settings(props: Props) {
 						<SettingsBox title="Types" top={
 							<Button color="secondary" variant="contained" size="small">Add</Button>
 						}>
-							<CTable data={types} cols={getTypeCols()}/>
+							<CTable data={createData(types)} cols={getTypeCols()}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={4}>
 						<SettingsBox title="Subjects" top={
 							<Button color="secondary" variant="contained" size="small">Add</Button>
 						}>
-							<CTable data={subjects} cols={getSubjectCols()}/>
+							<CTable data={createData(subjects)} cols={getSubjectCols()}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={4}>
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handlePeriodAdd()}>Add</Button>
 						}>
-							<CTable data={periods} cols={getPeriodCols()} delete={(id) => console.log(id)}
-									  edit={(id) => console.log(id)}/>
+							<CTable data={createData(periods)} cols={getPeriodCols()} delete={(id) => console.log(id)}/>
 						</SettingsBox>
 					</Grid>
 				</Grid>

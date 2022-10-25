@@ -10,6 +10,7 @@ import {reactSet} from "../ts/utils";
 import CAppBar from "../components/AppBar/CAppBar";
 import {createGrade} from "../components/NewGradeModal/create";
 import {deleteGrade} from "./delete";
+import {createData} from "../components/table/util";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -106,7 +107,7 @@ export default function Overview(props: Props) {
 					}}>New Grade</Button>
 				</Stack>
 			}/>
-				<CTable data={data} cols={getCols()} delete={(id) => handleDeleteGrade(id)}/>
+				<CTable data={createData(data)} cols={getCols()} delete={(id) => handleDeleteGrade(id)}/>
 			</>
 	)
 }

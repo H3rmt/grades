@@ -1,4 +1,4 @@
-import {IRow} from "./table";
+import {IRow, RowD} from "./table";
 
 function comp<Type>(a: Type, b: Type, orderBy: keyof Type) {
 	// debugger
@@ -13,8 +13,8 @@ function comp<Type>(a: Type, b: Type, orderBy: keyof Type) {
 
 export type Order = 'asc' | 'desc';
 
-export function getComparator<Type extends IRow>(order: Order, orderBy: keyof Type): (a: Type, b: Type) => number {
-	return order === 'desc' ? (a, b) => comp(a, b, orderBy) : (a, b) => -comp(a, b, orderBy);
+export function getComparator<Type extends IRow>(order: Order, orderBy: keyof Type): (a: RowD<Type>, b: RowD<Type>) => number {
+	return order === 'desc' ? (a, b) => comp(a.data, b.data, orderBy) : (a, b) => -comp(a.data, b.data, orderBy);
 }
 
 export function setSort<Type extends IRow>(property: keyof Type, order: Order, orderBy: keyof Type): [Order, keyof Type] {
