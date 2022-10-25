@@ -25,7 +25,10 @@ async fn main() {
 	let connection = db::database::establish_connection().await.expect("Error connecting to DB");
 	Migrator::up(&connection, None).await.expect("Error running migrations");
 	
+	// dont panic on cache missing
 	let cache = Mutex::new(cache::init::connect().expect("Error connecting to cache"));
+	
+	// dont panic on config missing
 	let config = Mutex::new(config::init::connect().expect("Error connecting to config"));
 	
 	tauri::Builder::default()
@@ -42,15 +45,15 @@ async fn main() {
 			.manage(cache)
 			.manage(config)
 			.invoke_handler(tauri::generate_handler![
-				commands::create_grade_js,
-				commands::get_subjects_js,
-				commands::get_types_js,
-				commands::get_grades_js,
-				commands::get_periods_js,
-				commands::store_page_in_cache_js,
-				commands::get_page_from_cache_js,
-				commands::get_note_rage_js,
-				commands::get_grade_modal_defaults
+				commands::db::create_grade_js,
+				commands::db::get_subjects_js,
+				commands::db::get_types_js,
+				commands::db::get_grades_js,
+				commands::db::get_periods_js,
+				commands::cache::store_page_in_cache_js,
+				commands::cache::get_page_from_cache_js,
+				commands::config::get_note_rage_js,
+				commands::config::get_grade_modal_defaults
         ])
 			.run(tauri::generate_context!())
 			.expect("error while running tauri application");
