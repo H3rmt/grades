@@ -1,11 +1,7 @@
 use sea_orm::DatabaseConnection;
-use tokio::sync::Mutex;
 
 use entity::grades;
 
-use crate::Cache;
-use crate::cache::types::Page;
-use crate::config::config::Config;
 use crate::db::grades::{create_grade, get_grades};
 use crate::db::periods::get_periods;
 use crate::db::subjects::get_subjects;
@@ -93,85 +89,6 @@ pub async fn get_periods_js(connection: tauri::State<'_, DatabaseConnection>) ->
 	})?;
 	
 	println!("json get periods: {}", data);
-	
-	Ok(data)
-}
-
-
-#[tauri::command]
-pub async fn store_page_in_cache_js(cache: tauri::State<'_, Mutex<Cache>>, json: String) -> Result<(), String> {
-	println!("json set page: {}", json);
-	
-	let json: Page = serde_json::from_str(&*json).map_err(|e| {
-		eprintln!("json set page Err: {e}");
-		format!("Error serialising SetPage from JSON: {}", e)
-	})?;
-	
-	{
-		let mut c = cache.lock().await;
-		c.get_mut().page = Some(json);
-		c.save().map_err(|e| {
-			eprintln!("set Page Err: {e}");
-			format!("Error setting Page:{}", e)
-		})?;
-	}
-	
-	Ok(())
-}
-
-
-#[tauri::command]
-pub async fn get_page_from_cache_js(cache: tauri::State<'_, Mutex<Cache>>) -> Result<String, String> {
-	let data = {
-		let mut c = cache.lock().await;
-		let page = c.get_mut().page.as_ref().ok_or_else(|| {
-			eprintln!("no site in cache");
-			"no site in cache".to_string()
-		})?;
-		
-		serde_json::to_string(&page).map_err(|e| {
-			eprintln!("json get periods Err: {e}");
-			format!("Error serialising Periods to JSON: {}", e)
-		})?
-	};
-	
-	println!("json get periods: {}", data);
-	
-	Ok(data)
-}
-
-
-#[tauri::command]
-pub async fn get_note_rage_js(config: tauri::State<'_, Mutex<Config>>) -> Result<String, String> {
-	let data = {
-		let mut c = config.lock().await;
-		let note_range = &c.get_mut().note_range;
-		
-		serde_json::to_string(&note_range).map_err(|e| {
-			eprintln!("json no get_note_rage_js found: {e}");
-			format!("no get_note_rage_js found: {}", e)
-		})?
-	};
-	
-	println!("json get get_note_rage_js: {}", data);
-	
-	Ok(data)
-}
-
-
-#[tauri::command]
-pub async fn get_grade_modal_defaults(config: tauri::State<'_, Mutex<Config>>) -> Result<String, String> {
-	let data = {
-		let mut c = config.lock().await;
-		let grade_modal_defaults = &c.get_mut().grade_modal_defaults;
-		
-		serde_json::to_string(&grade_modal_defaults).map_err(|e| {
-			eprintln!("json no grade_modal_defaults found: {e}");
-			format!("no grade_modal_defaults found: {}", e)
-		})?
-	};
-	
-	println!("json get grade_modal_defaults: {}", data);
 	
 	Ok(data)
 }
