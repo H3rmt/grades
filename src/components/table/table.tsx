@@ -17,6 +17,7 @@ type Props<Row extends IRow> = {
 	data: RowD<Row>[]
 	cols: cols<Row>
 	delete?: (row: number) => void
+	edit?: (row: number) => void
 }
 
 type RowD<Row> = {
@@ -82,30 +83,30 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 										{grade.edit ?
 												<IconButton color="error" onClick={() => {
 													grade.edit = false
-													forceUpdate();
-												}}>
-													<UndoIcon/>
+												}}><UndoIcon/>
 												</IconButton>
 												:
-												<IconButton color="error" onClick={() => props.delete && props?.delete(grade.data.id)}>
-													<DeleteIcon/>
-												</IconButton>
+												props.delete && (
+														<IconButton color="error" onClick={() => {
+															props.delete && props.delete(grade.data.id)
+															forceUpdate();
+														}}><DeleteIcon/>
+														</IconButton>
+												)
 										}
 										{grade.edit ?
 												<IconButton color="success" onClick={() => {
 													grade.edit = false
 													grade.data = {...grade.temp}
 													forceUpdate();
-												}}>
-													<SaveButton/>
+												}}><SaveButton/>
 												</IconButton>
 												:
 												<IconButton color="default" onClick={() => {
 													grade.edit = true
 													grade.temp = {...grade.data}
 													forceUpdate();
-												}}>
-													<EditIcon/>
+												}}><EditIcon/>
 												</IconButton>
 										}
 									</Stack>
