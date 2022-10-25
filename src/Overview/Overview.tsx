@@ -8,7 +8,6 @@ import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material";
 import {reactSet} from "../ts/utils";
 import CAppBar from "../components/AppBar/CAppBar";
-import {createGrade} from "../components/NewGradeModal/create";
 import {deleteGrade} from "./delete";
 import {createData} from "../components/table/util";
 
@@ -30,8 +29,8 @@ export default function Overview(props: Props) {
 
 	const toast = useToast()
 
-	const getGrades = () => {
-		loadGrades().then((data) => {
+	const getGrades = async () => {
+		await loadGrades().then((data) => {
 			setGrades(data)
 		}).catch((error) => {
 			setGrades([])
@@ -39,8 +38,8 @@ export default function Overview(props: Props) {
 		})
 	}
 
-	const getSubjects = () => {
-		loadSubjects().then((data) => {
+	const getSubjects = async () => {
+		await loadSubjects().then((data) => {
 			setSubjects(data)
 		}).catch((error) => {
 			setSubjects([])
@@ -48,8 +47,8 @@ export default function Overview(props: Props) {
 		})
 	}
 
-	const getPeriods = () => {
-		loadPeriods().then((data) => {
+	const getPeriods = async () => {
+		await loadPeriods().then((data) => {
 			setPeriods(data)
 		}).catch(() => {
 			setPeriods([])
@@ -57,8 +56,8 @@ export default function Overview(props: Props) {
 		})
 	}
 
-	const getTypes = () => {
-		loadTypes().then((data) => {
+	const getTypes = async () => {
+		await loadTypes().then((data) => {
 			setTypes(data)
 		}).catch((error) => {
 			setTypes([])
@@ -73,7 +72,8 @@ export default function Overview(props: Props) {
 	const handleDeleteGrade = async (id: number) => {
 		await deleteGrade(id).then(() => {
 			toastMessage("success", "Deleted Grade", toast)
-			// Todo: reload grades, add redo
+			// Todo: add redo
+			getGrades()
 		}).catch((error) => {
 			errorToast("Error deleting Grade", toast, error)
 		})

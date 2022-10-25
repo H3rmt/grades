@@ -49,8 +49,13 @@ function Settings(props: Props) {
 		})
 	}
 
-	const handlePeriodAdd = async () => {
-		await createPeriod()
+	const handlePeriodCreate = async () => {
+		await createPeriod().then(async () => {
+			toastMessage("success", "Created Period", toast)
+			await getPeriods()
+		}).catch((error) => {
+			errorToast("Error creating Period", toast, error)
+		})
 	}
 
 	useEffect(() => {
@@ -80,7 +85,7 @@ function Settings(props: Props) {
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={4}>
 						<SettingsBox title="Periods" top={
-							<Button color="secondary" variant="contained" size="small" onClick={() => handlePeriodAdd()}>Add</Button>
+							<Button color="secondary" variant="contained" size="small" onClick={() => handlePeriodCreate()}>Add</Button>
 						}>
 							<CTable data={createData(periods)} cols={getPeriodCols()} delete={(id) => console.log(id)}/>
 						</SettingsBox>
