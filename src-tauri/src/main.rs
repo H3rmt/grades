@@ -5,6 +5,7 @@ windows_subsystem = "windows"
 
 extern crate core;
 
+use serde::{Deserialize, Serialize};
 use tauri::Manager;
 use tokio::sync::Mutex;
 
@@ -17,6 +18,10 @@ mod dirs;
 mod cache;
 mod config;
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct Delete {
+	id: i32,
+}
 
 #[tokio::main]
 async fn main() {
@@ -50,6 +55,7 @@ async fn main() {
 				commands::db::get_types_js,
 				commands::db::get_grades_js,
 				commands::db::get_periods_js,
+				commands::db::delete_grade_js,
 				commands::cache::store_page_in_cache_js,
 				commands::cache::get_page_from_cache_js,
 				commands::config::get_note_rage_js,

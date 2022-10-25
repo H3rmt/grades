@@ -70,7 +70,6 @@ export default function Overview(props: Props) {
 	}
 
 	const handleDeleteGrade = async (id: number) => {
-		// @tas-ignore
 		await deleteGrade(id).then(() => {
 			toastMessage("success", "Deleted Grade", toast)
 			// Todo: reload grades, add redo

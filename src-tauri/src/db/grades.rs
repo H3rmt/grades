@@ -1,4 +1,4 @@
-use sea_orm::{ActiveValue, DatabaseConnection, DbErr, Order};
+use sea_orm::{ActiveValue, DatabaseConnection, DbErr, DeleteResult, Order};
 use sea_orm::EntityTrait;
 use sea_orm::QueryOrder;
 
@@ -37,4 +37,14 @@ pub async fn create_grade(db: &DatabaseConnection, subject: i32, r#type: i32, in
 	
 	Ok(())
 }
+
+pub async fn delete_grade(db: &DatabaseConnection, id: i32) -> Result<(), DbErr> {
+	let res: DeleteResult = grades::Entity::delete_by_id(id)
+			.exec(db).await?;
+	if res.rows_affected < 1 {
+		return Err(DbErr::RecordNotFound("Grade not found".to_string()));
+	}
+	Ok(())
+}
+
 
