@@ -3,6 +3,7 @@ import {invoke} from "@tauri-apps/api/tauri";
 function createPeriod(): Promise<void> {
 	return invoke("create_period_js", {
 		json: JSON.stringify({
+			id: -1,
 			name: "New Period",
 			from: "2021-01-01",
 			to: "2021-01-31",
