@@ -11,6 +11,7 @@ import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {createPeriod} from "./create";
 import {createData} from "../components/table/util";
 import {deletePeriod} from "./delete";
+import {editPeriod} from "./edit";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -70,6 +71,16 @@ function Settings(props: Props) {
 		})
 	}
 
+	const handleEditPeriod = async (period: Period) => {
+		await editPeriod(period.id, period.name, period.from, period.to).then(async () => {
+			toastMessage("success", "Edited Period", toast)
+			// TODO: add undo
+			await getPeriods()
+		}).catch((error) => {
+			errorToast("Error editing Period", toast, error)
+		})
+	}
+
 	useEffect(() => {
 		getTypes()
 		getPeriods()
@@ -97,7 +108,7 @@ function Settings(props: Props) {
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handlePeriodCreate()}>Add</Button>
 						}>
-							<CTable data={createData(periods)} cols={getPeriodCols()} delete={(id) => handleDeletePeriod(id)}/>
+							<CTable data={createData(periods)} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>
 					</Grid>
 				</Grid>

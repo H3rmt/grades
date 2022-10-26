@@ -46,5 +46,3 @@ pub async fn delete_grade(db: &DatabaseConnection, id: i32) -> Result<(), DbErr>
 	}
 	Ok(())
 }
-
-

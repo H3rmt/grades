@@ -16,8 +16,8 @@ import UndoIcon from '@mui/icons-material/Undo';
 type Props<Row extends IRow> = {
 	data: RowD<Row>[]
 	cols: cols<Row>
-	delete?: (row: number) => void
-	edit?: (row: number) => void
+	delete?: (id: number) => void
+	edit?: (row: Row) => void
 }
 
 type RowD<Row> = {
@@ -99,6 +99,8 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 													grade.edit = false
 													grade.data = {...grade.temp}
 													forceUpdate();
+													// @ts-ignore
+													props.edit(grade.data)
 												}}><SaveButton/>
 												</IconButton>
 												:

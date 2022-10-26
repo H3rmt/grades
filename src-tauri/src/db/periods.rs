@@ -1,4 +1,5 @@
 use sea_orm::{ActiveValue, DatabaseConnection, DbErr, DeleteResult, Order};
+use sea_orm::ActiveModelTrait;
 use sea_orm::EntityTrait;
 use sea_orm::QueryOrder;
 
@@ -31,5 +32,19 @@ pub async fn delete_period(db: &DatabaseConnection, id: i32) -> Result<(), DbErr
 	if res.rows_affected < 1 {
 		return Err(DbErr::RecordNotFound("Period not found".to_string()));
 	}
+	Ok(())
+}
+
+pub async fn edit_period(db: &DatabaseConnection, id: i32, name: String, from: String, to: String) -> Result<(), DbErr> {
+	let mut period: periods::ActiveModel = periods::Entity::find_by_id(id).one(db).await?
+			.ok_or_else(|| DbErr::RecordNotFound("Period not found".to_string()))?.into();
+	
+	period.name = ActiveValue::Set(name);
+	period.from = ActiveValue::Set(from);
+	period.to = ActiveValue::Set(to);
+	
+	let res = period.update(db).await?;
+	println!("edited period:{:?}", res);
+	
 	Ok(())
 }
