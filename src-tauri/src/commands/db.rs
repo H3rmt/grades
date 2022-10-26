@@ -3,7 +3,7 @@ use sea_orm::DatabaseConnection;
 use entity::{grades, periods};
 
 use crate::db::grades::{create_grade, delete_grade, get_grades};
-use crate::db::periods::{create_period, get_periods};
+use crate::db::periods::{create_period, delete_period, get_periods};
 use crate::db::subjects::get_subjects;
 use crate::db::types::get_types;
 use crate::Delete;
@@ -101,7 +101,7 @@ pub async fn delete_grade_js(connection: tauri::State<'_, DatabaseConnection>, j
 	
 	let json: Delete = serde_json::from_str(&*json).map_err(|e| {
 		eprintln!("json delete grade Err: {e}");
-		format!("Error serialising Grade from JSON: {}", e)
+		format!("Error serialising Delete from JSON: {}", e)
 	})?;
 	
 	delete_grade(&connection, json.id).await.map_err(|e| {
@@ -125,6 +125,24 @@ pub async fn create_period_js(connection: tauri::State<'_, DatabaseConnection>, 
 	create_period(&connection, json.name, json.from, json.to).await.map_err(|e| {
 		eprintln!("create period Err: {e}");
 		format!("Error creating Period:{}", e)
+	})?;
+	
+	Ok(())
+}
+
+
+#[tauri::command]
+pub async fn delete_period_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
+	println!("json delete period: {}", json);
+	
+	let json: Delete = serde_json::from_str(&*json).map_err(|e| {
+		eprintln!("json delete period Err: {e}");
+		format!("Error serialising Delete from JSON: {}", e)
+	})?;
+	
+	delete_period(&connection, json.id).await.map_err(|e| {
+		eprintln!("delete period Err: {e}");
+		format!("Error deleting Period:{}", e)
 	})?;
 	
 	Ok(())

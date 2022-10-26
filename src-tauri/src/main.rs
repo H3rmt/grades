@@ -57,6 +57,7 @@ async fn main() {
 				commands::db::get_periods_js,
 				commands::db::delete_grade_js,
 				commands::db::create_period_js,
+				commands::db::delete_period_js,
 				commands::cache::store_page_in_cache_js,
 				commands::cache::get_page_from_cache_js,
 				commands::config::get_note_rage_js,

@@ -10,6 +10,7 @@ import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {createPeriod} from "./create";
 import {createData} from "../components/table/util";
+import {deletePeriod} from "./delete";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -52,9 +53,20 @@ function Settings(props: Props) {
 	const handlePeriodCreate = async () => {
 		await createPeriod().then(async () => {
 			toastMessage("success", "Created Period", toast)
+			// TODO: add undo
 			await getPeriods()
 		}).catch((error) => {
 			errorToast("Error creating Period", toast, error)
+		})
+	}
+
+	const handleDeletePeriod = async (id: number) => {
+		await deletePeriod(id).then(async () => {
+			toastMessage("success", "Deleted Period", toast)
+			// TODO: add undo
+			await getPeriods()
+		}).catch((error) => {
+			errorToast("Error deleting Period", toast, error)
 		})
 	}
 
@@ -65,9 +77,7 @@ function Settings(props: Props) {
 	}, [])
 
 	return (<>
-				<CAppBar name="Settings" setOpenNav={props.setOpenNav} other={
-					<></>
-				}/>
+				<CAppBar name="Settings" setOpenNav={props.setOpenNav}/>
 				<Grid container spacing={2} padding={2}>
 					<Grid item xs={12} sm={12} md={6} xl={4}>
 						<SettingsBox title="Types" top={
@@ -87,7 +97,7 @@ function Settings(props: Props) {
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handlePeriodCreate()}>Add</Button>
 						}>
-							<CTable data={createData(periods)} cols={getPeriodCols()} delete={(id) => console.log(id)}/>
+							<CTable data={createData(periods)} cols={getPeriodCols()} delete={(id) => handleDeletePeriod(id)}/>
 						</SettingsBox>
 					</Grid>
 				</Grid>
