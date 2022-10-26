@@ -10,15 +10,17 @@ import {reactSet} from "../ts/utils";
 import CAppBar from "../components/AppBar/CAppBar";
 import {deleteGrade} from "./delete";
 import {createData} from "../components/table/util";
+import NewGradeModal from "../components/NewGradeModal/NewGradeModal";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
-	setOpenModal: reactSet<boolean>
 }
 
 const periodDefault = "-1"
 
 export default function Overview(props: Props) {
+	const [openModal, setOpenModal] = useState(false);
+
 	const [grades, setGrades] = useState<Grade[]>([]);
 	const [subjects, setSubjects] = useState<Subject[]>([])
 	const [types, setTypes] = useState<Type[]>([])
@@ -72,7 +74,7 @@ export default function Overview(props: Props) {
 	const handleDeleteGrade = async (id: number) => {
 		await deleteGrade(id).then(() => {
 			toastMessage("success", "Deleted Grade", toast)
-			// Todo: add redo
+			// Todo: add undo
 			getGrades()
 		}).catch((error) => {
 			errorToast("Error deleting Grade", toast, error)
@@ -91,23 +93,27 @@ export default function Overview(props: Props) {
 	const filteredGrades = grades.filter(grade => grade.period === Number(period) || period == "-1")
 	const data = transform(filteredGrades, subjects, types)
 
-	return (<><CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
-				<Stack spacing={2} direction="row" alignItems="start">
-					<Select color="secondary" variant="outlined" sx={{padding: 0}} value={period} size="small"
-							  onChange={handlePeriodSelectChange}>
-						{periodsPlus.map((period) => {
-							return <MenuItem value={period.id}>
-								{period.name}&nbsp;&nbsp;&nbsp;{period.from != "" && period.to != "" ? `${period.from} - ${period.to}` : ""}
-							</MenuItem>
-						})}
-					</Select>
+	return (<>
+				<CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
+					<Stack spacing={2} direction="row" alignItems="start">
+						<Select color="secondary" variant="outlined" sx={{padding: 0}} value={period} size="small"
+								  onChange={handlePeriodSelectChange}>
+							{periodsPlus.map((period) => {
+								return <MenuItem value={period.id}>
+									{period.name}&nbsp;&nbsp;&nbsp;{period.from != "" && period.to != "" ? `${period.from} - ${period.to}` : ""}
+								</MenuItem>
+							})}
+						</Select>
 
-					<Button color="secondary" variant="contained" onClick={() => {
-						props.setOpenModal(true)
-					}}>New Grade</Button>
-				</Stack>
-			}/>
+						<Button color="secondary" variant="contained" onClick={() => {
+							setOpenModal(true)
+						}}>New Grade</Button>
+					</Stack>
+				}/>
 				<CTable data={createData(data)} cols={getCols()} delete={(id) => handleDeleteGrade(id)}/>
+				<NewGradeModal open={openModal} closeModal={() => {
+					setOpenModal(false)
+				}} onUpdate={getGrades}/>
 			</>
 	)
 }

@@ -7,7 +7,7 @@ import {reactSet} from "../../ts/utils";
 type Props = {
 	setOpenNav: reactSet<boolean>
 	name: string
-	other: ReactElement
+	other?: ReactElement
 }
 
 export default function CAppBar(props: Props) {

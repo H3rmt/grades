@@ -26,7 +26,7 @@ import {GradeModalDefaults, NoteRange} from "../../entity/config";
 import {loadDefaults, loadNoteRange} from "./loadDefaults";
 import {nullableUseState} from '../../ts/utils';
 
-function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
+function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate: () => void }) {
 	const [grade, setGrade] = nullableUseState<number>()
 	const [subject, setSubject] = nullableUseState<string>()
 	const [type, setType] = nullableUseState<string>()
@@ -82,6 +82,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		await createGrade(grade, subject, type, info, period, notFinal, double).then(() => {
 			props.closeModal()
 			toastMessage("success", "Created Grade", toast)
+			props.onUpdate()
 		}).catch((error) => {
 			errorToast("Error creating Grade", toast, error)
 		})

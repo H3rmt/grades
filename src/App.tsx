@@ -6,7 +6,6 @@ import React, {ReactElement, useEffect, useState} from "react";
 import Overview from "./Overview/Overview";
 import Analysis from "./Analysis/Analysis";
 import Navbar from "./components/Navbar/Navbar";
-import NewGradeModal from "./components/NewGradeModal/NewGradeModal";
 import Settings from "./Settings/Settings";
 import {invoke} from "@tauri-apps/api/tauri";
 import {errorToast, useToast} from "./ts/toast";
@@ -27,19 +26,18 @@ type Page = {
 
 const App = () => {
 	const [openNav, setOpenNav] = useState(false);
-	const [openModal, setOpenModal] = useState(false);
 
 	const toast = useToast()
 
 	const pages: Pages = {
 		overview: {
-			page: <Overview setOpenNav={setOpenNav} setOpenModal={setOpenModal}/>,
+			page: <Overview setOpenNav={setOpenNav}/>,
 			name: "Overview",
 			description: "Overview of all grades",
 			icon: <MenuIcon/>,
 		},
 		analysis: {
-			page: <Analysis setOpenNav={setOpenNav} setOpenModal={setOpenModal}/>,
+			page: <Analysis setOpenNav={setOpenNav}/>,
 			name: "Analysis",
 			description: "Analysis of all grades",
 			icon: <MailIcon/>
@@ -92,9 +90,6 @@ const App = () => {
 		<Box component="main">
 			{openPage.page}
 		</Box>
-		<NewGradeModal open={openModal} closeModal={() => {
-			setOpenModal(false)
-		}}/>
 	</>)
 }
 
