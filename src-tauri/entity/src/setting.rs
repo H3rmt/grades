@@ -16,7 +16,6 @@ impl EntityName for Entity {
 #[derive(TS, Clone, Debug, PartialEq, DeriveModel, DeriveActiveModel, Serialize, Deserialize)]
 #[ts(export, export_to = "../../src/entity/setting.ts")]
 pub struct Model {
-	#[serde(skip_deserializing)]
 	pub id: i32,
 	pub name: String,
 	pub value: String,
