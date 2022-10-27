@@ -8,10 +8,10 @@ import {loadPeriods, loadSubjects, loadTypes} from "../ts/load";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
-import {createPeriod} from "./create";
+import {createPeriod, createSubject, createType} from "./create";
 import {createData} from "../components/table/util";
-import {deletePeriod} from "./delete";
-import {editPeriod} from "./edit";
+import {deletePeriod, deleteSubject, deleteType} from "./delete";
+import {editPeriod, editSubject, editType} from "./edit";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -51,7 +51,70 @@ function Settings(props: Props) {
 		})
 	}
 
-	const handlePeriodCreate = async () => {
+
+	const handleCreateType = async () => {
+		await createType().then(async () => {
+			toastMessage("success", "Created Type", toast)
+			// TODO: add undo
+			await getTypes()
+		}).catch((error) => {
+			errorToast("Error creating Type", toast, error)
+		})
+	}
+
+	const handleDeleteType = async (id: number) => {
+		await deleteType(id).then(async () => {
+			toastMessage("success", "Deleted Type", toast)
+			// TODO: add undo
+			await getTypes()
+		}).catch((error) => {
+			errorToast("Error deleting Type", toast, error)
+		})
+	}
+
+	const handleEditType = async (period: Type) => {
+		await editType(period.id, period.name, period.color).then(async () => {
+			toastMessage("success", "Edited Type", toast)
+			// TODO: add undo
+			await getTypes()
+		}).catch((error) => {
+			errorToast("Error editing Type", toast, error)
+		})
+	}
+
+
+	const handleCreateSubject = async () => {
+		await createSubject().then(async () => {
+			toastMessage("success", "Created Subject", toast)
+			// TODO: add undo
+			await getSubjects()
+		}).catch((error) => {
+			errorToast("Error creating Subject", toast, error)
+		})
+	}
+
+	const handleDeleteSubject = async (id: number) => {
+		await deleteSubject(id).then(async () => {
+			toastMessage("success", "Deleted Subject", toast)
+			// TODO: add undo
+			await getSubjects()
+		}).catch((error) => {
+			errorToast("Error deleting Subject", toast, error)
+		})
+	}
+
+	const handleEditSubject = async (period: Subject) => {
+		await editSubject(period.id, period.name, period.color).then(async () => {
+			toastMessage("success", "Edited Subject", toast)
+			// TODO: add undo
+			await getSubjects()
+		}).catch((error) => {
+			errorToast("Error editing Subject", toast, error)
+		})
+	}
+
+
+	const handleCreatePeriod = async () => {
 		await createPeriod().then(async () => {
 			toastMessage("success", "Created Period", toast)
 			// TODO: add undo
@@ -92,21 +155,21 @@ function Settings(props: Props) {
 				<Grid container spacing={2} padding={2}>
 					<Grid item xs={12} sm={12} md={6} xl={4}>
 						<SettingsBox title="Types" top={
-							<Button color="secondary" variant="contained" size="small">Add</Button>
+							<Button color="secondary" variant="contained" size="small" onClick={handleCreateType}>Add</Button>
 						}>
-							<CTable data={createData(types)} cols={getTypeCols()}/>
+							<CTable data={createData(types)} cols={getTypeCols()} delete={handleDeleteType} edit={handleEditType}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={4}>
 						<SettingsBox title="Subjects" top={
-							<Button color="secondary" variant="contained" size="small">Add</Button>
+							<Button color="secondary" variant="contained" size="small" onClick={handleCreateSubject}>Add</Button>
 						}>
-							<CTable data={createData(subjects)} cols={getSubjectCols()}/>
+							<CTable data={createData(subjects)} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={4}>
 						<SettingsBox title="Periods" top={
-							<Button color="secondary" variant="contained" size="small" onClick={() => handlePeriodCreate()}>Add</Button>
+							<Button color="secondary" variant="contained" size="small" onClick={handleCreatePeriod}>Add</Button>
 						}>
 							<CTable data={createData(periods)} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>

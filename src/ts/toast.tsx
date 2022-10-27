@@ -30,7 +30,8 @@ function toastMessage(
 							horizontal: 'right'
 						},
 						action: action(variant, toast.closeToast, undo, info),
-						persist: variant == "error"
+						persist: variant == "error",
+						autoHideDuration: 1500
 					}, opts
 			)
 	)

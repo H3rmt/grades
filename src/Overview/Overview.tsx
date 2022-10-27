@@ -6,11 +6,13 @@ import {CTable} from "../components/table/table";
 import {getCols, transform} from "./table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material";
-import {reactSet} from "../ts/utils";
+import {nullableUseState, reactSet} from "../ts/utils";
 import CAppBar from "../components/AppBar/CAppBar";
 import {deleteGrade} from "./delete";
 import {createData} from "../components/table/util";
 import NewGradeModal from "../components/NewGradeModal/NewGradeModal";
+import {NoteRange} from "../entity/config";
+import {loadNoteRange} from "../components/NewGradeModal/loadDefaults";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -26,6 +28,7 @@ export default function Overview(props: Props) {
 	const [types, setTypes] = useState<Type[]>([])
 	const [periods, setPeriods] = useState<Period[]>([])
 
+	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
 
 	const [period, setPeriod] = useState(periodDefault)
 
@@ -67,6 +70,14 @@ export default function Overview(props: Props) {
 		})
 	}
 
+	const getNoteRange = async () => {
+		await loadNoteRange().then((data) => {
+			setNoteRange(data)
+		}).catch((error) => {
+			errorToast("Error loading Note Range", toast, error)
+		})
+	}
+
 	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
 		setPeriod(event.target.value)
 	}
@@ -86,6 +97,7 @@ export default function Overview(props: Props) {
 		getTypes()
 		getPeriods()
 		getSubjects()
+		getNoteRange()
 	}, [])
 
 	const periodsPlus = [{id: -1, name: "All", from: "", to: ""}].concat(periods)
@@ -110,7 +122,7 @@ export default function Overview(props: Props) {
 						}}>New Grade</Button>
 					</Stack>
 				}/>
-				<CTable data={createData(data)} cols={getCols()} delete={(id) => handleDeleteGrade(id)}/>
+				<CTable data={createData(data)} cols={getCols(noteRange ?? {from: 0, to: 0})} delete={handleDeleteGrade} edit={(row) => {console.log(row)}}/>
 				<NewGradeModal open={openModal} closeModal={() => {
 					setOpenModal(false)
 				}} onUpdate={getGrades}/>

@@ -21,7 +21,7 @@ createRoot(document.getElementById("root") as HTMLElement).render(
 		<React.StrictMode>
 			<ThemeProvider theme={darkTheme}>
 				<CssBaseline enableColorScheme/>
-				<SnackbarProvider maxSnack={5}>
+				<SnackbarProvider maxSnack={5} >
 					<App/>
 				</SnackbarProvider>
 			</ThemeProvider>

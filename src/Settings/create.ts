@@ -1,5 +1,35 @@
 import {invoke} from "@tauri-apps/api/tauri";
 
+function createType(): Promise<void> {
+	return invoke("create_type_js", {
+		json: JSON.stringify({
+			id: -1,
+			name: "New Type",
+			color: "#0045f5",
+		})
+	}).then(() => {
+		console.log("Created new Type")
+	}).catch((error) => {
+		console.error("Create Type", error)
+		throw error
+	})
+}
+
+function createSubject(): Promise<void> {
+	return invoke("create_subject_js", {
+		json: JSON.stringify({
+			id: -1,
+			name: "New Subject",
+			color: "#1eff05",
+		})
+	}).then(() => {
+		console.log("Created new Subject")
+	}).catch((error) => {
+		console.error("Create Subject", error)
+		throw error
+	})
+}
+
 function createPeriod(): Promise<void> {
 	return invoke("create_period_js", {
 		json: JSON.stringify({
@@ -17,5 +47,7 @@ function createPeriod(): Promise<void> {
 }
 
 export {
+	createType,
+	createSubject,
 	createPeriod
 }
