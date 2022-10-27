@@ -41,16 +41,16 @@ pub async fn create_period_js(connection: tauri::State<'_, DatabaseConnection>, 
 
 #[tauri::command]
 pub async fn edit_period_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
-	println!("json edit grade: {}", json);
+	println!("json edit period: {}", json);
 	
 	let json: periods::Model = serde_json::from_str(&*json).map_err(|e| {
-		eprintln!("json edit grade Err: {e}");
-		format!("Error serialising Grade from JSON: {}", e)
+		eprintln!("json edit period Err: {e}");
+		format!("Error serialising Period from JSON: {}", e)
 	})?;
 	
 	edit_period(&connection, json.id, json.name, json.from, json.to).await.map_err(|e| {
-		eprintln!("edit grade Err: {e}");
-		format!("Error editing Grade:{}", e)
+		eprintln!("edit period Err: {e}");
+		format!("Error editing Period:{}", e)
 	})?;
 	
 	Ok(())

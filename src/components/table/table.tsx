@@ -62,7 +62,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 					{
 							(props.delete || props.edit) && <TableCell key="actions" padding="checkbox"/>
 					}
-					{Array.from(props.cols.entries()).filter(col => col[0] != "id").map(([key, col]) => {
+					{Array.from(props.cols.entries()).filter(([, col]) => !col.hide).map(([key, col]) => {
 						return <TableCell key={key as Key} sortDirection={orderBy === key ? order : false}
 												sx={{backgroundColor: "inherit"}}>
 							{

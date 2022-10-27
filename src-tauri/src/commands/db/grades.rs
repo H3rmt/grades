@@ -2,7 +2,7 @@ use sea_orm::DatabaseConnection;
 
 use entity::grades;
 
-use crate::db::grades::{create_grade, delete_grade, get_grades};
+use crate::db::grades::{create_grade, delete_grade, edit_grade, get_grades};
 use crate::Delete;
 
 #[tauri::command]
@@ -40,8 +40,20 @@ pub async fn create_grade_js(connection: tauri::State<'_, DatabaseConnection>, j
 }
 
 #[tauri::command]
-pub async fn edit_grade_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {
-	Err(format!("Not implemented"))
+pub async fn edit_grade_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
+	println!("json edit grade: {}", json);
+	
+	let json: grades::Model = serde_json::from_str(&*json).map_err(|e| {
+		eprintln!("json edit grade Err: {e}");
+		format!("Error serialising Grade from JSON: {}", e)
+	})?;
+	
+	edit_grade(&connection, json.id, json.subject, json.r#type, json.info, json.grade, json.period, json.not_final, json.double).await.map_err(|e| {
+		eprintln!("edit grade Err: {e}");
+		format!("Error editing Grade:{}", e)
+	})?;
+	
+	Ok(())
 }
 
 #[tauri::command]

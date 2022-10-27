@@ -8,9 +8,9 @@ function editType(id: number, name: string, color: string): Promise<void> {
 			color: color
 		})
 	}).then(() => {
-		console.log("Created new Type")
+		console.log("Edited Type")
 	}).catch((error) => {
-		console.error("Create Type", error)
+		console.error("Edit Type", error)
 		throw error
 	})
 }
@@ -23,9 +23,9 @@ function editSubject(id: number, name: string, color: string): Promise<void> {
 			color: color
 		})
 	}).then(() => {
-		console.log("Created new Subject")
+		console.log("Edited Subject")
 	}).catch((error) => {
-		console.error("Create Subject", error)
+		console.error("Edit Subject", error)
 		throw error
 	})
 }
@@ -39,9 +39,9 @@ function editPeriod(id: number, name: string, from: string, to: string): Promise
 			to: to,
 		})
 	}).then(() => {
-		console.log("Created new Period")
+		console.log("Edited Period")
 	}).catch((error) => {
-		console.error("Create Period", error)
+		console.error("Edit Period", error)
 		throw error
 	})
 }

@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react';
 import {Grade, Period, Subject, Type} from "../entity";
 import {loadGrades, loadPeriods, loadSubjects, loadTypes} from "../ts/load";
 import {CTable} from "../components/table/table";
-import {getCols, transform} from "./table";
+import {getCols} from "./table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material";
 import {nullableUseState, reactSet} from "../ts/utils";
@@ -13,12 +13,11 @@ import {createData} from "../components/table/util";
 import NewGradeModal from "../components/NewGradeModal/NewGradeModal";
 import {NoteRange} from "../entity/config";
 import {loadNoteRange} from "../components/NewGradeModal/loadDefaults";
+import {editGrade} from "./edit";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
 }
-
-const periodDefault = "-1"
 
 export default function Overview(props: Props) {
 	const [openModal, setOpenModal] = useState(false);
@@ -30,7 +29,7 @@ export default function Overview(props: Props) {
 
 	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
 
-	const [period, setPeriod] = useState(periodDefault)
+	const [period, setPeriod] = useState("-1")
 
 	const toast = useToast()
 
@@ -92,6 +91,16 @@ export default function Overview(props: Props) {
 		})
 	}
 
+	const handleEditGrade = async (grade: Grade) => {
+		await editGrade(grade.id, grade.grade, grade.subject, grade.type, grade.info, grade.period, grade.double, grade.not_final).then(async () => {
+			toastMessage("success", "Edited Grade", toast)
+			// TODO: add undo
+			await getGrades()
+		}).catch((error) => {
+			errorToast("Error editing Grade", toast, error)
+		})
+	}
+
 	useEffect(() => {
 		getGrades()
 		getTypes()
@@ -102,8 +111,7 @@ export default function Overview(props: Props) {
 
 	const periodsPlus = [{id: -1, name: "All", from: "", to: ""}].concat(periods)
 
-	const filteredGrades = grades.filter(grade => grade.period === Number(period) || period == "-1")
-	const data = transform(filteredGrades, subjects, types)
+	const data = grades.filter(grade => grade.period === Number(period) || period == "-1")
 
 	return (<>
 				<CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
@@ -122,7 +130,8 @@ export default function Overview(props: Props) {
 						}}>New Grade</Button>
 					</Stack>
 				}/>
-				<CTable data={createData(data)} cols={getCols(noteRange ?? {from: 0, to: 0})} delete={handleDeleteGrade} edit={(row) => {console.log(row)}}/>
+				<CTable data={createData(data)} cols={getCols(noteRange ?? {from: 0, to: 0}, subjects, types)} delete={handleDeleteGrade}
+						  edit={handleEditGrade}/>
 				<NewGradeModal open={openModal} closeModal={() => {
 					setOpenModal(false)
 				}} onUpdate={getGrades}/>
