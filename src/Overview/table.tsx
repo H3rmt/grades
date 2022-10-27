@@ -19,13 +19,11 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 			"subject", {
 				sort: true,
 				format: subject => subjects.find(sub => sub.id === subject)?.name || '--notfound--',
-				edit: (r) => <Typography>{r.subject}</Typography>
 			}
 		], [
 			"type", {
 				sort: true,
 				format: type => types.find(typ => typ.id === type)?.name || '--notfound--',
-				edit: (r) => <Typography>{r.type}</Typography>
 			}
 		], [
 			"info", {
@@ -44,6 +42,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 		], [
 			"not_final", {
 				sort: false,
+				name: "Not Final",
 				format: notFinal => <Checkbox checked={notFinal as boolean} disabled/>,
 				edit: (r) => <FormControlLabel control={
 					<Checkbox color="secondary" checked={r.not_final} onChange={i => r.not_final = i.target.checked}/>

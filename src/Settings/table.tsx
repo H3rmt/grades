@@ -1,4 +1,4 @@
-import {cols, Column} from "../components/table/table";
+import {cols, Column} from "../components/table/defs";
 import {Period, Subject, Type} from "../entity";
 import {TextField} from "@mui/material";
 

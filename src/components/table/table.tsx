@@ -12,6 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveButton from '@mui/icons-material/Save';
 import UndoIcon from '@mui/icons-material/Undo';
+import {cols, Column, IRow, RowD} from "./defs";
 
 type Props<Row extends IRow> = {
 	data: RowD<Row>[]
@@ -19,28 +20,6 @@ type Props<Row extends IRow> = {
 	delete?: (id: number) => void
 	edit?: (row: Row) => void
 }
-
-type RowD<Row> = {
-	data: Row
-	edit: boolean
-	temp: Row
-}
-
-interface IRow {
-	id: number
-}
-
-interface Column<Row> {
-	format?: format<Row>
-	// function returning elements to be displayed instead of the data, with event listeners to update the row
-	edit?: (row: Row) => ReactNode
-	hide?: boolean
-	sort: boolean
-}
-
-type cols<Row> = Map<keyof Row, Column<Row>>
-
-type format<Row> = (data: Row[keyof Row]) => ReactNode | Row[keyof Row]
 
 export function CTable<Row extends IRow>(props: Props<Row>) {
 	const [order, setOrder] = useState<Order>('asc');
@@ -66,12 +45,15 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 						return <TableCell key={key as Key} sortDirection={orderBy === key ? order : false}
 												sx={{backgroundColor: "inherit"}}>
 							{
-								col.sort ? <TableSortLabel
-										active={orderBy === key}
-										direction={orderBy === key ? order : 'asc'}
-										onClick={() => handleRequestSort(key)}>
-									{capitalizeFirstLetter(key as string)}
-								</TableSortLabel> : capitalizeFirstLetter(key as string)
+								col.sort ?
+										<TableSortLabel
+												active={orderBy === key}
+												direction={orderBy === key ? order : 'asc'}
+												onClick={() => handleRequestSort(key)}>
+											{col.name ?? capitalizeFirstLetter(key as string)}
+										</TableSortLabel>
+										:
+										col.name ?? capitalizeFirstLetter(key as string)
 							}
 						</TableCell>
 					})}
@@ -118,11 +100,10 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 						{Array.from(props.cols.entries()).filter(([, col]) => !col.hide).map((entry: [keyof Row, Column<Row>]) => {
 							const [key, row] = entry
 							let format = row.format ?? ((t) => t)
-							let edit = row.edit ?? (() => "not supported")
-							let e = edit(grade.temp)
+							let edit = ((row.edit) ?? (() => format(grade.data[key]) as ReactNode))(grade.temp)
 							return grade.edit ?
 									<TableCell key={key as Key} onChange={forceUpdate}>
-										{e}
+										{edit}
 									</TableCell>
 									:
 									<TableCell key={key as Key}>
@@ -140,6 +121,5 @@ export type {
 	IRow,
 	cols,
 	Column,
-	format,
 	RowD
 }
