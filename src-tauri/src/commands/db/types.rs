@@ -2,7 +2,7 @@ use sea_orm::DatabaseConnection;
 
 use entity::{grade_types, subjects};
 
-use crate::db::types::get_types;
+use crate::db::types::{create_type, delete_type, edit_type, get_types};
 use crate::Delete;
 
 #[tauri::command]

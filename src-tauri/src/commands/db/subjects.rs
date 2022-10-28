@@ -1,9 +1,8 @@
 use sea_orm::DatabaseConnection;
 
-use entity::{periods, subjects};
-use crate::db::periods::{create_period, edit_period};
+use entity::subjects;
 
-use crate::db::subjects::get_subjects;
+use crate::db::subjects::{create_subject, delete_subject, edit_subject, get_subjects};
 use crate::Delete;
 
 #[tauri::command]
