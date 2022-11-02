@@ -9,8 +9,6 @@ type Props = {
 
 
 export const SettingsBox = (props: Props) => {
-
-
 	return (
 			<Paper variant="outlined" sx={{borderRadius: 4, padding: 1, borderColor: "secondary.main"}}>
 				<Stack direction="row" spacing={1} borderColor="aqua" alignItems="start" justifyContent="space-between">

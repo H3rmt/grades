@@ -1,7 +1,7 @@
-import {Button, Grid} from '@mui/material';
-import React, {useEffect, useState} from 'react';
+import {Button, Grid, IconButton, Slider, Stack, TextField, Typography} from '@mui/material';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import CAppBar from '../components/AppBar/CAppBar';
-import {reactSet} from "../ts/utils";
+import {nullableUseState, reactSet} from "../ts/utils";
 import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
 import {loadPeriods, loadSubjects, loadTypes} from "../ts/load";
@@ -12,6 +12,11 @@ import {createPeriod, createSubject, createType} from "./create";
 import {createData} from "../components/table/util";
 import {deletePeriod, deleteSubject, deleteType} from "./delete";
 import {editPeriod, editSubject, editType} from "./edit";
+import {loadNoteRange} from "../components/NewGradeModal/loadDefaults";
+import {NoteRange} from "../entity/config";
+import SaveButton from "@mui/icons-material/Save";
+import UndoIcon from "@mui/icons-material/Undo";
+import {editNoteRange} from "./save";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -22,6 +27,8 @@ function Settings(props: Props) {
 	const [subjects, setSubjects] = useState<Subject[]>([])
 	const [types, setTypes] = useState<Type[]>([])
 	const [periods, setPeriods] = useState<Period[]>([])
+
+	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
 
 	const toast = useToast()
 
@@ -37,9 +44,9 @@ function Settings(props: Props) {
 	const getPeriods = async () => {
 		await loadPeriods().then((data) => {
 			setPeriods(data)
-		}).catch(() => {
+		}).catch((error) => {
 			setPeriods([])
-			toastMessage("error", "Error loading Periods", toast)
+			errorToast("Error loading Periods", toast, error)
 		})
 	}
 
@@ -48,6 +55,14 @@ function Settings(props: Props) {
 			setTypes(data)
 		}).catch((error) => {
 			errorToast("Error loading Types", toast, error)
+		})
+	}
+
+	const getNoteRange = async () => {
+		await loadNoteRange().then((data) => {
+			setNoteRange(data)
+		}).catch((error) => {
+			errorToast("Error loading Note Range", toast, error)
 		})
 	}
 
@@ -81,7 +96,6 @@ function Settings(props: Props) {
 			errorToast("Error editing Type", toast, error)
 		})
 	}
-
 
 	const handleCreateSubject = async () => {
 		await createSubject().then(async () => {
@@ -144,10 +158,65 @@ function Settings(props: Props) {
 		})
 	}
 
+	const handleNoteRangeToInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
+		setNoteRange({// @ts-ignore
+			from: Math.min(noteRange.from, Math.max(Math.min(Number(event.target.value), 30), 1) - 1),
+			to: Math.max(Math.min(Number(event.target.value), 30), 1)
+		})
+	}
+
+	const handleNoteRangeToSliderChange = async (event: Event, newValue: number | number[]) => {
+		setNoteRange({// @ts-ignore
+			from: Math.min(noteRange.from, newValue - 1),
+			to: Number(newValue)
+		})
+	}
+
+	const handleNoteRangeFromInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
+		setNoteRange({// @ts-ignore
+			to: Math.max(noteRange.to, Math.max(Math.min(Number(event.target.value), 29), 0) + 1),
+			from: Math.max(Math.min(Number(event.target.value), 29), 0)
+		})
+	}
+
+	const handleNoteRangeFromSliderChange = async (event: Event, newValue: number | number[]) => {
+		setNoteRange({// @ts-ignore
+			to: Math.max(noteRange.to, newValue + 1),
+			from: Number(newValue)
+		})
+	}
+
+	const handleSaveNoteRange = async () => {
+		// @ts-ignore
+		await editNoteRange(noteRange.from, noteRange.to).then(async () => {
+			toastMessage("success", "Saved NoteRange", toast)
+			// TODO: add undo
+			await getNoteRange()
+		}).catch((error) => {
+			errorToast("Error saving NoteRange", toast, error)
+		})
+	}
+
+	const handleNoteRangeReset = async () => {
+		// @ts-ignore
+		let old = Object.assign({}, noteRange)
+
+		await getNoteRange()
+
+		const undo = () => {
+			setNoteRange(old)
+			toastMessage("success", "Undid reset NoteRange", toast)
+			closeClear()
+		}
+
+		let closeClear = toastMessage("warning", "Reset NoteRange", toast, undo)
+	}
+
 	useEffect(() => {
 		getTypes()
 		getPeriods()
 		getSubjects()
+		getNoteRange()
 	}, [])
 
 	return (<>
@@ -167,13 +236,55 @@ function Settings(props: Props) {
 							<CTable data={createData(subjects)} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
 						</SettingsBox>
 					</Grid>
-					<Grid item xs={12} sm={12} md={6} xl={4}>
+					<Grid item xs={12} sm={12} md={8} xl={6}>
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreatePeriod}>Add</Button>
 						}>
 							<CTable data={createData(periods)} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>
 					</Grid>
+					<Grid item xs={12} sm={12} md={8} xl={6}>
+						<SettingsBox title="Defaults">
+							<Stack>
+
+							</Stack>
+						</SettingsBox>
+					</Grid>
+					{noteRange !== undefined &&
+							<Grid item xs={12} sm={12} md={8} xl={6}>
+								<SettingsBox title="Note Range" top={
+									<Stack direction="row">
+										<IconButton color="error" onClick={handleNoteRangeReset}>
+											<UndoIcon/>
+										</IconButton>
+										<IconButton color="success" onClick={handleSaveNoteRange}>
+											<SaveButton/>
+										</IconButton>
+									</Stack>
+								}>
+									<Grid container spacing={4} padding={2}>
+										<Grid item xs={12} sm={6} lg={12}>
+											<Stack spacing={2}>
+												<Typography variant="h6" fontWeight="normal">From</Typography>
+												<TextField value={noteRange.from} type="number" fullWidth margin="none"
+															  onChange={handleNoteRangeFromInputChange}/>
+												<Slider value={noteRange.from} color="secondary" min={0} max={29}
+														  onChange={handleNoteRangeFromSliderChange}/>
+											</Stack>
+										</Grid>
+										<Grid item xs={12} sm={6} lg={12}>
+											<Stack spacing={2}>
+												<Typography variant="h6" fontWeight="normal">To</Typography>
+												<TextField value={noteRange.to} type="number" fullWidth margin="none"
+															  onChange={handleNoteRangeToInputChange}/>
+												<Slider value={noteRange.to} color="secondary" min={1} max={30}
+														  onChange={handleNoteRangeToSliderChange}/>
+											</Stack>
+										</Grid>
+									</Grid>
+								</SettingsBox>
+							</Grid>
+					}
 				</Grid>
 			</>
 	)
