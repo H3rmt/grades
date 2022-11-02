@@ -33,7 +33,7 @@ pub async fn create_grade_js(connection: tauri::State<'_, DatabaseConnection>, j
 	
 	create_grade(&connection, json.subject, json.r#type, json.info, json.grade, json.period, json.not_final, json.double).await.map_err(|e| {
 		eprintln!("create grade Err: {}", e);
-		format!("Error creating Grade:{}", e)
+		format!("Error creating Grade: {}", e)
 	})?;
 	
 	Ok(())
@@ -50,7 +50,7 @@ pub async fn edit_grade_js(connection: tauri::State<'_, DatabaseConnection>, jso
 	
 	edit_grade(&connection, json.id, json.subject, json.r#type, json.info, json.grade, json.period, json.not_final, json.double).await.map_err(|e| {
 		eprintln!("edit grade Err: {}", e);
-		format!("Error editing Grade:{}", e)
+		format!("Error editing Grade: {}", e)
 	})?;
 	
 	Ok(())
@@ -67,7 +67,7 @@ pub async fn delete_grade_js(connection: tauri::State<'_, DatabaseConnection>, j
 	
 	delete_grade(&connection, json.id).await.map_err(|e| {
 		eprintln!("delete grade Err: {}", e);
-		format!("Error deleting Grade:{}", e)
+		format!("Error deleting Grade: {}", e)
 	})?;
 	
 	Ok(())

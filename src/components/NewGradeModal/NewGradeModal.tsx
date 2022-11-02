@@ -99,8 +99,8 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 	const getPeriods = async () => {
 		await loadPeriods().then((data) => {
 			setPeriods(data)
-		}).catch(() => {
-			toastMessage("error", "Error loading Periods", toast)
+		}).catch((error) => {
+			errorToast("Error loading Periods", toast, error)
 		})
 	}
 
@@ -156,7 +156,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 			closeClear()
 		}
 
-		let closeClear = toastMessage("success", "Cleared create Note window", toast, undo)
+		let closeClear = toastMessage("warning", "Cleared create Note window", toast, undo)
 	}
 
 	useEffect(() => {
@@ -167,12 +167,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 		getDefaults()
 	}, [])
 
-	let render = grade !== undefined && subject !== undefined && type !== undefined && period !== undefined && info !== undefined && notFinal !== undefined && double !== undefined
-			&& subjects.length > 0 && types.length > 0 && periods.length > 0 && noteRange !== undefined
-
-	// console.warn(grade, subject, type, period, info, double, notFinal, noteRange, defaults)
-	// console.warn(subjects, types, periods)
-	// console.warn(render)
+	let render = grade !== undefined && subject !== undefined && type !== undefined && period !== undefined && info !== undefined && notFinal !== undefined && double !== undefined && noteRange !== undefined
 
 	return (<Dialog open={props.open} onClose={props.closeModal} fullWidth maxWidth="md">
 		<DialogTitle variant="h5">New Grade</DialogTitle>
@@ -240,7 +235,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 										} label="Not Final"/>
 										<FormControlLabel control={
 											<Checkbox color="secondary" checked={double} onChange={handleDoubleCheckboxChange}/>
-										} label="Count x2"/>
+										} label="Double"/>
 									</FormGroup>
 								</Stack>
 							</Grid>

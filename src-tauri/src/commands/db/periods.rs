@@ -33,7 +33,7 @@ pub async fn create_period_js(connection: tauri::State<'_, DatabaseConnection>, 
 	
 	create_period(&connection, json.name, json.from, json.to).await.map_err(|e| {
 		eprintln!("create period Err: {}", e);
-		format!("Error creating Period:{}", e)
+		format!("Error creating Period: {}", e)
 	})?;
 	
 	Ok(())
@@ -50,7 +50,7 @@ pub async fn edit_period_js(connection: tauri::State<'_, DatabaseConnection>, js
 	
 	edit_period(&connection, json.id, json.name, json.from, json.to).await.map_err(|e| {
 		eprintln!("edit period Err: {}", e);
-		format!("Error editing Period:{}", e)
+		format!("Error editing Period: {}", e)
 	})?;
 	
 	Ok(())
@@ -67,7 +67,7 @@ pub async fn delete_period_js(connection: tauri::State<'_, DatabaseConnection>, 
 	
 	delete_period(&connection, json.id).await.map_err(|e| {
 		eprintln!("delete period Err: {}", e);
-		format!("Error deleting Period:{}", e)
+		format!("Error deleting Period: {}", e)
 	})?;
 	
 	Ok(())

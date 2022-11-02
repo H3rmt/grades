@@ -33,7 +33,7 @@ pub async fn create_subject_js(connection: tauri::State<'_, DatabaseConnection>,
 	
 	create_subject(&connection, json.name, json.color).await.map_err(|e| {
 		eprintln!("create subject Err: {}", e);
-		format!("Error creating Subject:{}", e)
+		format!("Error creating Subject: {}", e)
 	})?;
 	
 	Ok(())
@@ -50,7 +50,7 @@ pub async fn edit_subject_js(connection: tauri::State<'_, DatabaseConnection>, j
 	
 	edit_subject(&connection, json.id, json.name, json.color).await.map_err(|e| {
 		eprintln!("edit subject Err: {}", e);
-		format!("Error editing Subject:{}", e)
+		format!("Error editing Subject: {}", e)
 	})?;
 	
 	Ok(())
@@ -67,7 +67,7 @@ pub async fn delete_subject_js(connection: tauri::State<'_, DatabaseConnection>,
 	
 	delete_subject(&connection, json.id).await.map_err(|e| {
 		eprintln!("delete subject Err: {}", e);
-		format!("Error deleting Subject:{}", e)
+		format!("Error deleting Subject: {}", e)
 	})?;
 	
 	Ok(())

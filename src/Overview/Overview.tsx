@@ -54,9 +54,9 @@ export default function Overview(props: Props) {
 	const getPeriods = async () => {
 		await loadPeriods().then((data) => {
 			setPeriods(data)
-		}).catch(() => {
+		}).catch((error) => {
 			setPeriods([])
-			toastMessage("error", "Error loading Periods", toast)
+			errorToast("Error loading Periods", toast, error)
 		})
 	}
 

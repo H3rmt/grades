@@ -33,7 +33,7 @@ pub async fn create_type_js(connection: tauri::State<'_, DatabaseConnection>, js
 	
 	create_type(&connection, json.name, json.color).await.map_err(|e| {
 		eprintln!("create type Err: {}", e);
-		format!("Error creating Type:{}", e)
+		format!("Error creating Type: {}", e)
 	})?;
 	
 	Ok(())
@@ -50,7 +50,7 @@ pub async fn edit_type_js(connection: tauri::State<'_, DatabaseConnection>, json
 	
 	edit_type(&connection, json.id, json.name, json.color).await.map_err(|e| {
 		eprintln!("edit type Err: {}", e);
-		format!("Error editing Type:{}", e)
+		format!("Error editing Type: {}", e)
 	})?;
 	
 	Ok(())
@@ -67,7 +67,7 @@ pub async fn delete_type_js(connection: tauri::State<'_, DatabaseConnection>, js
 	
 	delete_type(&connection, json.id).await.map_err(|e| {
 		eprintln!("delete type Err: {}", e);
-		format!("Error deleting Type:{}", e)
+		format!("Error deleting Type: {}", e)
 	})?;
 	
 	Ok(())
