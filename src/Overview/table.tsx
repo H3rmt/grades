@@ -1,6 +1,6 @@
 import {Grade, Subject, Type} from "../entity";
-import {cols, Column} from "../components/table/table";
-import {Checkbox, FormControlLabel, TextField, Typography} from "@mui/material";
+import {cols, Column} from "../components/table/defs";
+import {Checkbox, TextField, Typography} from "@mui/material";
 import {map} from "../ts/utils";
 import React from "react";
 import {NoteRange} from "../entity/config";
@@ -12,7 +12,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 				sort: true,
 				format: grade => <Typography
 						color={`rgb(${map(grade as number, 0, 15, 230, 40)},${map(grade as number, 0, 15, 40, 230)},0)`}>{grade}</Typography>,
-				edit: (r) => <TextField value={r.grade}
+				edit: (r) => <TextField fullWidth value={r.grade}
 												onChange={(i) => r.grade = Math.max(Math.min(Number(i.target.value), noteRange?.to), noteRange?.from)}/>
 			}
 		], [
@@ -28,25 +28,20 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 		], [
 			"info", {
 				sort: true,
-				edit: (r) => <TextField value={r.info} onChange={(i) => r.info = i.target.value}/>
+				edit: (r) => <TextField fullWidth value={r.info} onChange={(i) => r.info = i.target.value}/>
 			}
 		], [
 			"double", {
 				sort: false,
 				format: double => <Checkbox checked={double as boolean} disabled/>,
-				edit: (r) => <FormControlLabel control={
-					<Checkbox color="secondary" checked={r.double} onChange={i => r.double = i.target.checked}/>
-				} label="Count x2"/>
-
+				edit: (r) => <Checkbox color="secondary" checked={r.double} onChange={i => r.double = i.target.checked}/>
 			}
 		], [
 			"not_final", {
 				sort: false,
 				name: "Not Final",
 				format: notFinal => <Checkbox checked={notFinal as boolean} disabled/>,
-				edit: (r) => <FormControlLabel control={
-					<Checkbox color="secondary" checked={r.not_final} onChange={i => r.not_final = i.target.checked}/>
-				} label="Not Final"/>
+				edit: (r) => <Checkbox color="secondary" checked={r.not_final} onChange={i => r.not_final = i.target.checked}/>
 			}
 		], [
 			"id", {
