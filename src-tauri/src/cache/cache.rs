@@ -26,7 +26,7 @@ impl Cache {
 		match cache.load() {
 			Ok(_) => {}
 			Err(e) => {
-				eprintln!("error loading cache: {e}");
+				eprintln!("error loading cache: {}", e);
 			}
 		};
 		println!("cache-data: {:?}", cache.data);
@@ -46,6 +46,10 @@ impl Cache {
 	
 	pub fn get_mut(&mut self) -> &mut Data {
 		&mut self.data
+	}
+	
+	pub fn get(&self) -> &Data {
+		&self.data
 	}
 	
 	pub fn save(&mut self) -> Result<(), Box<dyn error::Error>> {

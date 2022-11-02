@@ -27,7 +27,7 @@ impl Config {
 		match config.load() {
 			Ok(_) => {}
 			Err(e) => {
-				eprintln!("error loading config: {e}");
+				eprintln!("error loading config: {}", e);
 			}
 		};
 		println!("config-data: {:?}", config.data);
@@ -47,6 +47,10 @@ impl Config {
 	
 	pub fn get_mut(&mut self) -> &mut Data {
 		&mut self.data
+	}
+	
+	pub fn get(&self) -> &Data {
+		&self.data
 	}
 	
 	pub fn save(&mut self) -> Result<(), Box<dyn error::Error>> {
