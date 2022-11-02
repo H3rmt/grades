@@ -16,7 +16,7 @@
 		"@emotion/styled": "11.10.4",
 		"@babel/core": "7.19.3",
 
-		"@mui/icons-material": "5.10.6",
+		"@mui/icons-material": "5.10.9",
 		"@mui/material": "5.10.8",
 		"notistack": "2.0.5",
 
