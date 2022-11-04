@@ -12,11 +12,11 @@ import {createPeriod, createSubject, createType} from "./create";
 import {createData} from "../components/table/util";
 import {deletePeriod, deleteSubject, deleteType} from "./delete";
 import {editPeriod, editSubject, editType} from "./edit";
-import {loadNoteRange} from "../components/NewGradeModal/loadDefaults";
-import {NoteRange} from "../entity/config";
+import {loadDefaults, loadNoteRange} from "../components/NewGradeModal/loadDefaults";
+import {GradeModalDefaults, NoteRange} from "../entity/config";
 import SaveButton from "@mui/icons-material/Save";
 import UndoIcon from "@mui/icons-material/Undo";
-import {editNoteRange} from "./save";
+import {saveNoteRange, saveDefaults} from "./save";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -29,9 +29,7 @@ function Settings(props: Props) {
 	const [periods, setPeriods] = useState<Period[]>([])
 
 	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
-	const [period, setPeriod] = nullableUseState<string>()
-	const [subject, setSubject] = nullableUseState<string>()
-	const [type, setType] = nullableUseState<string>()
+	const [defaults, setDefaults] = nullableUseState<GradeModalDefaults>()
 
 	const toast = useToast()
 
@@ -66,6 +64,14 @@ function Settings(props: Props) {
 			setNoteRange(data)
 		}).catch((error) => {
 			errorToast("Error loading Note Range", toast, error)
+		})
+	}
+
+	const getDefaults = async () => {
+		await loadDefaults().then((data) => {
+			setDefaults(data)
+		}).catch((error) => {
+			errorToast("Error loading Defaults", toast, error)
 		})
 	}
 
@@ -191,7 +197,7 @@ function Settings(props: Props) {
 
 	const handleSaveNoteRange = async () => {
 		// @ts-ignore
-		await editNoteRange(noteRange.from, noteRange.to).then(async () => {
+		await saveNoteRange(noteRange).then(async () => {
 			toastMessage("success", "Saved NoteRange", toast)
 			// TODO: add undo
 			await getNoteRange()
@@ -201,7 +207,6 @@ function Settings(props: Props) {
 	}
 
 	const handleNoteRangeReset = async () => {
-		// @ts-ignore
 		let old = Object.assign({}, noteRange)
 
 		await getNoteRange()
@@ -216,15 +221,43 @@ function Settings(props: Props) {
 	}
 
 	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
-		setPeriod(event.target.value)
+		// @ts-ignore
+		setDefaults({...defaults, period_default: event.target.value})
 	}
 
 	const handleTypeSelectChange = (event: SelectChangeEvent) => {
-		setType(event.target.value)
+		// @ts-ignore
+		setDefaults({...defaults, type_default: event.target.value})
 	}
 
 	const handleSubjectSelectChange = (event: SelectChangeEvent) => {
-		setSubject(event.target.value)
+		// @ts-ignore
+		setDefaults({...defaults, subject_default: event.target.value})
+	}
+
+	const handleSaveDefaults = async () => {
+		// @ts-ignore
+		await saveDefaults(defaults).then(async () => {
+			toastMessage("success", "Saved NoteRange", toast)
+			// TODO: add undo
+			await getNoteRange()
+		}).catch((error) => {
+			errorToast("Error saving NoteRange", toast, error)
+		})
+	}
+
+	const handleDefaultsReset = async () => {
+		let old = Object.assign({}, defaults)
+
+		await getDefaults()
+
+		const undo = () => {
+			setDefaults(old)
+			toastMessage("success", "Undid reset Defaults", toast)
+			closeClear()
+		}
+
+		let closeClear = toastMessage("warning", "Reset Defaults", toast, undo)
 	}
 
 	useEffect(() => {
@@ -232,6 +265,7 @@ function Settings(props: Props) {
 		getPeriods()
 		getSubjects()
 		getNoteRange()
+		getDefaults()
 	}, [])
 
 	return (<>
@@ -240,77 +274,72 @@ function Settings(props: Props) {
 					<Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Types" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreateType}>Add</Button>
-						}>
-							<CTable data={createData(types)} cols={getTypeCols()} delete={handleDeleteType} edit={handleEditType}/>
+						}><CTable data={createData(types)} cols={getTypeCols()} delete={handleDeleteType} edit={handleEditType}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Subjects" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreateSubject}>Add</Button>
-						}>
-							<CTable data={createData(subjects)} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
+						}><CTable data={createData(subjects)} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={12} xl={6}>
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreatePeriod}>Add</Button>
-						}>
-							<CTable data={createData(periods)} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
+						}><CTable data={createData(periods)} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>
 					</Grid>
-					<Grid item xs={12} sm={12} md={6} xl={6}>
-						<SettingsBox title="Defaults" top={
-							<Stack direction="row">
-								<IconButton color="error" onClick={() => {
-								}}>
-									<UndoIcon/>
-								</IconButton>
-								<IconButton color="success" onClick={() => {
-								}}>
-									<SaveButton/>
-								</IconButton>
-							</Stack>
-						}>
-							<Grid container spacing={4} padding={2}>
-								<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
-									<Stack spacing={2} direction="row" alignItems="center">
-										<Typography variant="h6" fontWeight="normal">Type</Typography>
-										<Select value={type} margin="none" fullWidth onChange={handleTypeSelectChange}>
-											{types.map((type) => {
-												return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
-											})}
-										</Select>
+					{defaults !== undefined &&
+							<Grid item xs={12} sm={12} md={6} xl={6}>
+								<SettingsBox title="Defaults" top={
+									<Stack direction="row">
+										<IconButton color="error" onClick={handleDefaultsReset}>
+											<UndoIcon/>
+										</IconButton>
+										<IconButton color="success" onClick={handleSaveDefaults}><SaveButton/>
+										</IconButton>
 									</Stack>
+								}><Grid container spacing={4} padding={2}>
+									<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
+										<Stack spacing={2} direction="row" alignItems="center">
+											<Typography variant="h6" fontWeight="normal">Type</Typography>
+											<Select value={defaults.type_default} margin="none" fullWidth onChange={handleTypeSelectChange}>
+												{types.map((type) => {
+													return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
+												})}
+											</Select>
+										</Stack>
+									</Grid>
+									<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
+										<Stack spacing={2} direction="row" alignItems="center">
+											<Typography variant="h6" fontWeight="normal">Subject</Typography>
+											<Select value={defaults.subject_default} margin="none" fullWidth onChange={handleSubjectSelectChange}>
+												{subjects.map((subject) => {
+													return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
+												})}
+											</Select>
+										</Stack>
+									</Grid>
+									<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
+										<Stack spacing={2} direction="row" alignItems="center">
+											<Typography variant="h6" fontWeight="normal">Period</Typography>
+											<Select value={defaults.period_default} margin="none" fullWidth onChange={handlePeriodSelectChange}>
+												{periods.map((period) => {
+													return <MenuItem value={period.id}>
+														<Stack>
+															{period.name}
+															<br/>
+															<Typography variant="overline">{period.from} - {period.to}</Typography>
+														</Stack>
+													</MenuItem>
+												})}
+											</Select>
+										</Stack>
+									</Grid>
 								</Grid>
-								<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
-									<Stack spacing={2} direction="row" alignItems="center">
-										<Typography variant="h6" fontWeight="normal">Subject</Typography>
-										<Select value={subject} margin="none" fullWidth onChange={handleSubjectSelectChange}>
-											{subjects.map((subject) => {
-												return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
-											})}
-										</Select>
-									</Stack>
-								</Grid>
-								<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
-									<Stack spacing={2} direction="row" alignItems="center">
-										<Typography variant="h6" fontWeight="normal">Period</Typography>
-										<Select value={period} margin="none" fullWidth onChange={handlePeriodSelectChange}>
-											{periods.map((period) => {
-												return <MenuItem value={period.id}>
-													<Stack>
-														{period.name}
-														<br/>
-														<Typography variant="overline">{period.from} - {period.to}</Typography>
-													</Stack>
-												</MenuItem>
-											})}
-										</Select>
-									</Stack>
-								</Grid>
+								</SettingsBox>
 							</Grid>
-						</SettingsBox>
-					</Grid>
+					}
 					{noteRange !== undefined &&
 							<Grid item xs={12} sm={12} md={6} xl={6}>
 								<SettingsBox title="Note Range" top={

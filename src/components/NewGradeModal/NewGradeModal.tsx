@@ -125,18 +125,18 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 			setDefaults(data)
 			setDefault(data)
 		}).catch((error) => {
-			errorToast("Error loading Modal defaults", toast, error)
+			errorToast("Error loading Modal Defaults", toast, error)
 		})
 	}
 
 	const setDefault = (defaults: GradeModalDefaults) => {
-		setGrade(defaults?.grade_default)
-		setSubject(defaults?.subject_default)
-		setType(defaults?.type_default)
-		setPeriod(defaults?.period_default)
-		setInfo(defaults?.info_default)
-		setDouble(defaults?.double_default)
-		setNotFinal(defaults?.not_final_default)
+		setGrade(defaults.grade_default)
+		setSubject(defaults.subject_default)
+		setType(defaults.type_default)
+		setPeriod(defaults.period_default)
+		setInfo(defaults.info_default)
+		setDouble(defaults.double_default)
+		setNotFinal(defaults.not_final_default)
 	}
 
 	const handleClear = async () => {
