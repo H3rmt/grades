@@ -222,17 +222,17 @@ function Settings(props: Props) {
 
 	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
 		// @ts-ignore
-		setDefaults({...defaults, period_default: event.target.value})
+		setDefaults({...defaults, period_default: String(event.target.value)})
 	}
 
 	const handleTypeSelectChange = (event: SelectChangeEvent) => {
 		// @ts-ignore
-		setDefaults({...defaults, type_default: event.target.value})
+		setDefaults({...defaults, type_default: String(event.target.value)})
 	}
 
 	const handleSubjectSelectChange = (event: SelectChangeEvent) => {
 		// @ts-ignore
-		setDefaults({...defaults, subject_default: event.target.value})
+		setDefaults({...defaults, subject_default: String(event.target.value)})
 	}
 
 	const handleSaveDefaults = async () => {
