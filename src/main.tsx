@@ -15,13 +15,22 @@ const darkTheme = createTheme({
 			main: '#f50000'
 		},
 	},
+	breakpoints: {
+		values: {
+			xs: 0,
+			sm: 700,
+			md: 900,
+			lg: 1150,
+			xl: 1536,
+		},
+	},
 });
 
 createRoot(document.getElementById("root") as HTMLElement).render(
 		<React.StrictMode>
 			<ThemeProvider theme={darkTheme}>
 				<CssBaseline enableColorScheme/>
-				<SnackbarProvider maxSnack={5} >
+				<SnackbarProvider maxSnack={5}>
 					<App/>
 				</SnackbarProvider>
 			</ThemeProvider>

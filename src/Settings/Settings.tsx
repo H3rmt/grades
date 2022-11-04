@@ -1,4 +1,4 @@
-import {Button, Grid, IconButton, Slider, Stack, TextField, Typography} from '@mui/material';
+import {Button, Grid, IconButton, MenuItem, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import CAppBar from '../components/AppBar/CAppBar';
 import {nullableUseState, reactSet} from "../ts/utils";
@@ -29,6 +29,9 @@ function Settings(props: Props) {
 	const [periods, setPeriods] = useState<Period[]>([])
 
 	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
+	const [period, setPeriod] = nullableUseState<string>()
+	const [subject, setSubject] = nullableUseState<string>()
+	const [type, setType] = nullableUseState<string>()
 
 	const toast = useToast()
 
@@ -212,6 +215,18 @@ function Settings(props: Props) {
 		let closeClear = toastMessage("warning", "Reset NoteRange", toast, undo)
 	}
 
+	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
+		setPeriod(event.target.value)
+	}
+
+	const handleTypeSelectChange = (event: SelectChangeEvent) => {
+		setType(event.target.value)
+	}
+
+	const handleSubjectSelectChange = (event: SelectChangeEvent) => {
+		setSubject(event.target.value)
+	}
+
 	useEffect(() => {
 		getTypes()
 		getPeriods()
@@ -222,36 +237,82 @@ function Settings(props: Props) {
 	return (<>
 				<CAppBar name="Settings" setOpenNav={props.setOpenNav}/>
 				<Grid container spacing={2} padding={2}>
-					<Grid item xs={12} sm={12} md={6} xl={4}>
+					<Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Types" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreateType}>Add</Button>
 						}>
 							<CTable data={createData(types)} cols={getTypeCols()} delete={handleDeleteType} edit={handleEditType}/>
 						</SettingsBox>
 					</Grid>
-					<Grid item xs={12} sm={12} md={6} xl={4}>
+					<Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Subjects" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreateSubject}>Add</Button>
 						}>
 							<CTable data={createData(subjects)} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
 						</SettingsBox>
 					</Grid>
-					<Grid item xs={12} sm={12} md={8} xl={6}>
+					<Grid item xs={12} sm={12} md={12} xl={6}>
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreatePeriod}>Add</Button>
 						}>
 							<CTable data={createData(periods)} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>
 					</Grid>
-					<Grid item xs={12} sm={12} md={8} xl={6}>
-						<SettingsBox title="Defaults">
-							<Stack>
-
+					<Grid item xs={12} sm={12} md={6} xl={6}>
+						<SettingsBox title="Defaults" top={
+							<Stack direction="row">
+								<IconButton color="error" onClick={() => {
+								}}>
+									<UndoIcon/>
+								</IconButton>
+								<IconButton color="success" onClick={() => {
+								}}>
+									<SaveButton/>
+								</IconButton>
 							</Stack>
+						}>
+							<Grid container spacing={4} padding={2}>
+								<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
+									<Stack spacing={2} direction="row" alignItems="center">
+										<Typography variant="h6" fontWeight="normal">Type</Typography>
+										<Select value={type} margin="none" fullWidth onChange={handleTypeSelectChange}>
+											{types.map((type) => {
+												return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
+											})}
+										</Select>
+									</Stack>
+								</Grid>
+								<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
+									<Stack spacing={2} direction="row" alignItems="center">
+										<Typography variant="h6" fontWeight="normal">Subject</Typography>
+										<Select value={subject} margin="none" fullWidth onChange={handleSubjectSelectChange}>
+											{subjects.map((subject) => {
+												return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
+											})}
+										</Select>
+									</Stack>
+								</Grid>
+								<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
+									<Stack spacing={2} direction="row" alignItems="center">
+										<Typography variant="h6" fontWeight="normal">Period</Typography>
+										<Select value={period} margin="none" fullWidth onChange={handlePeriodSelectChange}>
+											{periods.map((period) => {
+												return <MenuItem value={period.id}>
+													<Stack>
+														{period.name}
+														<br/>
+														<Typography variant="overline">{period.from} - {period.to}</Typography>
+													</Stack>
+												</MenuItem>
+											})}
+										</Select>
+									</Stack>
+								</Grid>
+							</Grid>
 						</SettingsBox>
 					</Grid>
 					{noteRange !== undefined &&
-							<Grid item xs={12} sm={12} md={8} xl={6}>
+							<Grid item xs={12} sm={12} md={6} xl={6}>
 								<SettingsBox title="Note Range" top={
 									<Stack direction="row">
 										<IconButton color="error" onClick={handleNoteRangeReset}>
@@ -263,7 +324,7 @@ function Settings(props: Props) {
 									</Stack>
 								}>
 									<Grid container spacing={4} padding={2}>
-										<Grid item xs={12} sm={6} lg={12}>
+										<Grid item xs={12} sm={6} lg={6}>
 											<Stack spacing={2}>
 												<Typography variant="h6" fontWeight="normal">From</Typography>
 												<TextField value={noteRange.from} type="number" fullWidth margin="none"
@@ -272,7 +333,7 @@ function Settings(props: Props) {
 														  onChange={handleNoteRangeFromSliderChange}/>
 											</Stack>
 										</Grid>
-										<Grid item xs={12} sm={6} lg={12}>
+										<Grid item xs={12} sm={6} lg={6}>
 											<Stack spacing={2}>
 												<Typography variant="h6" fontWeight="normal">To</Typography>
 												<TextField value={noteRange.to} type="number" fullWidth margin="none"
