@@ -8,7 +8,7 @@ function createGrade(grade: number, subject: string, type: string, info: string,
 			subject: Number(subject),
 			type: Number(type),
 			info: info,
-			period: period,
+			period: Number(period),
 			not_final: notFinal,
 			double: double
 		})
