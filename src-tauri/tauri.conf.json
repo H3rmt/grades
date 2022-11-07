@@ -6,8 +6,8 @@
 		"distDir": "../dist"
 	},
 	"package": {
-		"productName": "grades",
-		"version": "0.0.0"
+		"productName": "Grades",
+		"version": "0.0.1"
 	},
 	"tauri": {
 		"allowlist": {
