@@ -1,6 +1,5 @@
-name: "test-on-pr"
 on:
-  push:
+
 
 jobs:
   test-tauri:
