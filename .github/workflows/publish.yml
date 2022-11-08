@@ -13,14 +13,14 @@ jobs:
       - name: Get JSON Version
         uses: notiz-dev/github-action-json-property@release
         with:
-          path: './src-tauri/tauri.config.json'
+          path: 'src-tauri/tauri.config.json'
           prop_path: 'package.version'
       - run: echo ${{steps.package_version.outputs.prop}}
 
       - name: Get JSON Name
         uses: notiz-dev/github-action-json-property@release
         with:
-          path: './src-tauri/tauri.config.json'
+          path: 'src-tauri/tauri.config.json'
           prop_path: 'package.productName'
       - run: echo ${{steps.package_productName.outputs.prop}}
 
