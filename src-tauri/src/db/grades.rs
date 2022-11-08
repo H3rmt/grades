@@ -27,7 +27,7 @@ pub async fn create_grade(db: &DatabaseConnection, subject: i32, r#type: i32, in
 		not_final: ActiveValue::set(not_final),
 	};
 	
-	let res = grades::Entity::insert(insert).exec(db).await;
+	let res = grades::Entity::insert(insert).exec(db).await?;
 	println!("created grade:{:?}", res);
 	
 	Ok(())

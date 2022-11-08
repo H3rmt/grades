@@ -19,7 +19,7 @@ pub async fn create_type(db: &DatabaseConnection, name: String, color: String) -
 		color: ActiveValue::Set(color),
 	};
 	
-	let res = grade_types::Entity::insert(insert).exec(db).await;
+	let res = grade_types::Entity::insert(insert).exec(db).await?;
 	println!("created type:{:?}", res);
 	
 	Ok(())

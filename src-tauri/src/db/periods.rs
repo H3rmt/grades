@@ -19,7 +19,7 @@ pub async fn create_period(db: &DatabaseConnection, name: String, from: String, 
 		to: ActiveValue::Set(to),
 	};
 	
-	let res = periods::Entity::insert(insert).exec(db).await;
+	let res = periods::Entity::insert(insert).exec(db).await?;
 	println!("created period:{:?}", res);
 	
 	Ok(())

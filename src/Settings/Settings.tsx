@@ -79,7 +79,6 @@ function Settings(props: Props) {
 	const handleCreateType = async () => {
 		await createType().then(async () => {
 			toastMessage("success", "Created Type", toast)
-			// TODO: add undo
 			await getTypes()
 		}).catch((error) => {
 			errorToast("Error creating Type", toast, error)
@@ -109,7 +108,6 @@ function Settings(props: Props) {
 	const handleCreateSubject = async () => {
 		await createSubject().then(async () => {
 			toastMessage("success", "Created Subject", toast)
-			// TODO: add undo
 			await getSubjects()
 		}).catch((error) => {
 			errorToast("Error creating Subject", toast, error)
@@ -140,7 +138,6 @@ function Settings(props: Props) {
 	const handleCreatePeriod = async () => {
 		await createPeriod().then(async () => {
 			toastMessage("success", "Created Period", toast)
-			// TODO: add undo
 			await getPeriods()
 		}).catch((error) => {
 			errorToast("Error creating Period", toast, error)

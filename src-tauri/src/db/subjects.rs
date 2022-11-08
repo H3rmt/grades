@@ -18,7 +18,7 @@ pub async fn create_subject(db: &DatabaseConnection, name: String, color: String
 		color: ActiveValue::Set(color),
 	};
 	
-	let res = subjects::Entity::insert(insert).exec(db).await;
+	let res = subjects::Entity::insert(insert).exec(db).await?;
 	println!("created subject:{:?}", res);
 	
 	Ok(())
