@@ -18,12 +18,15 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 		], [
 			"subject", {
 				sort: true,
-				format: subject => subjects.find(sub => sub.id === subject)?.name || '--notfound--',
+				format: subject => <Typography
+						sx={{color: subjects.find(sub => sub.id === subject)?.color || 'white'}}>{subjects.find(sub => sub.id === subject)?.name || '--notfound--'}</Typography>,
 			}
 		], [
 			"type", {
 				sort: true,
-				format: type => types.find(typ => typ.id === type)?.name || '--notfound--',
+				format: type => <Typography
+						sx={{color: types.find(typ => typ.id === type)?.color || 'white'}}>{subjects.find(typ => typ.id === type)?.name || '--notfound--'}</Typography>,
+
 			}
 		], [
 			"info", {
