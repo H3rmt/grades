@@ -32,7 +32,7 @@ jobs:
               repo: context.repo.repo,
               tag_name: `grade-app-v${{steps.get-json-version.outputs.prop}}`,
               name: `${{steps.get-json-name.outputs.prop}} v${{steps.get-json-version.outputs.prop}}`,
-              body: 'Take a look at the assets to download and install this app.',
+              body: 'Assets getting generated...',
               draft: true,
               prerelease: false
             })
@@ -86,6 +86,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: process.env.release_id,
+              body: 'Take a look at the assets to download and install this app.',
               draft: false,
               prerelease: false
             })
