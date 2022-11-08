@@ -28,8 +28,7 @@ jobs:
 
       - name: get version
         run: |
-          echo "PACKAGE_VERSION=${{steps.get-json-version.outputs.prop}}" >> $VERSION_ENV
-          echo "PACKAGE_VERSION=${{steps.get-json-name.outputs.prop}}" >> $NAME_ENV
+          echo "PACKAGE_VERSION=${{steps.get-json-version.outputs.prop}};PACKAGE_NAME=${{steps.get-json-name.outputs.prop}}" >> $GITHUB_ENV
       - name: create release
         id: create-release
         uses: actions/github-script@v6
@@ -38,8 +37,8 @@ jobs:
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `grade-app-v${process.env.VERSION_ENV}`,
-              name: `${process.env.NAME_ENV} v${process.env.VERSION_ENV}`,
+              tag_name: `grade-app-v${process.env.PACKAGE_VERSION}`,
+              name: `${process.env.PACKAGE_NAME} v${process.env.PACKAGE_VERSION}`,
               body: 'Take a look at the assets to download and install this app.',
               draft: true,
               prerelease: false
