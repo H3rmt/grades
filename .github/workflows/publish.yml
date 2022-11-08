@@ -11,23 +11,25 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Get JSON Version
+        id: get-json-version
         uses: notiz-dev/github-action-json-property@release
         with:
           path: 'src-tauri/tauri.conf.json'
           prop_path: 'package.version'
-      - run: echo ${{steps.package_version.outputs.prop}}
+      - run: echo ${{steps.get-json-version.outputs.prop}}
 
       - name: Get JSON Name
+        id: get-json-name
         uses: notiz-dev/github-action-json-property@release
         with:
           path: 'src-tauri/tauri.conf.json'
           prop_path: 'package.productName'
-      - run: echo ${{steps.package_productName.outputs.prop}}
+      - run: echo ${{steps.get-json-name.outputs.prop}}
 
       - name: get version
         run: |
-          echo "PACKAGE_VERSION=${{steps.package_version.outputs.prop}}" >> $VERSION_ENV
-          echo "PACKAGE_VERSION=${{steps.package_productName.outputs.prop}}" >> $NAME_ENV
+          echo "PACKAGE_VERSION=${{steps.get-json-version.outputs.prop}}" >> $VERSION_ENV
+          echo "PACKAGE_VERSION=${{steps.get-json-name.outputs.prop}}" >> $NAME_ENV
       - name: create release
         id: create-release
         uses: actions/github-script@v6
