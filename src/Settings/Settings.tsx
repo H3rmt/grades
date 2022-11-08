@@ -77,7 +77,7 @@ function Settings(props: Props) {
 
 
 	const handleCreateType = async () => {
-		await createType().then(async () => {
+		await createType(types).then(async () => {
 			toastMessage("success", "Created Type", toast)
 			await getTypes()
 		}).catch((error) => {
@@ -106,7 +106,7 @@ function Settings(props: Props) {
 	}
 
 	const handleCreateSubject = async () => {
-		await createSubject().then(async () => {
+		await createSubject(subjects).then(async () => {
 			toastMessage("success", "Created Subject", toast)
 			await getSubjects()
 		}).catch((error) => {
@@ -136,7 +136,7 @@ function Settings(props: Props) {
 
 
 	const handleCreatePeriod = async () => {
-		await createPeriod().then(async () => {
+		await createPeriod(periods).then(async () => {
 			toastMessage("success", "Created Period", toast)
 			await getPeriods()
 		}).catch((error) => {
