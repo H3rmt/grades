@@ -22,9 +22,6 @@ jobs:
         with:
           path: 'src-tauri/tauri.conf.json'
           prop_path: 'package.productName'
-      - name: get version
-        run: |
-          echo "PACKAGE_VERSION=${{steps.get-json-version.outputs.prop}};PACKAGE_NAME=${{steps.get-json-name.outputs.prop}}" >> $GITHUB_ENV
       - name: create release
         id: create-release
         uses: actions/github-script@v6
@@ -33,8 +30,8 @@ jobs:
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `grade-app-v${process.env.PACKAGE_VERSION}`,
-              name: `${process.env.PACKAGE_NAME} v${process.env.PACKAGE_VERSION}`,
+              tag_name: `grade-app-v${{steps.get-json-version.outputs.prop}}`,
+              name: `${{steps.get-json-name.outputs.prop}} v${{steps.get-json-version.outputs.prop}}`,
               body: 'Take a look at the assets to download and install this app.',
               draft: true,
               prerelease: false
