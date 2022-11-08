@@ -16,16 +16,12 @@ jobs:
         with:
           path: 'src-tauri/tauri.conf.json'
           prop_path: 'package.version'
-      - run: echo ${{steps.get-json-version.outputs.prop}}
-
       - name: Get JSON Name
         id: get-json-name
         uses: notiz-dev/github-action-json-property@release
         with:
           path: 'src-tauri/tauri.conf.json'
           prop_path: 'package.productName'
-      - run: echo ${{steps.get-json-name.outputs.prop}}
-
       - name: get version
         run: |
           echo "PACKAGE_VERSION=${{steps.get-json-version.outputs.prop}};PACKAGE_NAME=${{steps.get-json-name.outputs.prop}}" >> $GITHUB_ENV
