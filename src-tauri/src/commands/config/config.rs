@@ -50,8 +50,9 @@ pub async fn save_note_range_js(config: tauri::State<'_, Mutex<Config>>, json: S
 	
 	{
 		let mut c = config.lock().await;
-		c.get_mut().note_range = json;
-		c.save().map_err(|e| {
+		c.set(|data| {
+			data.note_range = json;
+		}).map_err(|e| {
 			eprintln!("set note_range Err: {}", e);
 			format!("Error setting NoteRange:{}", e)
 		})?;
@@ -71,8 +72,9 @@ pub async fn save_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>
 	
 	{
 		let mut c = config.lock().await;
-		c.get_mut().grade_modal_defaults = json;
-		c.save().map_err(|e| {
+		c.set(|data| {
+			data.grade_modal_defaults = json;
+		}).map_err(|e| {
 			eprintln!("set grade_modal_defaults Err: {}", e);
 			format!("Error setting GradeModalDefaults:{}", e)
 		})?;

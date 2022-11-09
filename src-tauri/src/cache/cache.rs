@@ -44,8 +44,14 @@ impl Cache {
 		Ok(())
 	}
 	
-	pub fn get_mut(&mut self) -> &mut Data {
+	fn get_mut(&mut self) -> &mut Data {
 		&mut self.data
+	}
+	
+	pub fn set<F: FnOnce(&mut Data)>(&mut self, f: F) -> Result<(), Box<dyn error::Error>> {
+		f(self.get_mut());
+		self.save()?;
+		Ok(())
 	}
 	
 	pub fn get(&self) -> &Data {

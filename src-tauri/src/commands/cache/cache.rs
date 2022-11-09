@@ -14,8 +14,9 @@ pub async fn store_page_in_cache_js(cache: tauri::State<'_, Mutex<Cache>>, json:
 	
 	{
 		let mut c = cache.lock().await;
-		c.get_mut().page = Some(json);
-		c.save().map_err(|e| {
+		c.set(|data| {
+			data.page = Some(json);
+		}).map_err(|e| {
 			eprintln!("set page Err: {}", e);
 			format!("Error setting Page:{}", e)
 		})?;

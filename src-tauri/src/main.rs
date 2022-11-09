@@ -37,10 +37,10 @@ async fn main() {
 	Migrator::up(&connection, None).await.expect("Error running migrations");
 	
 	// dont panic on cache missing
-	let cache = Mutex::new(cache::init::connect().expect("Error connecting to cache"));
+	let cache = Mutex::new(cache::create().expect("Error connecting to cache"));
 	
 	// dont panic on config missing
-	let config = Mutex::new(config::init::connect().expect("Error connecting to config"));
+	let config = Mutex::new(config::create().expect("Error connecting to config"));
 	
 	tauri::Builder::default()
 			.setup(|app| {

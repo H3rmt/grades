@@ -19,7 +19,7 @@ pub struct Config {
 }
 
 impl Config {
-	pub fn connect(path: &str) -> Result<Self, Box<dyn error::Error>> {
+	pub fn create(path: &str) -> Result<Self, Box<dyn error::Error>> {
 		let mut config = Config {
 			path: path.to_string(),
 			data: Data::default(),
@@ -45,8 +45,14 @@ impl Config {
 		Ok(())
 	}
 	
-	pub fn get_mut(&mut self) -> &mut Data {
+	fn get_mut(&mut self) -> &mut Data {
 		&mut self.data
+	}
+	
+	pub fn set<F: FnOnce(&mut Data)>(&mut self, f: F) -> Result<(), Box<dyn error::Error>> {
+		f(self.get_mut());
+		self.save()?;
+		Ok(())
 	}
 	
 	pub fn get(&self) -> &Data {

@@ -38,7 +38,9 @@
 				"icons/icon.ico"
 			],
 			"identifier": "grades",
-			"longDescription": "",
+			"resources": [],
+			"shortDescription": "App to manage grades in school",
+			"longDescription": "A desktop app to manage grades in school",
 			"macOS": {
 				"entitlements": null,
 				"exceptionDomain": "",
@@ -46,8 +48,6 @@
 				"providerShortName": null,
 				"signingIdentity": null
 			},
-			"resources": [],
-			"shortDescription": "",
 			"targets": "all",
 			"windows": {
 				"certificateThumbprint": null,
