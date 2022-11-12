@@ -1,0 +1,1 @@
+export interface Info { version: string, name: string, }
