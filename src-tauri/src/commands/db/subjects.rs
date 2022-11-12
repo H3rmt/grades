@@ -26,12 +26,12 @@ pub async fn get_subjects_js(connection: tauri::State<'_, DatabaseConnection>) -
 pub async fn create_subject_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
 	println!("json create subject: {}", json);
 	
-	let json: subjects::Model = serde_json::from_str(&*json).map_err(|e| {
+	let model: subjects::Model = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json create subject Err: {}", e);
 		format!("Error serialising Subject from JSON: {}", e)
 	})?;
 	
-	create_subject(&connection, json.name, json.color).await.map_err(|e| {
+	create_subject(&connection, model).await.map_err(|e| {
 		eprintln!("create subject Err: {}", e);
 		format!("Error creating Subject: {}", e)
 	})?;
@@ -43,12 +43,12 @@ pub async fn create_subject_js(connection: tauri::State<'_, DatabaseConnection>,
 pub async fn edit_subject_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
 	println!("json edit subject: {}", json);
 	
-	let json: subjects::Model = serde_json::from_str(&*json).map_err(|e| {
+	let model: subjects::Model = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json edit subject Err: {}", e);
 		format!("Error serialising Subject from JSON: {}", e)
 	})?;
 	
-	edit_subject(&connection, json.id, json.name, json.color).await.map_err(|e| {
+	edit_subject(&connection, model).await.map_err(|e| {
 		eprintln!("edit subject Err: {}", e);
 		format!("Error editing Subject: {}", e)
 	})?;
@@ -60,12 +60,12 @@ pub async fn edit_subject_js(connection: tauri::State<'_, DatabaseConnection>, j
 pub async fn delete_subject_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
 	println!("json delete subject: {}", json);
 	
-	let json: Delete = serde_json::from_str(&*json).map_err(|e| {
+	let delete: Delete = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json delete subject Err: {}", e);
 		format!("Error serialising Delete from JSON: {}", e)
 	})?;
 	
-	delete_subject(&connection, json.id).await.map_err(|e| {
+	delete_subject(&connection, delete).await.map_err(|e| {
 		eprintln!("delete subject Err: {}", e);
 		format!("Error deleting Subject: {}", e)
 	})?;

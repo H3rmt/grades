@@ -26,12 +26,12 @@ pub async fn get_periods_js(connection: tauri::State<'_, DatabaseConnection>) ->
 pub async fn create_period_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
 	println!("json create grade: {}", json);
 	
-	let json: periods::Model = serde_json::from_str(&*json).map_err(|e| {
+	let model: periods::Model = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json create period Err: {}", e);
 		format!("Error serialising Period from JSON: {}", e)
 	})?;
 	
-	create_period(&connection, json.name, json.from, json.to).await.map_err(|e| {
+	create_period(&connection, model).await.map_err(|e| {
 		eprintln!("create period Err: {}", e);
 		format!("Error creating Period: {}", e)
 	})?;
@@ -43,12 +43,12 @@ pub async fn create_period_js(connection: tauri::State<'_, DatabaseConnection>, 
 pub async fn edit_period_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
 	println!("json edit period: {}", json);
 	
-	let json: periods::Model = serde_json::from_str(&*json).map_err(|e| {
+	let model: periods::Model = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json edit period Err: {}", e);
 		format!("Error serialising Period from JSON: {}", e)
 	})?;
 	
-	edit_period(&connection, json.id, json.name, json.from, json.to).await.map_err(|e| {
+	edit_period(&connection, model).await.map_err(|e| {
 		eprintln!("edit period Err: {}", e);
 		format!("Error editing Period: {}", e)
 	})?;
@@ -60,12 +60,12 @@ pub async fn edit_period_js(connection: tauri::State<'_, DatabaseConnection>, js
 pub async fn delete_period_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
 	println!("json delete period: {}", json);
 	
-	let json: Delete = serde_json::from_str(&*json).map_err(|e| {
+	let delete: Delete = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json delete period Err: {}", e);
 		format!("Error serialising Delete from JSON: {}", e)
 	})?;
 	
-	delete_period(&connection, json.id).await.map_err(|e| {
+	delete_period(&connection, delete).await.map_err(|e| {
 		eprintln!("delete period Err: {}", e);
 		format!("Error deleting Period: {}", e)
 	})?;

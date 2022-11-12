@@ -1,4 +1,4 @@
-mod other;
+pub mod other;
 
 pub mod db {
 	pub mod grades;

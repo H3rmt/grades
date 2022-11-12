@@ -1,6 +1,6 @@
 use sea_orm::DatabaseConnection;
 
-use entity::{grade_types, subjects};
+use entity::{grade_types};
 
 use crate::db::types::{create_type, delete_type, edit_type, get_types};
 use crate::commands::other::Delete;
@@ -26,12 +26,12 @@ pub async fn get_types_js(connection: tauri::State<'_, DatabaseConnection>) -> R
 pub async fn create_type_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
 	println!("json create type: {}", json);
 	
-	let json: grade_types::Model = serde_json::from_str(&*json).map_err(|e| {
+	let model: grade_types::Model = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json create type Err: {}", e);
 		format!("Error serialising Type from JSON: {}", e)
 	})?;
 	
-	create_type(&connection, json.name, json.color).await.map_err(|e| {
+	create_type(&connection, model).await.map_err(|e| {
 		eprintln!("create type Err: {}", e);
 		format!("Error creating Type: {}", e)
 	})?;
@@ -43,12 +43,12 @@ pub async fn create_type_js(connection: tauri::State<'_, DatabaseConnection>, js
 pub async fn edit_type_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
 	println!("json edit type: {}", json);
 	
-	let json: grade_types::Model = serde_json::from_str(&*json).map_err(|e| {
+	let model: grade_types::Model = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json edit type Err: {}", e);
 		format!("Error serialising Type from JSON: {}", e)
 	})?;
 	
-	edit_type(&connection, json.id, json.name, json.color).await.map_err(|e| {
+	edit_type(&connection, model).await.map_err(|e| {
 		eprintln!("edit type Err: {}", e);
 		format!("Error editing Type: {}", e)
 	})?;
@@ -60,12 +60,12 @@ pub async fn edit_type_js(connection: tauri::State<'_, DatabaseConnection>, json
 pub async fn delete_type_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
 	println!("json delete type: {}", json);
 	
-	let json: Delete = serde_json::from_str(&*json).map_err(|e| {
+	let delete: Delete = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json delete type Err: {}", e);
 		format!("Error serialising Delete from JSON: {}", e)
 	})?;
 	
-	delete_type(&connection, json.id).await.map_err(|e| {
+	delete_type(&connection, delete).await.map_err(|e| {
 		eprintln!("delete type Err: {}", e);
 		format!("Error deleting Type: {}", e)
 	})?;

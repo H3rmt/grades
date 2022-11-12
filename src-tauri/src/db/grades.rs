@@ -1,61 +1,100 @@
-use sea_orm::{ActiveValue, DatabaseConnection, DbErr, DeleteResult, Order};
+use error_stack::{IntoReport, Result, ResultExt};
+use sea_orm::{ActiveValue, DatabaseConnection, DbErr, DeleteResult};
 use sea_orm::ActiveModelTrait;
 use sea_orm::EntityTrait;
-use sea_orm::QueryOrder;
 
-use entity::{grade_types, grades, periods, subjects};
+use entity::grades::{ActiveModel, Entity, Model};
+use entity::{grade_types, periods, subjects};
 
-pub async fn get_grades(db: &DatabaseConnection) -> Result<Vec<grades::Model>, DbErr> {
-	grades::Entity::find()
-			.order_by(grades::Column::Grade, Order::Asc)
+use crate::db::{check_fk, DBError};
+use crate::commands::other::{Delete};
+
+pub async fn get_grades(db: &DatabaseConnection) -> Result<Vec<Model>, DBError> {
+	Entity::find()
 			.all(db).await
+			.into_report()
+			.attach_printable_lazy(|| "Error loading grades from DB")
+			.change_context(DBError)
 }
 
-pub async fn create_grade(db: &DatabaseConnection, subject: i32, r#type: i32, info: String, grade: i32, period: i32, not_final: bool, double: bool) -> Result<(), DbErr> {
-	subjects::Entity::find_by_id(subject).one(db).await?.ok_or(DbErr::RecordNotFound("Subject not found".to_string()))?;
-	grade_types::Entity::find_by_id(r#type).one(db).await?.ok_or(DbErr::RecordNotFound("Type not found".to_string()))?;
-	periods::Entity::find_by_id(period).one(db).await?.ok_or(DbErr::RecordNotFound("Period not found".to_string()))?;
+pub async fn create_grade(db: &DatabaseConnection, model: Model) -> Result<(), DBError> {
+	check_fk(db, subjects::Entity::find_by_id(model.subject), "Subject").await.attach_printable_lazy(|| format!("id: {}", model.subject))?;
+	check_fk(db, grade_types::Entity::find_by_id(model.r#type), "Type").await.attach_printable_lazy(|| format!("id: {}", model.subject))?;
+	check_fk(db, periods::Entity::find_by_id(model.period), "Period").await.attach_printable_lazy(|| format!("id: {}", model.subject))?;
 	
-	let insert = grades::ActiveModel {
+	let insert = ActiveModel {
 		id: ActiveValue::NotSet,
-		subject: ActiveValue::Set(subject),
-		r#type: ActiveValue::Set(r#type),
-		info: ActiveValue::Set(info),
-		grade: ActiveValue::Set(grade),
-		period: ActiveValue::Set(period),
-		double: ActiveValue::set(double),
-		not_final: ActiveValue::set(not_final),
+		subject: ActiveValue::Set(model.subject),
+		r#type: ActiveValue::Set(model.r#type),
+		info: ActiveValue::Set(model.info.clone()),
+		grade: ActiveValue::Set(model.grade),
+		period: ActiveValue::Set(model.period),
+		double: ActiveValue::Set(model.double),
+		not_final: ActiveValue::Set(model.not_final),
 	};
 	
-	let res = grades::Entity::insert(insert).exec(db).await?;
+	let res = Entity::insert(insert.clone())
+			.exec(db).await
+			.into_report()
+			.attach_printable_lazy(|| "Error creating grade in DB")
+			.attach_printable_lazy(|| format!("insert:{:#?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}", insert, model.subject, model.r#type, model.info, model.grade, model.period, model.double, model.not_final))
+			.change_context(DBError)?;
+	
 	println!("created grade:{:?}", res);
 	
 	Ok(())
 }
 
-pub async fn edit_grade(db: &DatabaseConnection, id: i32, subject: i32, r#type: i32, info: String, grade: i32, period: i32, not_final: bool, double: bool) -> Result<(), DbErr> {
-	let mut egrade: grades::ActiveModel = grades::Entity::find_by_id(id).one(db).await?
-			.ok_or_else(|| DbErr::RecordNotFound("Grade not found".to_string()))?.into();
+pub async fn edit_grade(db: &DatabaseConnection, model: Model) -> Result<(), DBError> {
+	let edit: Option<Model> = Entity::find_by_id(model.id)
+			.one(db).await
+			.into_report()
+			.attach_printable_lazy(|| "Error finding grade in DB")
+			.attach_printable_lazy(|| format!("id:{:?}", model.id))
+			.change_context(DBError)?;
 	
-	egrade.subject = ActiveValue::Set(subject);
-	egrade.r#type = ActiveValue::Set(r#type);
-	egrade.info = ActiveValue::Set(info);
-	egrade.grade = ActiveValue::Set(grade);
-	egrade.period = ActiveValue::Set(period);
-	egrade.not_final = ActiveValue::Set(not_final);
-	egrade.double = ActiveValue::Set(double);
+	let mut edit: ActiveModel = edit
+			.ok_or_else(|| DbErr::RecordNotFound("Grade not found".to_string()))
+			.into_report()
+			.attach_printable_lazy(|| "Error finding grade in DB")
+			.attach_printable_lazy(|| format!("id:{:?}", model.id))
+			.change_context(DBError)?
+			.into();
 	
-	let res = egrade.update(db).await?;
+	edit.subject = ActiveValue::Set(model.subject);
+	edit.r#type = ActiveValue::Set(model.r#type);
+	edit.info = ActiveValue::Set(model.info.clone());
+	edit.grade = ActiveValue::Set(model.grade);
+	edit.period = ActiveValue::Set(model.period);
+	edit.not_final = ActiveValue::Set(model.not_final);
+	edit.double = ActiveValue::Set(model.double);
+	
+	let res = edit.clone()
+					  .update(db).await
+					  .into_report()
+					  .attach_printable_lazy(|| "Error editing grade in DB")
+					  .attach_printable_lazy(|| format!("edit:{:#?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}", edit, model.subject, model.r#type, model.info, model.grade, model.period, model.double, model.not_final))
+					  .change_context(DBError)?;
+	
 	println!("edited grade:{:?}", res);
 	
 	Ok(())
 }
 
-pub async fn delete_grade(db: &DatabaseConnection, id: i32) -> Result<(), DbErr> {
-	let res: DeleteResult = grades::Entity::delete_by_id(id)
-			.exec(db).await?;
+pub async fn delete_grade(db: &DatabaseConnection, delete: Delete) -> Result<(), DBError> {
+	let res: DeleteResult = Entity::delete_by_id(delete.id)
+			.exec(db).await
+			.into_report()
+			.attach_printable_lazy(|| "Error deleting grade in DB")
+			.attach_printable_lazy(|| format!("id:{:?}", delete.id))
+			.change_context(DBError)?;
+	
 	if res.rows_affected < 1 {
-		return Err(DbErr::RecordNotFound("Grade not found".to_string()));
+		Err(DbErr::RecordNotFound("Grade not found".to_string()))
+				.into_report()
+				.attach_printable_lazy(|| "Error deleting grade in DB")
+				.attach_printable_lazy(|| format!("id:{:?}", delete.id))
+				.change_context(DBError)?;
 	}
 	Ok(())
 }
