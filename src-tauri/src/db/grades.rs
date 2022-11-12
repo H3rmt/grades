@@ -18,9 +18,9 @@ pub async fn get_grades(db: &DatabaseConnection) -> Result<Vec<Model>, DBError> 
 }
 
 pub async fn create_grade(db: &DatabaseConnection, model: Model) -> Result<(), DBError> {
-	check_fk(db, subjects::Entity::find_by_id(model.subject), "Subject").await.attach_printable_lazy(|| format!("id: {}", model.subject))?;
-	check_fk(db, grade_types::Entity::find_by_id(model.r#type), "Type").await.attach_printable_lazy(|| format!("id: {}", model.subject))?;
-	check_fk(db, periods::Entity::find_by_id(model.period), "Period").await.attach_printable_lazy(|| format!("id: {}", model.subject))?;
+	check_fk(db, subjects::Entity::find_by_id(model.subject)).await.attach_printable_lazy(|| "Check if Subject exists failed").attach_printable_lazy(|| format!("subject id: {}", model.subject))?;
+	check_fk(db, grade_types::Entity::find_by_id(model.r#type)).await.attach_printable_lazy(|| "Check if Type exists failed").attach_printable_lazy(|| format!("type id: {}", model.r#type))?;
+	check_fk(db, periods::Entity::find_by_id(model.period)).await.attach_printable_lazy(|| "Check if Period exists failed").attach_printable_lazy(|| format!("period id: {}", model.period))?;
 	
 	let insert = ActiveModel {
 		id: ActiveValue::NotSet,
@@ -37,7 +37,7 @@ pub async fn create_grade(db: &DatabaseConnection, model: Model) -> Result<(), D
 			.exec(db).await
 			.into_report()
 			.attach_printable_lazy(|| "Error creating grade in DB")
-			.attach_printable_lazy(|| format!("insert:{:#?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}", insert, model.subject, model.r#type, model.info, model.grade, model.period, model.double, model.not_final))
+			.attach_printable_lazy(|| format!("insert:{:?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}", insert, model.subject, model.r#type, model.info, model.grade, model.period, model.double, model.not_final))
 			.change_context(DBError)?;
 	
 	println!("created grade:{:?}", res);
@@ -50,14 +50,14 @@ pub async fn edit_grade(db: &DatabaseConnection, model: Model) -> Result<(), DBE
 			.one(db).await
 			.into_report()
 			.attach_printable_lazy(|| "Error finding grade in DB")
-			.attach_printable_lazy(|| format!("id:{:?}", model.id))
+			.attach_printable_lazy(|| format!("id:{}", model.id))
 			.change_context(DBError)?;
 	
 	let mut edit: ActiveModel = edit
 			.ok_or_else(|| DbErr::RecordNotFound("Grade not found".to_string()))
 			.into_report()
 			.attach_printable_lazy(|| "Error finding grade in DB")
-			.attach_printable_lazy(|| format!("id:{:?}", model.id))
+			.attach_printable_lazy(|| format!("id:{}", model.id))
 			.change_context(DBError)?
 			.into();
 	
@@ -73,7 +73,7 @@ pub async fn edit_grade(db: &DatabaseConnection, model: Model) -> Result<(), DBE
 					  .update(db).await
 					  .into_report()
 					  .attach_printable_lazy(|| "Error editing grade in DB")
-					  .attach_printable_lazy(|| format!("edit:{:#?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}", edit, model.subject, model.r#type, model.info, model.grade, model.period, model.double, model.not_final))
+					  .attach_printable_lazy(|| format!("edit:{:?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}", edit, model.subject, model.r#type, model.info, model.grade, model.period, model.double, model.not_final))
 					  .change_context(DBError)?;
 	
 	println!("edited grade:{:?}", res);
@@ -86,14 +86,14 @@ pub async fn delete_grade(db: &DatabaseConnection, delete: Delete) -> Result<(),
 			.exec(db).await
 			.into_report()
 			.attach_printable_lazy(|| "Error deleting grade in DB")
-			.attach_printable_lazy(|| format!("id:{:?}", delete.id))
+			.attach_printable_lazy(|| format!("id:{}", delete.id))
 			.change_context(DBError)?;
 	
 	if res.rows_affected < 1 {
 		Err(DbErr::RecordNotFound("Grade not found".to_string()))
 				.into_report()
 				.attach_printable_lazy(|| "Error deleting grade in DB")
-				.attach_printable_lazy(|| format!("id:{:?}", delete.id))
+				.attach_printable_lazy(|| format!("id:{}", delete.id))
 				.change_context(DBError)?;
 	}
 	Ok(())

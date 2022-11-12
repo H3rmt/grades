@@ -1,3 +1,4 @@
+#![feature(result_option_inspect)]
 #![cfg_attr(
 all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
@@ -23,6 +24,7 @@ mod config;
 
 #[tokio::main]
 async fn main() {
+	env_logger::init();
 	tauri::async_runtime::set(tokio::runtime::Handle::current());
 	
 	let connection = db::database::establish_connection().await.expect("Error connecting to DB");
