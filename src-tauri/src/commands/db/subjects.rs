@@ -3,7 +3,7 @@ use sea_orm::DatabaseConnection;
 use entity::subjects;
 
 use crate::db::subjects::{create_subject, delete_subject, edit_subject, get_subjects};
-use crate::Delete;
+use crate::commands::other::Delete;
 
 #[tauri::command]
 pub async fn get_subjects_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {

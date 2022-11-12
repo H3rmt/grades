@@ -3,9 +3,6 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
-extern crate core;
-
-use serde::{Deserialize, Serialize};
 use tauri::Manager;
 use tokio::sync::Mutex;
 
@@ -23,11 +20,6 @@ mod commands;
 mod dirs;
 mod cache;
 mod config;
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-struct Delete {
-	id: i32,
-}
 
 #[tokio::main]
 async fn main() {

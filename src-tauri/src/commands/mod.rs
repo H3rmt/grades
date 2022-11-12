@@ -1,3 +1,5 @@
+mod other;
+
 pub mod db {
 	pub mod grades;
 	pub mod periods;

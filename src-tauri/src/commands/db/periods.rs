@@ -3,7 +3,7 @@ use sea_orm::DatabaseConnection;
 use entity::periods;
 
 use crate::db::periods::{create_period, delete_period, edit_period, get_periods};
-use crate::Delete;
+use crate::commands::other::Delete;
 
 #[tauri::command]
 pub async fn get_periods_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {

@@ -3,7 +3,7 @@ use sea_orm::DatabaseConnection;
 use entity::{grade_types, subjects};
 
 use crate::db::types::{create_type, delete_type, edit_type, get_types};
-use crate::Delete;
+use crate::commands::other::Delete;
 
 #[tauri::command]
 pub async fn get_types_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {

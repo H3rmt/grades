@@ -3,7 +3,7 @@ use sea_orm::DatabaseConnection;
 use entity::grades;
 
 use crate::db::grades::{create_grade, delete_grade, edit_grade, get_grades};
-use crate::Delete;
+use crate::commands::other::Delete;
 
 #[tauri::command]
 pub async fn get_grades_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {
