@@ -7,7 +7,7 @@ use crate::cache::types::Page;
 pub async fn store_page_in_cache_js(cache: tauri::State<'_, Mutex<Cache>>, json: String) -> Result<(), String> {
 	println!("json set page: {}", json);
 	
-	let json: Page = serde_json::from_str(&*json).map_err(|e| {
+	let json: Page = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json set page Err: {}", e);
 		format!("Error serialising SetPage from JSON: {}", e)
 	})?;

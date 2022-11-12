@@ -1,6 +1,5 @@
 use tokio::sync::Mutex;
 
-use crate::cache::types::Page;
 use crate::config::config::Config;
 use crate::config::types::{GradeModalDefaults, NoteRange};
 
@@ -43,7 +42,7 @@ pub async fn get_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>>
 pub async fn save_note_range_js(config: tauri::State<'_, Mutex<Config>>, json: String) -> Result<(), String> {
 	println!("json set note_range: {}", json);
 	
-	let json: NoteRange = serde_json::from_str(&*json).map_err(|e| {
+	let json: NoteRange = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json set note_range Err: {}", e);
 		format!("Error serialising SetNoteRange from JSON: {}", e)
 	})?;
@@ -65,7 +64,7 @@ pub async fn save_note_range_js(config: tauri::State<'_, Mutex<Config>>, json: S
 pub async fn save_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>>, json: String) -> Result<(), String> {
 	println!("json set grade_modal_defaults: {}", json);
 	
-	let json: GradeModalDefaults = serde_json::from_str(&*json).map_err(|e| {
+	let json: GradeModalDefaults = serde_json::from_str(&json).map_err(|e| {
 		eprintln!("json set grade_modal_defaults Err: {}", e);
 		format!("Error serialising SetGradeModalDefaults from JSON: {}", e)
 	})?;

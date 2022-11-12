@@ -19,13 +19,13 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 			"subject", {
 				sort: true,
 				format: subject => <Typography
-						sx={{color: subjects.find(sub => sub.id === subject)?.color || 'white'}}>{subjects.find(sub => sub.id === subject)?.name || '--notfound--'}</Typography>,
+						sx={{color: subjects.find(sub => sub.id === subject)?.color || 'white'}}>{subjects.find(sub => sub.id === subject)?.name || (() => {console.error('subject:',subject);return '--notfound--'})() }</Typography>,
 			}
 		], [
 			"type", {
 				sort: true,
 				format: type => <Typography
-						sx={{color: types.find(typ => typ.id === type)?.color || 'white'}}>{subjects.find(typ => typ.id === type)?.name || '--notfound--'}</Typography>,
+						sx={{color: types.find(typ => typ.id === type)?.color || 'white'}}>{types.find(typ => typ.id === type)?.name || (() => {console.error('type:',type);return '--notfound--'})()}</Typography>,
 
 			}
 		], [

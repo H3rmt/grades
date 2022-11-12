@@ -50,6 +50,8 @@ async fn main() {
 					window.open_devtools();
 					window.close_devtools();
 				}
+				
+				println!("version: {}", app.config().package.version.as_ref().unwrap());
 				Ok(())
 			})
 			.manage(connection)
