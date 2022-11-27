@@ -1,14 +1,15 @@
 [package]
 name = "grades"
-version = "0.1.0"
+version = "0.0.1" # irrelevant (tauri.conf.json will override)
 description = "tauri app to manage grades in school"
 authors = ["H3rmt"]
+edition = "2021"
 license = "MIT"
 repository = "https://github.com/H3rmt/grades/"
-edition = "2021"
 
 [build-dependencies]
 tauri-build = { version = "1.2.0", features = [] }
+built = { version = "0.5.1", features = ["git2"] }
 
 [workspace]
 members = [".", "entity", "migrations"]
@@ -29,3 +30,7 @@ migration = { path = "migrations" }
 [features]
 default = ["custom-protocol"]
 custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+strip = "debuginfo"
+lto = true

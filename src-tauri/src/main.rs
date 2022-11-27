@@ -3,6 +3,7 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
+use serde::{Deserialize, Serialize};
 use tauri::Manager;
 use tokio::sync::Mutex;
 
@@ -66,4 +67,9 @@ async fn main() {
 pub mod built_info {
 	// The file has been placed there by the build script.
 	include!(concat!(env!("OUT_DIR"), "/built.rs"));
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct Delete {
+	id: i32,
 }
