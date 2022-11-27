@@ -1,4 +1,3 @@
-#![feature(result_option_inspect)]
 #![cfg_attr(
 all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
