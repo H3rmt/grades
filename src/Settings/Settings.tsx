@@ -405,9 +405,6 @@ function Settings(props: Props) {
 												profile: {info.profile}
 											</Typography>
 											<Typography>
-												commit: {info.commit}
-											</Typography>
-											<Typography>
 												commit-hash: {info.commit_hash}
 											</Typography>
 										</Stack>

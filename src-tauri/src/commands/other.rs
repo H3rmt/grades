@@ -16,8 +16,6 @@ pub async fn get_info_js(app_handle: AppHandle<Wry>) -> Result<String, String> {
 		authors: built_info::PKG_AUTHORS.to_string(),
 		target: built_info::TARGET.to_string(),
 		profile: built_info::PROFILE.to_string(),
-		rustc_version: built_info::RUSTC_VERSION.to_string(),
-		commit: built_info::GIT_VERSION.unwrap_or_default().to_string().split('-').last().unwrap_or_default().to_string(),
 		commit_hash: built_info::GIT_COMMIT_HASH.unwrap_or_default().to_string(),
 	};
 	
@@ -39,7 +37,5 @@ struct Info {
 	authors: String,
 	target: String,
 	profile: String,
-	rustc_version: String,
-	commit: String,
 	commit_hash: String,
 }

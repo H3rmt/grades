@@ -14,7 +14,7 @@ use commands::db::grades::{create_grade_js, delete_grade_js, edit_grade_js, get_
 use commands::db::periods::{create_period_js, delete_period_js, edit_period_js, get_periods_js};
 use commands::db::subjects::{create_subject_js, delete_subject_js, edit_subject_js, get_subjects_js};
 use commands::db::types::{create_type_js, delete_type_js, edit_type_js, get_types_js};
-use commands::other::{get_info_js};
+use commands::other::get_info_js;
 use migrations::{Migrator, MigratorTrait};
 
 mod db;
@@ -25,13 +25,15 @@ mod config;
 
 #[tokio::main]
 async fn main() {
+	println!("target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}", built_info::TARGET.to_string(), built_info::HOST.to_string(), built_info::PROFILE.to_string(), built_info::GIT_COMMIT_HASH.unwrap_or_default().to_string(), built_info::CFG_OS.to_string());
+	
 	env_logger::init();
 	tauri::async_runtime::set(tokio::runtime::Handle::current());
 	
 	let connection = db::database::establish_connection().await.expect("Error connecting to DB");
 	Migrator::up(&connection, None).await.expect("Error running migrations");
 	
-	// dont panic on cache missing
+	// TODO dont panic on cache missing
 	let cache = Mutex::new(cache::create().expect("Error connecting to cache"));
 	
 	// dont panic on config missing
