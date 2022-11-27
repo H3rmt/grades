@@ -3,9 +3,6 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
-extern crate core;
-
-use serde::{Deserialize, Serialize};
 use tauri::Manager;
 use tokio::sync::Mutex;
 
@@ -25,13 +22,9 @@ mod dirs;
 mod cache;
 mod config;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-struct Delete {
-	id: i32,
-}
-
 #[tokio::main]
 async fn main() {
+	env_logger::init();
 	tauri::async_runtime::set(tokio::runtime::Handle::current());
 	
 	let connection = db::database::establish_connection().await.expect("Error connecting to DB");
@@ -44,21 +37,21 @@ async fn main() {
 	let config = Mutex::new(config::create().expect("Error connecting to config"));
 	
 	tauri::Builder::default()
-		.setup(|app| {
-			#[cfg(debug_assertions)] // only include this code on debug builds
-			{
-				let window = app.get_window("main").unwrap();
-				window.open_devtools();
-				window.close_devtools();
-			}
-			
-			println!("version: {}", app.config().package.version.as_ref().unwrap());
-			Ok(())
-		})
-		.manage(connection)
-		.manage(cache)
-		.manage(config)
-		.invoke_handler(tauri::generate_handler![
+			.setup(|app| {
+				#[cfg(debug_assertions)] // only include this code on debug builds
+				{
+					let window = app.get_window("main").unwrap();
+					window.open_devtools();
+					window.close_devtools();
+				}
+				
+				println!("version: {}", app.config().package.version.as_ref().unwrap());
+				Ok(())
+			})
+			.manage(connection)
+			.manage(cache)
+			.manage(config)
+			.invoke_handler(tauri::generate_handler![
 				get_grades_js, create_grade_js, edit_grade_js, delete_grade_js,
 				get_periods_js, create_period_js, edit_period_js, delete_period_js,
 				get_types_js, create_type_js, edit_type_js, delete_type_js,
@@ -66,8 +59,8 @@ async fn main() {
 				store_page_in_cache_js,get_page_from_cache_js, get_info_js,
 				get_note_rage_js,get_grade_modal_defaults_js, save_note_range_js, save_grade_modal_defaults_js
         ])
-		.run(tauri::generate_context!())
-		.expect("error while running tauri application");
+			.run(tauri::generate_context!())
+			.expect("error while running tauri application");
 }
 
 pub mod built_info {
