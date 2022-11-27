@@ -1,5 +1,6 @@
 use tauri::{AppHandle, Wry};
 use serde::{Deserialize, Serialize};
+use crate::built_info;
 use ts_rs::TS;
 
 #[tauri::command]
@@ -10,6 +11,12 @@ pub async fn get_info_js(app_handle: AppHandle<Wry>) -> Result<String, String> {
 	let data = Info {
 		name,
 		version,
+		authors: built_info::PKG_AUTHORS.to_string(),
+		target: built_info::TARGET.to_string(),
+		profile: built_info::PROFILE.to_string(),
+		rustc_version: built_info::RUSTC_VERSION.to_string(),
+		commit: built_info::GIT_VERSION.unwrap_or_default().to_string().split('-').last().unwrap_or_default().to_string(),
+		commit_hash: built_info::GIT_COMMIT_HASH.unwrap_or_default().to_string(),
 	};
 	
 	let data = serde_json::to_string(&data).map_err(|e| {
@@ -27,4 +34,10 @@ pub async fn get_info_js(app_handle: AppHandle<Wry>) -> Result<String, String> {
 struct Info {
 	version: String,
 	name: String,
+	authors: String,
+	target: String,
+	profile: String,
+	rustc_version: String,
+	commit: String,
+	commit_hash: String,
 }

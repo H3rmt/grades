@@ -6,7 +6,7 @@ import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
 import {loadPeriods, loadSubjects, loadTypes} from "../ts/load";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
-import {Period, Subject, Type, Info} from "../entity";
+import {Info, Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {createPeriod, createSubject, createType} from "./create";
 import {createData} from "../components/table/util";
@@ -16,7 +16,7 @@ import {loadDefaults, loadNoteRange} from "../components/NewGradeModal/loadDefau
 import {GradeModalDefaults, NoteRange} from "../entity/config";
 import SaveButton from "@mui/icons-material/Save";
 import UndoIcon from "@mui/icons-material/Undo";
-import {saveNoteRange, saveDefaults} from "./save";
+import {saveDefaults, saveNoteRange} from "./save";
 import {loadInfo} from "./load";
 
 type Props = {
@@ -387,13 +387,28 @@ function Settings(props: Props) {
 					{info !== undefined &&
 							<Grid item xs={12} sm={6} md={6} xl={6}>
 								<SettingsBox title="Info">
-									<Paper sx={{padding: 1}} variant="outlined">
+									<Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">
 										<Stack spacing={1} direction="column">
 											<Typography>
-												{info.name}
+												name: {info.name}
 											</Typography>
 											<Typography>
-												v{info.version}
+												version: {info.version}
+											</Typography>
+											<Typography>
+												authors: {info.authors}
+											</Typography>
+											<Typography>
+												target: {info.target}
+											</Typography>
+											<Typography>
+												profile: {info.profile}
+											</Typography>
+											<Typography>
+												commit: {info.commit}
+											</Typography>
+											<Typography>
+												commit-hash: {info.commit_hash}
 											</Typography>
 										</Stack>
 									</Paper>

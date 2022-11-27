@@ -1,11 +1,10 @@
 [package]
-name = "app"
+name = "grades"
 version = "0.1.0"
-description = "A Tauri App"
+description = "tauri app to manage grades in school"
 authors = ["H3rmt"]
-license = ""
-repository = ""
-default-run = "app"
+license = "MIT"
+repository = "https://github.com/H3rmt/grades/"
 edition = "2021"
 
 [build-dependencies]
