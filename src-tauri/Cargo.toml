@@ -4,22 +4,20 @@ version = "0.0.1"
 authors = ["H3rmt"]
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [build-dependencies]
-tauri-build = { version = "1.0", features = [] }
+tauri-build = { version = "1.2.0", features = [] }
 
 [workspace]
 members = [".", "entity", "migrations"]
 
 [dependencies]
-serde_json = "1.0.86"
-serde = { version = "1.0.145", features = ["derive"] }
-tauri = { version = "1.1.1", features = ["fs-write-file", "path-all"] }
+serde_json = "1.0.87"
+serde = { version = "1.0.147", features = ["derive"] }
+tauri = { version = "1.2.0", features = ["fs-write-file", "path-all", "updater"] }
 dirs = "4.0.0"
 tokio = { version = "1.21.2", features = ["full"] }
-sea-orm = { version = "0.10.1", features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"] }
-ts-rs = "6.2.0"
+sea-orm = { version = "0.10.2", features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"] }
+ts-rs = "6.2.1"
 toml = "0.5.9"
 error-stack = "0.2.4"
 log = "0.4.17"
@@ -30,9 +28,5 @@ entity = { path = "entity" }
 migration = { path = "migrations" }
 
 [features]
-# by default Tauri runs in production mode
-# when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
 default = ["custom-protocol"]
-# this feature is used used for production builds where `devPath` points to the filesystem
-# DO NOT remove this
 custom-protocol = ["tauri/custom-protocol"]

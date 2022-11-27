@@ -10,7 +10,7 @@ const CACHE_NAME: &str = "cache.json";
 
 fn create_data_folder() -> Result<PathBuf, String> {
 	let dir_option = dirs::data_dir();
-	let dir = dir_option.ok_or("Unable to get data directory".to_string())?;
+	let dir = dir_option.ok_or_else(|| "Unable to get data directory".to_string())?;
 	let app_dir = dir.join(APPLICATION_NAME);
 	std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
 	Ok(app_dir)
@@ -27,7 +27,7 @@ pub fn create_data_db() -> Result<PathBuf, String> {
 
 fn create_conf_folder() -> Result<PathBuf, String> {
 	let dir_option = dirs::preference_dir();
-	let dir = dir_option.ok_or("Unable to get conf directory".to_string())?;
+	let dir = dir_option.ok_or_else(|| "Unable to get conf directory".to_string())?;
 	let app_dir = dir.join(APPLICATION_NAME);
 	std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
 	Ok(app_dir)
@@ -44,7 +44,7 @@ pub fn create_conf_toml() -> Result<PathBuf, String> {
 
 fn create_cache_folder() -> Result<PathBuf, String> {
 	let dir_option = dirs::cache_dir();
-	let dir = dir_option.ok_or("Unable to get cache directory".to_string())?;
+	let dir = dir_option.ok_or_else(|| "Unable to get cache directory".to_string())?;
 	let app_dir = dir.join(APPLICATION_NAME);
 	std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
 	Ok(app_dir)
