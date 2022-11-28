@@ -3,16 +3,14 @@ extern crate dirs;
 use std::fmt;
 use std::path::PathBuf;
 
-use error_stack::{IntoReport, ResultExt};
-use serde::{Deserialize, Serialize};
-use serde::de::Unexpected::Str;
+use error_stack::{IntoReport, Result, ResultExt};
 
 const APPLICATION_NAME: &str = "grades";
 const DB_NAME: &str = "db.db";
 const CONF_NAME: &str = "conf.toml";
 const CACHE_NAME: &str = "cache.json";
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug)]
 struct StrError(String);
 
 impl fmt::Display for StrError {
@@ -23,7 +21,7 @@ impl fmt::Display for StrError {
 
 impl std::error::Error for StrError {}
 
-fn create_data_folder() -> error_stack::Result<PathBuf, DirError> {
+fn create_data_folder() -> Result<PathBuf, DirError> {
 	let dir = dirs::data_dir()
 			.ok_or(StrError("Could not find data directory".to_string()))
 			.into_report()
@@ -38,7 +36,7 @@ fn create_data_folder() -> error_stack::Result<PathBuf, DirError> {
 	Ok(app_dir)
 }
 
-pub fn create_data_db() -> error_stack::Result<PathBuf, DirError> {
+pub fn create_data_db() -> Result<PathBuf, DirError> {
 	let db_path = create_data_folder()?.join(DB_NAME);
 	if !db_path.exists() {
 		std::fs::write(db_path.as_path(), b"")
@@ -51,41 +49,61 @@ pub fn create_data_db() -> error_stack::Result<PathBuf, DirError> {
 	Ok(db_path)
 }
 
-fn create_conf_folder() -> Result<PathBuf, String> {
-	let dir_option = dirs::preference_dir();
-	let dir = dir_option.ok_or_else(|| "Unable to get conf directory".to_string())?;
+fn create_conf_folder() -> Result<PathBuf, DirError> {
+	let dir = dirs::preference_dir()
+			.ok_or(StrError("Could not find config directory".to_string()))
+			.into_report()
+			.attach_printable("error in create_conf_folder")
+			.change_context(DirError)?;
 	let app_dir = dir.join(APPLICATION_NAME);
-	std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
+	std::fs::create_dir_all(&app_dir)
+			.into_report()
+			.attach_printable("error creating folders for create_data_folder")
+			.attach_printable_lazy(|| format!("app_dir: {:?}", app_dir))
+			.change_context(DirError)?;
 	Ok(app_dir)
 }
 
-pub fn create_conf_toml() -> Result<PathBuf, String> {
+pub fn create_conf_toml() -> Result<PathBuf, DirError> {
 	let conf_path = create_conf_folder()?.join(CONF_NAME);
 	if !conf_path.exists() {
-		std::fs::write(conf_path.as_path(), b"{}").map_err(|e| e.to_string())?;
-		println!("create conf toml: {:?}", conf_path.as_path());
+		std::fs::write(conf_path.as_path(), b"")
+				.into_report()
+				.attach_printable("error creating conf file")
+				.attach_printable(format!("path: {:?}", conf_path))
+				.change_context(DirError)?;
 	}
 	Ok(conf_path)
 }
 
-fn create_cache_folder() -> Result<PathBuf, String> {
-	let dir_option = dirs::cache_dir();
-	let dir = dir_option.ok_or_else(|| "Unable to get cache directory".to_string())?;
+fn create_cache_folder() -> Result<PathBuf, DirError> {
+	let dir = dirs::cache_dir()
+			.ok_or(StrError("Could not find cache directory".to_string()))
+			.into_report()
+			.attach_printable("error in create_cache_folder")
+			.change_context(DirError)?;
 	let app_dir = dir.join(APPLICATION_NAME);
-	std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
+	std::fs::create_dir_all(&app_dir)
+			.into_report()
+			.attach_printable("error creating folders for create_cache_folder")
+			.attach_printable_lazy(|| format!("app_dir: {:?}", app_dir))
+			.change_context(DirError)?;
 	Ok(app_dir)
 }
 
-pub fn create_cache_json() -> Result<PathBuf, String> {
+pub fn create_cache_json() -> Result<PathBuf, DirError> {
 	let cache_path = create_cache_folder()?.join(CACHE_NAME);
 	if !cache_path.exists() {
-		std::fs::write(cache_path.as_path(), b"{}").map_err(|e| e.to_string())?;
-		println!("create cache json: {:?}", cache_path.as_path());
+		std::fs::write(cache_path.as_path(), b"{}")
+				.into_report()
+				.attach_printable("error creating cache file")
+				.attach_printable(format!("path: {:?}", cache_path))
+				.change_context(DirError)?;
 	}
 	Ok(cache_path)
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct DirError;
 
 impl fmt::Display for DirError {
