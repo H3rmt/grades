@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-#[derive(TS, Deserialize, Debug, Serialize)]
+#[derive(TS, Deserialize, Serialize, Debug)]
 #[ts(export, export_to = "../src/entity/config/noteRange.ts")]
 pub struct NoteRange {
 	pub from: i8,
@@ -17,7 +17,7 @@ impl Default for NoteRange {
 	}
 }
 
-#[derive(TS, Deserialize, Debug, Serialize)]
+#[derive(TS, Deserialize, Serialize, Debug)]
 #[ts(export, export_to = "../src/entity/config/gradeModalDefaults.ts")]
 pub struct GradeModalDefaults {
 	pub grade_default: i8,

@@ -1,11 +1,14 @@
+use error_stack::{Result, ResultExt};
+
+use crate::config::config::ConfigError;
+
 pub mod types;
 pub mod config;
 
-pub fn create() -> Result<config::Config, String> {
-	let db = crate::dirs::create_conf_toml()?;
-	let path = db.as_path().to_str().unwrap();
+pub fn create() -> Result<config::Config, ConfigError> {
+	let configPath = crate::dirs::create_conf_toml()
+			.attach_printable("error getting config json path")
+			.change_context(ConfigError)?;
 	
-	let mut config = config::Config::create(path).map_err(|e| e.to_string())?;
-	config.save().expect("Error saving config back after loading");
-	Ok(config)
+	Ok(config::Config::create(configPath))
 }

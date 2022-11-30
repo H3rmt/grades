@@ -1,57 +1,78 @@
-use std::error;
+use std::{error, fmt};
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
+use std::path::PathBuf;
 
+use error_stack::{IntoReport, Result, ResultExt};
 use serde::{Deserialize, Serialize};
 
 use crate::config::types::{GradeModalDefaults, NoteRange};
 
-#[derive(Deserialize, Debug, Serialize, Default)]
+#[derive(Deserialize, Serialize, Default, Debug)]
 pub struct Data {
 	pub note_range: NoteRange,
 	pub grade_modal_defaults: GradeModalDefaults,
 }
 
-#[derive(Debug)]
+#[derive(Default, Debug)]
 pub struct Config {
-	path: String,
+	path: PathBuf,
 	data: Data,
 }
 
+#[derive(Debug)]
+pub struct ConfigError;
+
+impl error::Error for ConfigError {}
+
+impl fmt::Display for ConfigError {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		write!(f, "ConfigError")
+	}
+}
+
+
 impl Config {
-	pub fn create(path: &str) -> Result<Self, Box<dyn error::Error>> {
+	pub fn create(path: PathBuf) -> Self {
 		let mut config = Config {
-			path: path.to_string(),
-			data: Data::default(),
+			path,
+			data: Default::default(),
 		};
-		match config.load() {
-			Ok(_) => {}
-			Err(e) => {
-				eprintln!("error loading config: {}", e);
-			}
-		};
+		config.load().unwrap_or_else(|err| {
+			eprintln!("error loading config: {}", err);
+			// dont exit
+		});
 		println!("config-data: {:?}", config.data);
-		Ok(config)
+		config
 	}
 	
-	fn load(&mut self) -> Result<(), Box<dyn error::Error>> {
-		let mut file = OpenOptions::new().read(true).open(self.path.as_str())?;
+	fn load(&mut self) -> Result<(), ConfigError> {
+		let mut file = OpenOptions::new().read(true).open(self.path.as_path())
+		                                 .into_report()
+		                                 .attach_printable("error opening config file in read mode")
+		                                 .attach_printable(format!("path: {:?}", self.path.as_path()))
+		                                 .change_context(ConfigError)?;
+		
 		let mut buffer = String::new();
 		
-		file.read_to_string(&mut buffer)?;
+		file.read_to_string(&mut buffer)
+		    .into_report()
+		    .attach_printable("error reading config file")
+		    .change_context(ConfigError)?;
 		
-		let data: Data = toml::from_str(buffer.as_str())?;
+		let data: Data = toml::from_str(buffer.as_str())
+				.into_report()
+				.attach_printable("error parsing config file from json")
+				.change_context(ConfigError)?;
+		
 		self.data = data;
 		Ok(())
 	}
 	
-	fn get_mut(&mut self) -> &mut Data {
-		&mut self.data
-	}
-	
-	pub fn set<F: FnOnce(&mut Data)>(&mut self, f: F) -> Result<(), Box<dyn error::Error>> {
-		f(self.get_mut());
-		self.save()?;
+	pub fn set<F: FnOnce(&mut Data)>(&mut self, f: F) -> Result<(), ConfigError> {
+		f(&mut self.data);
+		self.save()
+		    .attach_printable("error during saving after changes to config")?;
 		Ok(())
 	}
 	
@@ -59,9 +80,22 @@ impl Config {
 		&self.data
 	}
 	
-	pub fn save(&mut self) -> Result<(), Box<dyn error::Error>> {
-		let mut file = OpenOptions::new().write(true).append(false).open(self.path.as_str())?;
-		let _ = file.write(toml::to_string(&self.data)?.as_bytes());
+	pub fn save(&mut self) -> Result<(), ConfigError> {
+		let mut file = OpenOptions::new().write(true).append(false).open(self.path.as_path())
+		                                 .into_report()
+		                                 .attach_printable("error opening config file in write mode")
+		                                 .attach_printable(format!("path: {:?}", self.path.as_path()))
+		                                 .change_context(ConfigError)?;
+		
+		let data = serde_json::to_string(&self.data)
+				.into_report()
+				.attach_printable("error parsing config data to json")
+				.change_context(ConfigError)?;
+		
+		file.write_all(data.as_bytes())
+		    .into_report()
+		    .attach_printable("error parsing config data to json")
+		    .change_context(ConfigError)?;
 		Ok(())
 	}
 }
