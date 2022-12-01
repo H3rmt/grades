@@ -1,100 +1,150 @@
 use error_stack::{IntoReport, Result, ResultExt};
-use sea_orm::{ActiveValue, DatabaseConnection, DbErr, DeleteResult};
+use sea_orm::{ActiveValue, DatabaseConnection, DbErr, DeleteResult, InsertResult};
 use sea_orm::ActiveModelTrait;
 use sea_orm::EntityTrait;
+use tokio::sync::Mutex;
 
-use entity::grades::{ActiveModel, Entity, Model};
-use entity::{grade_types, periods, subjects};
+use entity::prelude::{*};
 
+use crate::config::config::Config;
 use crate::db::{check_fk, DBError};
-use crate::commands::other::{Delete};
+use crate::utils::StrError;
 
-pub async fn get_grades(db: &DatabaseConnection) -> Result<Vec<Model>, DBError> {
-	Entity::find()
+pub async fn get_grades(db: &DatabaseConnection) -> Result<Vec<Grade>, DBError> {
+	Grades::find()
 			.all(db).await
+//	Err(StrError("get_grades not implemented".to_string()))
 			.into_report()
-			.attach_printable_lazy(|| "Error loading grades from DB")
+			.attach_printable("Error loading grades from DB")
 			.change_context(DBError)
 }
 
-pub async fn create_grade(db: &DatabaseConnection, model: Model) -> Result<(), DBError> {
-	check_fk(db, subjects::Entity::find_by_id(model.subject)).await.attach_printable_lazy(|| "Check if Subject exists failed").attach_printable_lazy(|| format!("subject id: {}", model.subject))?;
-	check_fk(db, grade_types::Entity::find_by_id(model.r#type)).await.attach_printable_lazy(|| "Check if Type exists failed").attach_printable_lazy(|| format!("type id: {}", model.r#type))?;
-	check_fk(db, periods::Entity::find_by_id(model.period)).await.attach_printable_lazy(|| "Check if Period exists failed").attach_printable_lazy(|| format!("period id: {}", model.period))?;
+pub async fn create_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: Grade) -> Result<i32, DBError> {
+	check_fk(db, Subjects::find_by_id(grade.subject), "subject".to_string())
+			.await
+			.attach_printable("Check if subject exists failed")
+			.attach_printable(format!("subject id: {}", grade.subject))?;
+	check_fk(db, GradeTypes::find_by_id(grade.r#type), "type".to_string())
+			.await
+			.attach_printable("Check if type exists failed")
+			.attach_printable(format!("type id: {}", grade.r#type))?;
+	check_fk(db, Periods::find_by_id(grade.period), "period".to_string())
+			.await
+			.attach_printable("Check if period exists failed")
+			.attach_printable(format!("period id: {}", grade.period))?;
+	{
+		let mutex = config.lock().await;
+		let note_range = &mutex.get().note_range;
+		
+		if grade.grade < note_range.from || grade.grade > note_range.to {
+			return Err(StrError("Grade out of range".to_string()))
+					.into_report()
+					.attach_printable(format!("grade: {}", grade.grade))
+					.attach_printable(format!("range: {}", note_range))
+					.change_context(DBError);
+		}
+	}
 	
-	let insert = ActiveModel {
+	let insert = ActiveGrade {
 		id: ActiveValue::NotSet,
-		subject: ActiveValue::Set(model.subject),
-		r#type: ActiveValue::Set(model.r#type),
-		info: ActiveValue::Set(model.info.clone()),
-		grade: ActiveValue::Set(model.grade),
-		period: ActiveValue::Set(model.period),
-		double: ActiveValue::Set(model.double),
-		not_final: ActiveValue::Set(model.not_final),
+		subject: ActiveValue::Set(grade.subject),
+		r#type: ActiveValue::Set(grade.r#type),
+		info: ActiveValue::Set(grade.info.clone()),
+		grade: ActiveValue::Set(grade.grade),
+		period: ActiveValue::Set(grade.period),
+		double: ActiveValue::Set(grade.double),
+		not_final: ActiveValue::Set(grade.not_final),
 	};
 	
-	let res = Entity::insert(insert.clone())
+	let res: InsertResult<ActiveGrade> = Grades::insert(insert.clone())
 			.exec(db).await
 			.into_report()
-			.attach_printable_lazy(|| "Error creating grade in DB")
-			.attach_printable_lazy(|| format!("insert:{:?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}", insert, model.subject, model.r#type, model.info, model.grade, model.period, model.double, model.not_final))
+			.attach_printable("Error creating grade in DB")
+			.attach_printable(format!("insert:{:?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}",
+			                          insert, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.double, grade.not_final))
 			.change_context(DBError)?;
 	
-	println!("created grade:{:?}", res);
-	
-	Ok(())
+	log::info!("created grade, id:{}", res.last_insert_id);
+	Ok(res.last_insert_id)
 }
 
-pub async fn edit_grade(db: &DatabaseConnection, model: Model) -> Result<(), DBError> {
-	let edit: Option<Model> = Entity::find_by_id(model.id)
+pub async fn edit_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: Grade) -> Result<Grade, DBError> {
+	let edit: Option<Grade> = Grades::find_by_id(grade.id)
 			.one(db).await
 			.into_report()
-			.attach_printable_lazy(|| "Error finding grade in DB")
-			.attach_printable_lazy(|| format!("id:{}", model.id))
+			.attach_printable("Error finding grade in DB")
+			.attach_printable(format!("id:{}", grade.id))
 			.change_context(DBError)?;
 	
-	let mut edit: ActiveModel = edit
+	let mut edit: ActiveGrade = edit
 			.ok_or_else(|| DbErr::RecordNotFound("Grade not found".to_string()))
 			.into_report()
-			.attach_printable_lazy(|| "Error finding grade in DB")
-			.attach_printable_lazy(|| format!("id:{}", model.id))
+			.attach_printable("Error finding grade in DB")
+			.attach_printable(format!("id:{}", grade.id))
 			.change_context(DBError)?
 			.into();
 	
-	edit.subject = ActiveValue::Set(model.subject);
-	edit.r#type = ActiveValue::Set(model.r#type);
-	edit.info = ActiveValue::Set(model.info.clone());
-	edit.grade = ActiveValue::Set(model.grade);
-	edit.period = ActiveValue::Set(model.period);
-	edit.not_final = ActiveValue::Set(model.not_final);
-	edit.double = ActiveValue::Set(model.double);
+	check_fk(db, Subjects::find_by_id(grade.subject), "subject".to_string())
+			.await
+			.attach_printable("Check if subject exists failed")
+			.attach_printable(format!("subject id: {}", grade.subject))?;
+	check_fk(db, GradeTypes::find_by_id(grade.r#type), "type".to_string())
+			.await
+			.attach_printable("Check if type exists failed")
+			.attach_printable(format!("type id: {}", grade.r#type))?;
+	check_fk(db, Periods::find_by_id(grade.period), "period".to_string())
+			.await
+			.attach_printable("Check if period exists failed")
+			.attach_printable(format!("period id: {}", grade.period))?;
+	{
+		let mutex = config.lock().await;
+		let note_range = &mutex.get().note_range;
+		
+		if grade.grade < note_range.from || grade.grade > note_range.to {
+			return Err(StrError("Grade out of range".to_string()))
+					.into_report()
+					.attach_printable(format!("grade: {}", grade.grade))
+					.attach_printable(format!("range: {}", note_range))
+					.change_context(DBError);
+		}
+	}
 	
-	let res = edit.clone()
-					  .update(db).await
-					  .into_report()
-					  .attach_printable_lazy(|| "Error editing grade in DB")
-					  .attach_printable_lazy(|| format!("edit:{:?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}", edit, model.subject, model.r#type, model.info, model.grade, model.period, model.double, model.not_final))
-					  .change_context(DBError)?;
+	edit.subject = ActiveValue::Set(grade.subject);
+	edit.r#type = ActiveValue::Set(grade.r#type);
+	edit.info = ActiveValue::Set(grade.info.clone());
+	edit.grade = ActiveValue::Set(grade.grade);
+	edit.period = ActiveValue::Set(grade.period);
+	edit.not_final = ActiveValue::Set(grade.not_final);
+	edit.double = ActiveValue::Set(grade.double);
 	
-	println!("edited grade:{:?}", res);
+	let res: Grade = edit.clone()
+	              .update(db).await
+	              .into_report()
+	              .attach_printable("Error editing grade in DB")
+	              .attach_printable(format!("edit:{:?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}",
+	                                        edit, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.double, grade.not_final))
+	              .change_context(DBError)?;
 	
-	Ok(())
+	log::info!("edited grade:{:?}", res);
+	Ok(res)
 }
 
-pub async fn delete_grade(db: &DatabaseConnection, delete: Delete) -> Result<(), DBError> {
-	let res: DeleteResult = Entity::delete_by_id(delete.id)
+pub async fn delete_grade(db: &DatabaseConnection, id: i32) -> Result<(), DBError> {
+	let res: DeleteResult = Grades::delete_by_id(id)
 			.exec(db).await
 			.into_report()
-			.attach_printable_lazy(|| "Error deleting grade in DB")
-			.attach_printable_lazy(|| format!("id:{}", delete.id))
+			.attach_printable("Error deleting grade in DB")
+			.attach_printable(format!("id:{}", id))
 			.change_context(DBError)?;
 	
 	if res.rows_affected < 1 {
 		Err(DbErr::RecordNotFound("Grade not found".to_string()))
 				.into_report()
-				.attach_printable_lazy(|| "Error deleting grade in DB")
-				.attach_printable_lazy(|| format!("id:{}", delete.id))
+				.attach_printable("Error deleting grade in DB")
+				.attach_printable(format!("id:{}", id))
 				.change_context(DBError)?;
 	}
+	
+	log::info!("deleted grade, id:{:?}", id);
 	Ok(())
 }
