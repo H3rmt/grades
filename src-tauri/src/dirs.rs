@@ -5,21 +5,13 @@ use std::path::PathBuf;
 
 use error_stack::{IntoReport, Result, ResultExt};
 
+use crate::utils::StrError;
+
 const APPLICATION_NAME: &str = "grades";
 const DB_NAME: &str = "db.db";
 const CONF_NAME: &str = "conf.toml";
 const CACHE_NAME: &str = "cache.json";
 
-#[derive(Debug)]
-struct StrError(String);
-
-impl fmt::Display for StrError {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		write!(f, "{}", self.0)
-	}
-}
-
-impl std::error::Error for StrError {}
 
 fn create_data_folder() -> Result<PathBuf, DirError> {
 	let dir = dirs::data_dir()
