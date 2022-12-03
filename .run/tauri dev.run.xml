@@ -8,6 +8,7 @@
     <node-interpreter value="project" />
     <envs>
       <env name="RUST_BACKTRACE" value="0" />
+      <env name="RUST_LOG" value="grades=debug" />
     </envs>
     <method v="2" />
   </configuration>

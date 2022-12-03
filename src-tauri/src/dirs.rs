@@ -15,7 +15,7 @@ const CACHE_NAME: &str = "cache.json";
 
 fn create_data_folder() -> Result<PathBuf, DirError> {
 	let dir = dirs::data_dir()
-			.ok_or(StrError("Could not find data directory".to_string()))
+			.ok_or_else(|| StrError("Could not find data directory".to_string()))
 			.into_report()
 			.attach_printable("error in create_data_folder")
 			.change_context(DirError)?;
@@ -23,7 +23,7 @@ fn create_data_folder() -> Result<PathBuf, DirError> {
 	std::fs::create_dir_all(&app_dir)
 			.into_report()
 			.attach_printable("error creating folders for create_data_folder")
-			.attach_printable_lazy(|| format!("app_dir: {:?}", app_dir))
+			.attach_printable(format!("app_dir: {:?}", app_dir))
 			.change_context(DirError)?;
 	Ok(app_dir)
 }
@@ -43,7 +43,7 @@ pub fn create_data_db() -> Result<PathBuf, DirError> {
 
 fn create_conf_folder() -> Result<PathBuf, DirError> {
 	let dir = dirs::preference_dir()
-			.ok_or(StrError("Could not find config directory".to_string()))
+			.ok_or_else(|| StrError("Could not find config directory".to_string()))
 			.into_report()
 			.attach_printable("error in create_conf_folder")
 			.change_context(DirError)?;
@@ -51,7 +51,7 @@ fn create_conf_folder() -> Result<PathBuf, DirError> {
 	std::fs::create_dir_all(&app_dir)
 			.into_report()
 			.attach_printable("error creating folders for create_data_folder")
-			.attach_printable_lazy(|| format!("app_dir: {:?}", app_dir))
+			.attach_printable(format!("app_dir: {:?}", app_dir))
 			.change_context(DirError)?;
 	Ok(app_dir)
 }
@@ -64,13 +64,14 @@ pub fn create_conf_toml() -> Result<PathBuf, DirError> {
 				.attach_printable("error creating conf file")
 				.attach_printable(format!("path: {:?}", conf_path))
 				.change_context(DirError)?;
+        log::warn!("created conf toml: {:?}", conf_path);
 	}
 	Ok(conf_path)
 }
 
 fn create_cache_folder() -> Result<PathBuf, DirError> {
 	let dir = dirs::cache_dir()
-			.ok_or(StrError("Could not find cache directory".to_string()))
+			.ok_or_else(|| StrError("Could not find cache directory".to_string()))
 			.into_report()
 			.attach_printable("error in create_cache_folder")
 			.change_context(DirError)?;
@@ -78,7 +79,7 @@ fn create_cache_folder() -> Result<PathBuf, DirError> {
 	std::fs::create_dir_all(&app_dir)
 			.into_report()
 			.attach_printable("error creating folders for create_cache_folder")
-			.attach_printable_lazy(|| format!("app_dir: {:?}", app_dir))
+			.attach_printable(format!("app_dir: {:?}", app_dir))
 			.change_context(DirError)?;
 	Ok(app_dir)
 }
@@ -91,6 +92,7 @@ pub fn create_cache_json() -> Result<PathBuf, DirError> {
 				.attach_printable("error creating cache file")
 				.attach_printable(format!("path: {:?}", cache_path))
 				.change_context(DirError)?;
+        log::warn!("created cache json: {:?}", cache_path);
 	}
 	Ok(cache_path)
 }
@@ -100,7 +102,7 @@ pub struct DirError;
 
 impl fmt::Display for DirError {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(f, "Error getting sys directory")
+		write!(f, "Error getting directory")
 	}
 }
 
