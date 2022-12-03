@@ -1,74 +1,84 @@
+use error_stack::{IntoReport, ResultExt};
 use sea_orm::DatabaseConnection;
 
-use entity::periods;
+use entity::prelude::Period;
 
-use crate::db::periods::{create_period, delete_period, edit_period, get_periods};
-use crate::Delete;
+use crate::{
+	commands::utils::{CommandError, Delete, LogAndString},
+	db::periods::{create_period, delete_period, edit_period, get_periods},
+};
 
 #[tauri::command]
 pub async fn get_periods_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {
-	let periods = get_periods(&connection).await.map_err(|e| {
-		eprintln!("get periods Err: {}", e);
-		format!("Error getting Periods from DB: {}", e)
-	})?;
+	let periods = get_periods(&connection)
+			.await
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
-	let data = serde_json::to_string(&periods).map_err(|e| {
-		eprintln!("json get periods Err: {}", e);
-		format!("Error serialising Periods to JSON: {}", e)
-	})?;
+	let data = serde_json::to_string(&periods)
+			.into_report()
+			.attach_printable("Error serializing data to json")
+			.attach_printable(format!("periods: {:?}", periods))
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
-	println!("json get periods: {}", data);
-	
+	log::debug!("get_periods_js json: {}", data);
 	Ok(data)
 }
 
 #[tauri::command]
 pub async fn create_period_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
-	println!("json create grade: {}", json);
+	log::debug!("create_period_js json: {}", json);
 	
-	let json: periods::Model = serde_json::from_str(&*json).map_err(|e| {
-		eprintln!("json create period Err: {}", e);
-		format!("Error serialising Period from JSON: {}", e)
-	})?;
+	let model: Period = serde_json::from_str(&json)
+			.into_report()
+			.attach_printable("Error serializing period from json")
+			.attach_printable(format!("json: {}", json))
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
-	create_period(&connection, json.name, json.from, json.to).await.map_err(|e| {
-		eprintln!("create period Err: {}", e);
-		format!("Error creating Period: {}", e)
-	})?;
+	create_period(&connection, model)
+			.await
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
 	Ok(())
 }
 
 #[tauri::command]
 pub async fn edit_period_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
-	println!("json edit period: {}", json);
+	log::debug!("edit_period_js json: {}", json);
 	
-	let json: periods::Model = serde_json::from_str(&*json).map_err(|e| {
-		eprintln!("json edit period Err: {}", e);
-		format!("Error serialising Period from JSON: {}", e)
-	})?;
+	let model: Period = serde_json::from_str(&json)
+			.into_report()
+			.attach_printable("Error serializing period")
+			.attach_printable(format!("json: {}", json))
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
-	edit_period(&connection, json.id, json.name, json.from, json.to).await.map_err(|e| {
-		eprintln!("edit period Err: {}", e);
-		format!("Error editing Period: {}", e)
-	})?;
+	edit_period(&connection, model)
+			.await
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
 	Ok(())
 }
 
 #[tauri::command]
 pub async fn delete_period_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
-	println!("json delete period: {}", json);
+	log::debug!("json delete period: {}", json);
 	
-	let json: Delete = serde_json::from_str(&*json).map_err(|e| {
-		eprintln!("json delete period Err: {}", e);
-		format!("Error serialising Delete from JSON: {}", e)
-	})?;
+	let delete: Delete = serde_json::from_str(&json)
+			.into_report()
+			.attach_printable("Error serializing delete")
+			.attach_printable(format!("json: {}", json))
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
-	delete_period(&connection, json.id).await.map_err(|e| {
-		eprintln!("delete period Err: {}", e);
-		format!("Error deleting Period: {}", e)
-	})?;
+	delete_period(&connection, delete.id)
+			.await
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
 	Ok(())
 }

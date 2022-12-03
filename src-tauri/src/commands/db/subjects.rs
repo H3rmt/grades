@@ -1,74 +1,85 @@
+use error_stack::{IntoReport, ResultExt};
 use sea_orm::DatabaseConnection;
 
-use entity::subjects;
+use entity::prelude::Subject;
 
-use crate::db::subjects::{create_subject, delete_subject, edit_subject, get_subjects};
-use crate::Delete;
+use crate::{
+	commands::utils::{CommandError, LogAndString},
+	commands::utils::Delete,
+	db::subjects::{create_subject, delete_subject, edit_subject, get_subjects},
+};
 
 #[tauri::command]
 pub async fn get_subjects_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {
-	let subjects = get_subjects(&connection).await.map_err(|e| {
-		eprintln!("get subjects Err: {}", e);
-		format!("Error getting Subjects from DB: {}", e)
-	})?;
+	let subjects = get_subjects(&connection)
+			.await
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
-	let data = serde_json::to_string(&subjects).map_err(|e| {
-		eprintln!("json get subjects Err: {}", e);
-		format!("Error serialising Subjects to JSON: {}", e)
-	})?;
+	let data = serde_json::to_string(&subjects)
+			.into_report()
+			.attach_printable("Error serializing data to json")
+			.attach_printable(format!("subjects: {:?}", subjects))
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
-	println!("json get subjects: {}", data);
-	
+	log::debug!("get_subjects_js json: {}", data);
 	Ok(data)
 }
 
 #[tauri::command]
 pub async fn create_subject_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
-	println!("json create subject: {}", json);
+	println!("create_subject_js json: {}", json);
 	
-	let json: subjects::Model = serde_json::from_str(&*json).map_err(|e| {
-		eprintln!("json create subject Err: {}", e);
-		format!("Error serialising Subject from JSON: {}", e)
-	})?;
+	let model: Subject = serde_json::from_str(&json)
+			.into_report()
+			.attach_printable("Error serializing subject from json")
+			.attach_printable(format!("json: {}", json))
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
-	create_subject(&connection, json.name, json.color).await.map_err(|e| {
-		eprintln!("create subject Err: {}", e);
-		format!("Error creating Subject: {}", e)
-	})?;
+	create_subject(&connection, model)
+			.await
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
 	Ok(())
 }
 
 #[tauri::command]
 pub async fn edit_subject_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
-	println!("json edit subject: {}", json);
+	log::debug!("edit_subject_js json: {}", json);
 	
-	let json: subjects::Model = serde_json::from_str(&*json).map_err(|e| {
-		eprintln!("json edit subject Err: {}", e);
-		format!("Error serialising Subject from JSON: {}", e)
-	})?;
+	let model: Subject = serde_json::from_str(&json)
+			.into_report()
+			.attach_printable("Error serializing subject from json")
+			.attach_printable(format!("json: {}", json))
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
-	edit_subject(&connection, json.id, json.name, json.color).await.map_err(|e| {
-		eprintln!("edit subject Err: {}", e);
-		format!("Error editing Subject: {}", e)
-	})?;
+	edit_subject(&connection, model)
+			.await
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
 	Ok(())
 }
 
 #[tauri::command]
 pub async fn delete_subject_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
-	println!("json delete subject: {}", json);
+	log::debug!("delete_subject_js json: {}", json);
 	
-	let json: Delete = serde_json::from_str(&*json).map_err(|e| {
-		eprintln!("json delete subject Err: {}", e);
-		format!("Error serialising Delete from JSON: {}", e)
-	})?;
+	let delete: Delete = serde_json::from_str(&json)
+			.into_report()
+			.attach_printable("Error serializing delete from json")
+			.attach_printable(format!("json: {}", json))
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
-	delete_subject(&connection, json.id).await.map_err(|e| {
-		eprintln!("delete subject Err: {}", e);
-		format!("Error deleting Subject: {}", e)
-	})?;
+	delete_subject(&connection, delete.id)
+			.await
+			.change_context(CommandError)
+			.log_and_to_string()?;
 	
 	Ok(())
 }

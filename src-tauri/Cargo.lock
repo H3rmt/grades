@@ -395,9 +395,12 @@ name = "cc"
 version = "1.0.77"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e9f73505338f7d905b19d18738976aae232eb46b8efc15554ffc56deb5d9ebe4"
+<<<<<<< HEAD
 dependencies = [
  "jobserver",
 ]
+=======
+>>>>>>> 14-add-errorstack-instead-of-passing-strings-arround
 
 [[package]]
 name = "cesu8"
@@ -909,7 +912,7 @@ dependencies = [
 
 [[package]]
 name = "entity"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "sea-orm",
  "serde",
@@ -1387,7 +1390,10 @@ dependencies = [
 name = "grades"
 version = "0.0.1"
 dependencies = [
+<<<<<<< HEAD
  "built",
+=======
+>>>>>>> 14-add-errorstack-instead-of-passing-strings-arround
  "dirs",
  "entity",
  "env_logger",
@@ -1936,7 +1942,7 @@ dependencies = [
 
 [[package]]
 name = "migration"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "sea-orm-migration",
  "tokio",

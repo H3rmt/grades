@@ -3,6 +3,9 @@ name = "grades"
 version = "0.0.1" # irrelevant (tauri.conf.json will override)
 description = "tauri app to manage grades in school"
 authors = ["H3rmt"]
+license = ""
+repository = ""
+default-run = "app"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/H3rmt/grades/"
@@ -23,6 +26,10 @@ tokio = { version = "1.21.2", features = ["full"] }
 sea-orm = { version = "0.10.2", features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"] }
 ts-rs = "6.2.1"
 toml = "0.5.9"
+error-stack = "0.2.4"
+log = "0.4.17"
+env_logger = "0.9.0"
+
 
 entity = { path = "entity" }
 migration = { path = "migrations" }
