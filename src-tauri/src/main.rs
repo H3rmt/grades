@@ -7,7 +7,6 @@ use error_stack::{IntoReport, ResultExt};
 use tauri::Manager;
 use tokio::sync::Mutex;
 
-use cache::cache::Cache;
 use commands::cache::{get_page_from_cache_js, save_page_in_cache_js};
 use commands::config::{get_grade_modal_defaults_js, get_note_rage_js, save_grade_modal_defaults_js, save_note_range_js};
 use commands::db::grades::{create_grade_js, delete_grade_js, edit_grade_js, get_grades_js};
@@ -77,5 +76,9 @@ async fn main() {
 				get_note_rage_js,get_grade_modal_defaults_js, save_note_range_js, save_grade_modal_defaults_js
         ])
 			.run(tauri::generate_context!())
-			.expect("error while running tauri application");
+			.into_report()
+			.attach_printable("Error running grades")
+			.map_err(|e| {
+				log::error!("{}", e);
+			}).expect("error while running tauri application");
 }
