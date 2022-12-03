@@ -21,7 +21,7 @@ impl Default for NoteRange {
 
 impl Display for NoteRange {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "{{ {} - {} }}", self.from, self.to)
+		write!(f, "{} - {}", self.from, self.to)
 	}
 }
 
@@ -53,7 +53,7 @@ impl Default for GradeModalDefaults {
 
 impl Display for GradeModalDefaults {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "{{ grade_default:{} subject_default:{} type_default:{} period_default:{} info_default:{} not_final_default:{} double_default:{} }}",
+		write!(f, "grade_default:{} subject_default:{} type_default:{} period_default:{} info_default:{} not_final_default:{} double_default:{}",
 		       self.grade_default, self.subject_default, self.type_default, self.period_default, self.info_default, self.not_final_default, self.double_default)
 	}
 }

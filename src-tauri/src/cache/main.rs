@@ -1,4 +1,3 @@
-use std::{error, fmt};
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
 use std::path::PathBuf;
@@ -6,6 +5,7 @@ use std::path::PathBuf;
 use error_stack::{IntoReport, ResultExt};
 use serde::{Deserialize, Serialize};
 
+use crate::cache::error::CacheError;
 use crate::cache::types::Page;
 
 #[derive(Deserialize, Serialize, Default, Debug)]
@@ -19,18 +19,6 @@ pub struct Cache {
 	data: Data,
 }
 
-#[derive(Debug)]
-pub struct CacheError;
-
-impl error::Error for CacheError {}
-
-impl fmt::Display for CacheError {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		write!(f, "CacheError")
-	}
-}
-
-
 impl Cache {
 	pub fn create(path: PathBuf) -> Self {
 		let mut cache = Cache {
@@ -38,10 +26,10 @@ impl Cache {
 			data: Data::default(),
 		};
 		cache.load().unwrap_or_else(|err| {
-			eprintln!("error loading cache: {}", err);
+			log::warn!("error loading cache: {}", err);
 			// dont exit
 		});
-		println!("cache-data: {:?}", cache.data);
+		log::debug!("cache-data: {:?}", cache.data);
 		cache
 	}
 	

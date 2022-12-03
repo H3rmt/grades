@@ -1,14 +1,16 @@
 use error_stack::{Result, ResultExt};
 
-use crate::cache::cache::CacheError;
+use crate::cache::error::CacheError;
+use crate::cache::main::Cache;
 
-pub mod cache;
 pub mod types;
+pub mod main;
+mod error;
 
-pub fn create() -> Result<cache::Cache, CacheError> {
+pub fn create() -> Result<Cache, CacheError> {
 	let cache_path = crate::dirs::create_cache_json()
 			.attach_printable("error getting cache json path")
 			.change_context(CacheError)?;
 	
-	Ok(cache::Cache::create(cache_path))
+	Ok(Cache::create(cache_path))
 }

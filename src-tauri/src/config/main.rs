@@ -1,4 +1,3 @@
-use std::{error, fmt};
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
 use std::path::PathBuf;
@@ -6,6 +5,7 @@ use std::path::PathBuf;
 use error_stack::{IntoReport, Result, ResultExt};
 use serde::{Deserialize, Serialize};
 
+use crate::config::error::ConfigError;
 use crate::config::types::{GradeModalDefaults, NoteRange};
 
 #[derive(Deserialize, Serialize, Default, Debug)]
@@ -20,18 +20,6 @@ pub struct Config {
 	data: Data,
 }
 
-#[derive(Debug)]
-pub struct ConfigError;
-
-impl error::Error for ConfigError {}
-
-impl fmt::Display for ConfigError {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		write!(f, "ConfigError")
-	}
-}
-
-
 impl Config {
 	pub fn create(path: PathBuf) -> Self {
 		let mut config = Config {
@@ -39,10 +27,10 @@ impl Config {
 			data: Default::default(),
 		};
 		config.load().unwrap_or_else(|err| {
-			eprintln!("error loading config: {}", err);
+			log::warn!("error loading config: {}", err);
 			// dont exit
 		});
-		println!("config-data: {:?}", config.data);
+		log::debug!("config-data: {:?}", config.data);
 		config
 	}
 	
