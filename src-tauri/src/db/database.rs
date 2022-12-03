@@ -1,7 +1,7 @@
 use error_stack::{IntoReport, Result, ResultExt};
 use sea_orm::{Database, DatabaseConnection};
 
-use crate::db::DBError;
+use crate::db::error::DBError;
 
 pub async fn establish_connection() -> Result<DatabaseConnection, DBError> {
 	let db = crate::dirs::create_data_db()
