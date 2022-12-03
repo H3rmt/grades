@@ -1,9 +1,13 @@
 use error_stack::{IntoReport, ResultExt};
 use tokio::sync::Mutex;
 
-use crate::commands::other::{CommandError, LogAndString};
-use crate::config::config::Config;
-use crate::config::types::{GradeModalDefaults, NoteRange};
+use crate::{
+	commands::utils::{CommandError, LogAndString},
+	config::{
+		main::Config,
+		types::{GradeModalDefaults, NoteRange},
+	},
+};
 
 #[tauri::command]
 pub async fn get_note_rage_js(config: tauri::State<'_, Mutex<Config>>) -> Result<String, String> {
@@ -13,8 +17,8 @@ pub async fn get_note_rage_js(config: tauri::State<'_, Mutex<Config>>) -> Result
 		
 		serde_json::to_string(&note_range)
 				.into_report()
-				.attach_printable("Error serializing NoteRange to json")
-				.attach_printable(format!("note_range: {:?}", note_range))
+				.attach_printable("Error serializing note_range to json")
+				.attach_printable(format!("note_range: {}", note_range))
 				.change_context(CommandError)
 				.log_and_to_string()?
 	};
@@ -32,7 +36,7 @@ pub async fn get_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>>
 		
 		serde_json::to_string(&grade_modal_defaults)
 				.into_report()
-				.attach_printable("Error serializing GradeModalDefaults to json")
+				.attach_printable("Error serializing grade_modal_defaults to json")
 				.attach_printable(format!("grade_modal_defaults: {:?}", grade_modal_defaults))
 				.change_context(CommandError)
 				.log_and_to_string()?
@@ -48,7 +52,7 @@ pub async fn save_note_range_js(config: tauri::State<'_, Mutex<Config>>, json: S
 	
 	let json: NoteRange = serde_json::from_str(&json)
 			.into_report()
-			.attach_printable("Error deserializing NoteRange from json")
+			.attach_printable("Error deserializing note_range from json")
 			.attach_printable(format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
@@ -72,7 +76,7 @@ pub async fn save_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>
 	
 	let json: GradeModalDefaults = serde_json::from_str(&json)
 			.into_report()
-			.attach_printable("Error deserializing GradeModalDefaults from json")
+			.attach_printable("Error deserializing grade_modal_defaults from json")
 			.attach_printable(format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;

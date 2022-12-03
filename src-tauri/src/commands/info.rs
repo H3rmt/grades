@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Wry};
 use ts_rs::TS;
 
-use crate::commands::other::{CommandError, LogAndString};
+use crate::commands::utils::{CommandError, LogAndString};
 
 #[tauri::command]
 pub async fn get_info_js(app_handle: AppHandle<Wry>) -> Result<String, String> {
@@ -17,19 +17,19 @@ pub async fn get_info_js(app_handle: AppHandle<Wry>) -> Result<String, String> {
 		"name not found".to_string()
 	});
 	
-	let data = Info {
+	let info = Info {
 		name,
 		version,
 	};
 	
-	let data = serde_json::to_string(&data)
+	let data = serde_json::to_string(&info)
 			.into_report()
-			.attach_printable("Error serializing Info to json")
-			.attach_printable(format!("data: {:?}", data))
+			.attach_printable("Error serializing info to json")
+			.attach_printable(format!("info: {:?}", info))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
-	log::debug!("json get info: {}", data);
+	log::debug!("get_info_js json: {}", data);
 	Ok(data)
 }
 

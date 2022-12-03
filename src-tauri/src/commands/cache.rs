@@ -1,24 +1,30 @@
 use error_stack::{IntoReport, ResultExt};
 use tokio::sync::Mutex;
 
-use crate::Cache;
-use crate::cache::types::Page;
-use crate::commands::other::{CommandError, LogAndString};
+use crate::{
+	cache::{
+		main::Cache,
+		types::Page,
+	},
+	commands::utils::{CommandError, LogAndString},
+};
 
 #[tauri::command]
 pub async fn get_page_from_cache_js(cache: tauri::State<'_, Mutex<Cache>>) -> Result<Option<String>, String> {
 	let data = {
-		let c = cache.lock().await;
-		let page = &c.get().page;
-		if page.is_none() {
-			log::debug!("no site in cache");
-			return Ok(None);
-		}
+		let mutex = cache.lock().await;
+		let page = match &mutex.get().page {
+			Some(page) => page,
+			None => {
+				log::debug!("no site in cache");
+				return Ok(None);
+			}
+		};
 		
 		serde_json::to_string(&page)
 				.into_report()
 				.attach_printable("Error serializing Page to json")
-				.attach_printable(format!("page: {:?}", page))
+				.attach_printable(format!("page: {}", page))
 				.change_context(CommandError)
 				.log_and_to_string()?
 	};
