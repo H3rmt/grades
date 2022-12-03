@@ -2,6 +2,7 @@ use error_stack::{IntoReport, Result, ResultExt};
 use sea_orm::{
 	ActiveModelTrait,
 	ActiveValue,
+	ColumnTrait,
 	DatabaseConnection,
 	DbErr,
 	DeleteResult,
@@ -78,7 +79,7 @@ pub async fn edit_type(db: &DatabaseConnection, modal: GradeType) -> Result<Grad
 
 pub async fn delete_type(db: &DatabaseConnection, id: i32) -> Result<(), DBError> {
 	let f: Vec<Grade> = Grades::find()
-			.filter(Grades::Column::Type.eq(id))
+			.filter(GradeColumn::Type.eq(id))
 			.all(db).await
 			.into_report()
 			.attach_printable("Error checking for referencing grades in DB")

@@ -2,18 +2,21 @@ use error_stack::{IntoReport, Result, ResultExt};
 use sea_orm::{
 	ActiveModelTrait,
 	ActiveValue,
+	ColumnTrait,
 	DatabaseConnection,
 	DbErr,
 	DeleteResult,
 	EntityTrait,
 	InsertResult,
-	QueryFilter
+	QueryFilter,
 };
 
 use entity::prelude::{*};
 
-use crate::db::error::DBError;
-use crate::utils::StrError;
+use crate::{
+	db::error::DBError,
+	utils::StrError,
+};
 
 pub async fn get_subjects(db: &DatabaseConnection) -> Result<Vec<Subject>, DBError> {
 	Subjects::find()
@@ -75,13 +78,13 @@ pub async fn edit_subject(db: &DatabaseConnection, modal: Subject) -> Result<Sub
 
 pub async fn delete_subject(db: &DatabaseConnection, id: i32) -> Result<(), DBError> {
 	let f: Vec<Grade> = Grades::find()
-			.filter(Grades::Column::Subject.eq(id))
+			.filter(GradeColumn::Subject.eq(id))
 			.all(db).await
 			.into_report()
 			.attach_printable("Error checking for referencing grades in DB")
 			.attach_printable(format!("id:{}", id))
 			.change_context(DBError)?;
-
+	
 	if !f.is_empty() {
 		return Err(StrError(format!("Cannot delete subject, it is referenced by {} grades", f.len())))
 				.into_report()

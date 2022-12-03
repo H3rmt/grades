@@ -13,7 +13,7 @@ use commands::db::grades::{create_grade_js, delete_grade_js, edit_grade_js, get_
 use commands::db::periods::{create_period_js, delete_period_js, edit_period_js, get_periods_js};
 use commands::db::subjects::{create_subject_js, delete_subject_js, edit_subject_js, get_subjects_js};
 use commands::db::types::{create_type_js, delete_type_js, edit_type_js, get_types_js};
-use commands::info::{get_info_js};
+use commands::info::get_info_js;
 use migrations::{Migrator, MigratorTrait};
 
 mod db;
@@ -26,7 +26,8 @@ mod utils;
 #[tokio::main]
 async fn main() {
 	env_logger::init();
-	println!("target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}", built_info::TARGET.to_string(), built_info::HOST.to_string(), built_info::PROFILE.to_string(), built_info::GIT_COMMIT_HASH.unwrap_or_default().to_string(), built_info::CFG_OS.to_string());
+	println!("target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}",
+	         built_info::TARGET.to_string(), built_info::HOST.to_string(), built_info::PROFILE.to_string(), built_info::GIT_COMMIT_HASH.unwrap_or_default().to_string(), built_info::CFG_OS.to_string());
 	
 	tauri::async_runtime::set(tokio::runtime::Handle::current());
 	
@@ -88,9 +89,4 @@ async fn main() {
 pub mod built_info {
 	// The file has been placed there by the build script.
 	include!(concat!(env!("OUT_DIR"), "/built.rs"));
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-struct Delete {
-	id: i32,
 }

@@ -11,7 +11,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 			"grade", {
 				sort: true,
 				format: grade => <Typography
-						color={`rgb(${map(grade as number, 0, 15, 230, 40)},${map(grade as number, 0, 15, 40, 230)},0)`}>{grade}</Typography>,
+						color={`rgb(${map(grade as number, noteRange.from, noteRange.to, 230, 40)},${map(grade as number, noteRange.from, noteRange.to, 40, 230)},0)`}>{grade}</Typography>,
 				edit: (r) => <TextField fullWidth value={r.grade}
 												onChange={(i) => r.grade = Math.max(Math.min(Number(i.target.value), noteRange?.to), noteRange?.from)}/>
 			}

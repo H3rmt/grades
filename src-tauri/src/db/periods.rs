@@ -2,6 +2,7 @@ use error_stack::{IntoReport, Result, ResultExt};
 use sea_orm::{
 	ActiveModelTrait,
 	ActiveValue,
+	ColumnTrait,
 	DatabaseConnection,
 	DbErr,
 	DeleteResult,
@@ -12,8 +13,10 @@ use sea_orm::{
 
 use entity::prelude::{*};
 
-use crate::db::error::DBError;
-use crate::utils::StrError;
+use crate::{
+	db::error::DBError,
+	utils::StrError,
+};
 
 pub async fn get_periods(db: &DatabaseConnection) -> Result<Vec<Period>, DBError> {
 	Periods::find()
@@ -76,7 +79,7 @@ pub async fn edit_period(db: &DatabaseConnection, model: Period) -> Result<Perio
 
 pub async fn delete_period(db: &DatabaseConnection, id: i32) -> Result<(), DBError> {
 	let f: Vec<Grade> = Grades::find()
-			.filter(Grades::Column::Period.eq(id))
+			.filter(GradeColumn::Period.eq(id))
 			.all(db).await
 			.into_report()
 			.attach_printable("Error checking for referencing grades in DB")
