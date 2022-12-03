@@ -7,11 +7,15 @@ use sea_orm::{
 	DeleteResult,
 	EntityTrait,
 	InsertResult,
+	QueryFilter,
 };
 
 use entity::prelude::{*};
 
-use crate::db::error::DBError;
+use crate::{
+	db::error::DBError,
+	utils::StrError,
+};
 
 pub async fn get_types(db: &DatabaseConnection) -> Result<Vec<GradeType>, DBError> {
 	GradeTypes::find()
@@ -73,21 +77,21 @@ pub async fn edit_type(db: &DatabaseConnection, modal: GradeType) -> Result<Grad
 }
 
 pub async fn delete_type(db: &DatabaseConnection, id: i32) -> Result<(), DBError> {
-//	let f: Vec<Grade> = Grades::find()
-//			.filter(Grades::Column::Type.eq(id))
-//			.all(db).await
-//			.into_report()
-//			.attach_printable("Error checking for referencing grades in DB")
-//			.attach_printable(format!("id:{}", id))
-//			.change_context(DBError)?;
-//
-//	if !f.is_empty() {
-//		return Err(StrError(format!("Cannot delete subject, it is referenced by {} grades", f.len())))
-//				.into_report()
-//				.attach_printable("Error deleting subject in DB")
-//				.attach_printable(format!("id:{}", id))
-//				.change_context(DBError)?;
-//	}
+	let f: Vec<Grade> = Grades::find()
+			.filter(Grades::Column::Type.eq(id))
+			.all(db).await
+			.into_report()
+			.attach_printable("Error checking for referencing grades in DB")
+			.attach_printable(format!("id:{}", id))
+			.change_context(DBError)?;
+	
+	if !f.is_empty() {
+		return Err(StrError(format!("Cannot delete subject, it is referenced by {} grades", f.len())))
+				.into_report()
+				.attach_printable("Error deleting subject in DB")
+				.attach_printable(format!("id:{}", id))
+				.change_context(DBError)?;
+	}
 	
 	let res: DeleteResult = GradeTypes::delete_by_id(id)
 			.exec(db).await

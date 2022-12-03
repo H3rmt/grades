@@ -7,11 +7,13 @@ use sea_orm::{
 	DeleteResult,
 	EntityTrait,
 	InsertResult,
+	QueryFilter,
 };
 
 use entity::prelude::{*};
 
 use crate::db::error::DBError;
+use crate::utils::StrError;
 
 pub async fn get_periods(db: &DatabaseConnection) -> Result<Vec<Period>, DBError> {
 	Periods::find()
@@ -73,21 +75,21 @@ pub async fn edit_period(db: &DatabaseConnection, model: Period) -> Result<Perio
 }
 
 pub async fn delete_period(db: &DatabaseConnection, id: i32) -> Result<(), DBError> {
-//	let f: Vec<Grade> = Grades::find()
-//			.filter(Grades::Column::Period.eq(id))
-//			.all(db).await
-//			.into_report()
-//			.attach_printable("Error checking for referencing grades in DB")
-//			.attach_printable(format!("id:{}", id))
-//			.change_context(DBError)?;
-//
-//	if !f.is_empty() {
-//		return Err(StrError(format!("Cannot delete period, it is referenced by {} grades", f.len())))
-//				.into_report()
-//				.attach_printable("Error deleting period in DB")
-//				.attach_printable(format!("id:{}", id))
-//				.change_context(DBError)?;
-//	}
+	let f: Vec<Grade> = Grades::find()
+			.filter(Grades::Column::Period.eq(id))
+			.all(db).await
+			.into_report()
+			.attach_printable("Error checking for referencing grades in DB")
+			.attach_printable(format!("id:{}", id))
+			.change_context(DBError)?;
+	
+	if !f.is_empty() {
+		return Err(StrError(format!("Cannot delete period, it is referenced by {} grades", f.len())))
+				.into_report()
+				.attach_printable("Error deleting period in DB")
+				.attach_printable(format!("id:{}", id))
+				.change_context(DBError)?;
+	}
 	
 	let res: DeleteResult = Periods::delete_by_id(id)
 			.exec(db).await

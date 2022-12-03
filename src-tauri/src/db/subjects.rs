@@ -7,11 +7,13 @@ use sea_orm::{
 	DeleteResult,
 	EntityTrait,
 	InsertResult,
+	QueryFilter
 };
 
 use entity::prelude::{*};
 
 use crate::db::error::DBError;
+use crate::utils::StrError;
 
 pub async fn get_subjects(db: &DatabaseConnection) -> Result<Vec<Subject>, DBError> {
 	Subjects::find()
@@ -72,21 +74,21 @@ pub async fn edit_subject(db: &DatabaseConnection, modal: Subject) -> Result<Sub
 }
 
 pub async fn delete_subject(db: &DatabaseConnection, id: i32) -> Result<(), DBError> {
-//	let f: Vec<Grade> = Grades::find()
-//			.filter(Grades::Column::Subject.eq(id))
-//			.all(db).await
-//			.into_report()
-//			.attach_printable("Error checking for referencing grades in DB")
-//			.attach_printable(format!("id:{}", id))
-//			.change_context(DBError)?;
-//
-//	if !f.is_empty() {
-//		return Err(StrError(format!("Cannot delete subject, it is referenced by {} grades", f.len())))
-//				.into_report()
-//				.attach_printable("Error deleting subject in DB")
-//				.attach_printable(format!("id:{}", id))
-//				.change_context(DBError)?;
-//	}
+	let f: Vec<Grade> = Grades::find()
+			.filter(Grades::Column::Subject.eq(id))
+			.all(db).await
+			.into_report()
+			.attach_printable("Error checking for referencing grades in DB")
+			.attach_printable(format!("id:{}", id))
+			.change_context(DBError)?;
+
+	if !f.is_empty() {
+		return Err(StrError(format!("Cannot delete subject, it is referenced by {} grades", f.len())))
+				.into_report()
+				.attach_printable("Error deleting subject in DB")
+				.attach_printable(format!("id:{}", id))
+				.change_context(DBError)?;
+	}
 	
 	let res: DeleteResult = Subjects::delete_by_id(id)
 			.exec(db).await
