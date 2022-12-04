@@ -124,7 +124,7 @@ jobs:
           version: ${{ needs.create-release.outputs.version }}
           gistId: 9f0a67b7ad425e9fb74b32f6afcab111
           releaseNotes: ${{ github.event.head_commit.message }}
-          releaseTagName: grades-app-v${{ steps.get-json-version.outputs.prop }}
+          releaseTagName: grades-app-v${{ needs.create-release.outputs.version }}
 
           winsig: ${{ needs.build-tauri.outputs.winsig }}
           macsig: ${{ needs.build-tauri.outputs.macsig }}
