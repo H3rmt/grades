@@ -10,6 +10,7 @@ mod m20221012_184535_added_not_final_and_count2_to_grade;
 mod m20221016_122525_add_settings_to_db;
 mod m20221108_010923_removed_settings;
 mod m20221108_011056_added_unique_indexes_period;
+mod m20221204_223500_add_dates_to_grade;
 
 
 pub struct Migrator;
@@ -28,6 +29,7 @@ impl MigratorTrait for Migrator {
 			Box::new(m20221016_122525_add_settings_to_db::Migration),
 			Box::new(m20221108_010923_removed_settings::Migration),
 			Box::new(m20221108_011056_added_unique_indexes_period::Migration),
+			Box::new(m20221204_223500_add_dates_to_grade::Migration),
 		]
 	}
 }

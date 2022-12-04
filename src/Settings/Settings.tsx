@@ -279,17 +279,6 @@ function Settings(props: Props) {
 		getDefaults()
 		getInfo();
 
-		// (async () => {
-		// 	setText(text + "check update")
-		// 	const {shouldUpdate, manifest} = await checkUpdate().catch((error) => {
-		// 		errorToast("Error checking for update", toast, error)
-		// 		throw error
-		// 	});
-		// 	setText(text + `Should update: ${shouldUpdate}`);
-		// 	setText(text + manifest);
-		// 	await installUpdate();
-		// 	setText(text + "Installation complete, restart required.");
-		// })();
 	}, [])
 
 	return (<>
