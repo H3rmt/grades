@@ -26,7 +26,7 @@ impl Cache {
 			data: Data::default(),
 		};
 		cache.load().unwrap_or_else(|err| {
-			log::warn!("error loading cache: {}", err);
+			log::warn!("error loading cache: {:?}", err);
 			// dont exit
 		});
 		log::debug!("cache-data: {:?}", cache.data);
@@ -45,11 +45,13 @@ impl Cache {
 		file.read_to_string(&mut buffer)
 		    .into_report()
 		    .attach_printable("error reading cache file")
+		    .attach_printable_lazy(|| format!("buffer: {}", buffer))
 		    .change_context(CacheError)?;
 		
 		let data: Data = serde_json::from_str(buffer.as_str())
 				.into_report()
 				.attach_printable("error parsing cache file from json")
+				.attach_printable_lazy(|| format!("buffer: {}", buffer))
 				.change_context(CacheError)?;
 		
 		self.data = data;
@@ -77,11 +79,13 @@ impl Cache {
 		let data = serde_json::to_string(&self.data)
 				.into_report()
 				.attach_printable("error parsing cache data to json")
+				.attach_printable_lazy(|| format!("data: {:?}", self.data))
 				.change_context(CacheError)?;
 		
 		file.write_all(data.as_bytes())
 		    .into_report()
 		    .attach_printable("error parsing cache data to json")
+		    .attach_printable_lazy(|| format!("data: {}", data))
 		    .change_context(CacheError)?;
 		Ok(())
 	}
