@@ -24,6 +24,8 @@ pub struct Model {
 	pub period: i32,
 	pub not_final: bool,
 	pub double: bool,
+	pub confirmed: Option<String>,
+	pub date: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
@@ -36,6 +38,8 @@ pub enum Column {
 	Period,
 	NotFinal,
 	Double,
+	Confirmed,
+	Date,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -69,6 +73,8 @@ impl ColumnTrait for Column {
 			Self::Period => ColumnType::Integer.def(),
 			Self::NotFinal => ColumnType::Boolean.def(),
 			Self::Double => ColumnType::Boolean.def(),
+			Self::Confirmed => ColumnType::String(None).def().null(),
+			Self::Date => ColumnType::String(None).def(),
 		}
 	}
 }
