@@ -33,9 +33,10 @@ jobs:
         with:
           workspaces: src-tauri
           prefix-key: rust-${{ matrix.platform }}
-      - name: install app dependencies and build it
-        run: yarn install --frozen-lockfile && yarn build
+      - name: install app dependencies
+        run: yarn install --frozen-lockfile
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
