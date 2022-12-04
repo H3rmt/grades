@@ -27,11 +27,12 @@ impl Display for NoteRange {
 
 #[derive(TS, Deserialize, Serialize, Debug)]
 #[ts(export, export_to = "../src/entity/config/gradeModalDefaults.ts")]
+#[serde(default)]
 pub struct GradeModalDefaults {
 	pub grade_default: i32,
-	pub subject_default: String,
-	pub type_default: String,
-	pub period_default: String,
+	pub subject_default: Option<i32>,
+	pub type_default: Option<i32>,
+	pub period_default: Option<i32>,
 	pub info_default: String,
 	pub not_final_default: bool,
 	pub double_default: bool,
@@ -41,9 +42,9 @@ impl Default for GradeModalDefaults {
 	fn default() -> Self {
 		Self {
 			grade_default: 10,
-			subject_default: "".to_string(),
-			type_default: "".to_string(),
-			period_default: "".to_string(),
+			subject_default: None,
+			type_default: None,
+			period_default: None,
 			info_default: "".to_string(),
 			not_final_default: false,
 			double_default: false,
@@ -53,7 +54,7 @@ impl Default for GradeModalDefaults {
 
 impl Display for GradeModalDefaults {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "grade_default:{} subject_default:{} type_default:{} period_default:{} info_default:{} not_final_default:{} double_default:{}",
+		write!(f, "grade_default:{} subject_default:{:?} type_default:{:?} period_default:{:?} info_default:{} not_final_default:{} double_default:{}",
 		       self.grade_default, self.subject_default, self.type_default, self.period_default, self.info_default, self.not_final_default, self.double_default)
 	}
 }

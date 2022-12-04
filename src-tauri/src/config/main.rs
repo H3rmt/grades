@@ -27,7 +27,7 @@ impl Config {
 			data: Default::default(),
 		};
 		config.load().unwrap_or_else(|err| {
-			log::warn!("error loading config: {}", err);
+			log::warn!("error loading config: {:?}", err);
 			// dont exit
 		});
 		log::debug!("config-data: {:?}", config.data);
@@ -45,12 +45,14 @@ impl Config {
 		
 		file.read_to_string(&mut buffer)
 		    .into_report()
-		    .attach_printable("error reading config file")
+		    .attach_printable("error reading config data from file")
+		    .attach_printable_lazy(|| format!("buffer: {}", buffer))
 		    .change_context(ConfigError)?;
 		
 		let data: Data = toml::from_str(buffer.as_str())
 				.into_report()
-				.attach_printable("error parsing config file from json")
+				.attach_printable("error parsing config file from toml")
+				.attach_printable_lazy(|| format!("buffer: {}", buffer))
 				.change_context(ConfigError)?;
 		
 		self.data = data;
@@ -75,14 +77,16 @@ impl Config {
 		                                 .attach_printable(format!("path: {:?}", self.path.as_path()))
 		                                 .change_context(ConfigError)?;
 		
-		let data = serde_json::to_string(&self.data)
+		let data = toml::to_string(&self.data)
 				.into_report()
-				.attach_printable("error parsing config data to json")
+				.attach_printable("error parsing config data to toml")
+				.attach_printable_lazy(|| format!("data: {:?}", self.data))
 				.change_context(ConfigError)?;
 		
 		file.write_all(data.as_bytes())
 		    .into_report()
-		    .attach_printable("error parsing config data to json")
+		    .attach_printable("error writing config data to file")
+		    .attach_printable_lazy(|| format!("data: {}", data))
 		    .change_context(ConfigError)?;
 		Ok(())
 	}
