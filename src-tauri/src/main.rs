@@ -4,7 +4,6 @@ windows_subsystem = "windows"
 )]
 
 use error_stack::{IntoReport, ResultExt};
-use tauri::Manager;
 use tokio::sync::Mutex;
 
 use commands::cache::{get_page_from_cache_js, save_page_in_cache_js};
@@ -59,6 +58,7 @@ async fn main() {
 			.setup(|app| {
 				#[cfg(debug_assertions)] // only include this code on debug builds
 				{
+					use tauri::Manager;
 					let window = app.get_window("main").unwrap();
 					window.open_devtools();
 					window.close_devtools();
