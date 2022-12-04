@@ -25,8 +25,8 @@ mod utils;
 #[tokio::main]
 async fn main() {
 	env_logger::init();
-	println!("target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}",
-	         built_info::TARGET.to_string(), built_info::HOST.to_string(), built_info::PROFILE.to_string(), built_info::GIT_COMMIT_HASH.unwrap_or_default().to_string(), built_info::CFG_OS.to_string());
+	log::info!("version:{}; target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}",
+	         built_info::PKG_VERSION, built_info::TARGET, built_info::HOST, built_info::PROFILE, built_info::GIT_COMMIT_HASH.unwrap_or("GIT_COMMIT_HASH MISSING"), built_info::CFG_OS);
 	
 	tauri::async_runtime::set(tokio::runtime::Handle::current());
 	
@@ -64,7 +64,25 @@ async fn main() {
 					window.close_devtools();
 				}
 				
-				log::info!("version: {}", app.config().package.version.as_ref().unwrap_or(&"???".to_string()));
+				let handle = app.handle();
+				tauri::async_runtime::spawn(async move {
+					match tauri::updater::builder(handle).check().await {
+						Ok(update) => {
+							if update.is_update_available() {
+								log::info!("Update available: {}", update.latest_version());
+								if let Err(e) = update.download_and_install().await {
+									log::error!("Error downloading update: {}", e);
+								}
+							} else {
+								log::info!("No update available");
+							}
+						}
+						Err(e) => {
+							log::error!("Error checking for update: {}", e);
+						}
+					}
+				});
+				
 				Ok(())
 			})
 			.manage(connection)
