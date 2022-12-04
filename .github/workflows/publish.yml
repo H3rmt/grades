@@ -65,7 +65,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: npm
+          cache: yarn
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
       - name: install dependencies (ubuntu only)
@@ -78,7 +78,7 @@ jobs:
           prefix-key: rust-${{ matrix.platform }}
 #      - name: install app dependencies and build it
 #        run: yarn install --frozen-lockfile && yarn build
-      - uses: h3rmt/tauri-action@v0.1.1
+      - uses: h3rmt/tauri-action@v0.2.0
         id: build
         env:
           TOKEN: ${{ secrets.PAT }}
@@ -117,7 +117,7 @@ jobs:
 
     steps:
       - name: update-update-json
-        uses: h3rmt/tauri-action@v0.1.1
+        uses: h3rmt/tauri-action@v0.2.0
         env:
           TOKEN: ${{ secrets.PAT }}
         with:
