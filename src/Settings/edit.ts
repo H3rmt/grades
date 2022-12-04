@@ -1,12 +1,9 @@
 import {invoke} from "@tauri-apps/api/tauri";
+import {Period, Subject, Type} from "../entity";
 
-function editType(id: number, name: string, color: string): Promise<void> {
+function editType(type: Type): Promise<void> {
 	return invoke("edit_type_js", {
-		json: JSON.stringify({
-			id: id,
-			name: name,
-			color: color
-		})
+		json: JSON.stringify(type)
 	}).then(() => {
 		console.log("Edited Type")
 	}).catch((error) => {
@@ -15,13 +12,9 @@ function editType(id: number, name: string, color: string): Promise<void> {
 	})
 }
 
-function editSubject(id: number, name: string, color: string): Promise<void> {
+function editSubject(subject: Subject): Promise<void> {
 	return invoke("edit_subject_js", {
-		json: JSON.stringify({
-			id: id,
-			name: name,
-			color: color
-		})
+		json: JSON.stringify(subject)
 	}).then(() => {
 		console.log("Edited Subject")
 	}).catch((error) => {
@@ -30,14 +23,9 @@ function editSubject(id: number, name: string, color: string): Promise<void> {
 	})
 }
 
-function editPeriod(id: number, name: string, from: string, to: string): Promise<void> {
+function editPeriod(period: Period): Promise<void> {
 	return invoke("edit_period_js", {
-		json: JSON.stringify({
-			id: id,
-			name: name,
-			from: from,
-			to: to,
-		})
+		json: JSON.stringify(period)
 	}).then(() => {
 		console.log("Edited Period")
 	}).catch((error) => {

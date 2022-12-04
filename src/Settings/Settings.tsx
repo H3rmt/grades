@@ -18,7 +18,6 @@ import SaveButton from "@mui/icons-material/Save";
 import UndoIcon from "@mui/icons-material/Undo";
 import {saveDefaults, saveNoteRange} from "./save";
 import {loadInfo} from "./load";
-import {checkUpdate, installUpdate} from "@tauri-apps/api/updater";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -108,7 +107,7 @@ function Settings(props: Props) {
 	}
 
 	const handleEditType = async (period: Type) => {
-		await editType(period.id, period.name, period.color).then(async () => {
+		await editType(period).then(async () => {
 			toastMessage("success", "Edited Type", toast)
 			// TODO: add undo
 			await getTypes()
@@ -136,8 +135,8 @@ function Settings(props: Props) {
 		})
 	}
 
-	const handleEditSubject = async (period: Subject) => {
-		await editSubject(period.id, period.name, period.color).then(async () => {
+	const handleEditSubject = async (subject: Subject) => {
+		await editSubject(subject).then(async () => {
 			toastMessage("success", "Edited Subject", toast)
 			// TODO: add undo
 			await getSubjects()
@@ -167,7 +166,7 @@ function Settings(props: Props) {
 	}
 
 	const handleEditPeriod = async (period: Period) => {
-		await editPeriod(period.id, period.name, period.from, period.to).then(async () => {
+		await editPeriod(period).then(async () => {
 			toastMessage("success", "Edited Period", toast)
 			// TODO: add undo
 			await getPeriods()
@@ -269,8 +268,6 @@ function Settings(props: Props) {
 		let closeClear = toastMessage("warning", "Reset Defaults", toast, undo)
 	}
 
-	const [text, setText] = useState("")
-
 	useEffect(() => {
 		getTypes()
 		getPeriods()
@@ -296,7 +293,6 @@ function Settings(props: Props) {
 						}><CTable data={createData(subjects)} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
 						</SettingsBox>
 					</Grid>
-					{text}
 					<Grid item xs={12} sm={12} md={12} xl={6}>
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreatePeriod}>Add</Button>
@@ -317,7 +313,7 @@ function Settings(props: Props) {
 									<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
 										<Stack spacing={2} direction="row" alignItems="center">
 											<Typography variant="h6" fontWeight="normal">Type</Typography>
-											<Select value={defaults.type_default} margin="none" fullWidth onChange={handleTypeSelectChange}>
+											<Select value={defaults.type_default?.toString() ?? ''} margin="none" fullWidth onChange={handleTypeSelectChange}>
 												{types.map((type) => {
 													return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
 												})}
@@ -327,7 +323,8 @@ function Settings(props: Props) {
 									<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
 										<Stack spacing={2} direction="row" alignItems="center">
 											<Typography variant="h6" fontWeight="normal">Subject</Typography>
-											<Select value={defaults.subject_default} margin="none" fullWidth onChange={handleSubjectSelectChange}>
+											<Select value={defaults.subject_default?.toString() ?? ''} margin="none" fullWidth
+													  onChange={handleSubjectSelectChange}>
 												{subjects.map((subject) => {
 													return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
 												})}
@@ -337,7 +334,7 @@ function Settings(props: Props) {
 									<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
 										<Stack spacing={2} direction="row" alignItems="center">
 											<Typography variant="h6" fontWeight="normal">Period</Typography>
-											<Select value={defaults.period_default} margin="none" fullWidth onChange={handlePeriodSelectChange}>
+											<Select value={defaults.period_default?.toString() ?? ''} margin="none" fullWidth onChange={handlePeriodSelectChange}>
 												{periods.map((period) => {
 													return <MenuItem value={period.id}>
 														<Stack>
