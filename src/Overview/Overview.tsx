@@ -92,7 +92,7 @@ export default function Overview(props: Props) {
 	}
 
 	const handleEditGrade = async (grade: Grade) => {
-		await editGrade(grade.id, grade.grade, grade.subject, grade.type, grade.info, grade.period, grade.double, grade.not_final).then(async () => {
+		await editGrade(grade).then(async () => {
 			toastMessage("success", "Edited Grade", toast)
 			// TODO: add undo
 			await getGrades()
@@ -111,6 +111,7 @@ export default function Overview(props: Props) {
 
 	const periodsPlus = [{id: -1, name: "All", from: "", to: ""}].concat(periods)
 
+	// filter by period
 	const data = grades.filter(grade => grade.period === Number(period) || period == "-1")
 
 	return (<>
@@ -130,8 +131,10 @@ export default function Overview(props: Props) {
 						}}>New Grade</Button>
 					</Stack>
 				}/>
-				<CTable data={createData(data)} cols={getCols(noteRange ?? {from: 0, to: 0}, subjects, types)} delete={handleDeleteGrade}
-						  edit={handleEditGrade}/>
+				{noteRange !== undefined &&
+						<CTable data={createData(data)} cols={getCols(noteRange, subjects, types)} delete={handleDeleteGrade}
+								  edit={handleEditGrade}/>
+				}
 				<NewGradeModal open={openModal} closeModal={() => {
 					setOpenModal(false)
 				}} onUpdate={getGrades}/>
