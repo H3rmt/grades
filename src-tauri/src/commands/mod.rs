@@ -1,3 +1,5 @@
+mod utils;
+
 pub mod db {
 	pub mod grades;
 	pub mod periods;
@@ -5,10 +7,6 @@ pub mod db {
 	pub mod subjects;
 }
 
-pub mod cache {
-	pub mod cache;
-}
-
-pub mod config {
-	pub mod config;
-}
+pub mod config;
+pub mod cache;
+pub mod info;

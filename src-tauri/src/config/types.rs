@@ -1,11 +1,13 @@
+use std::fmt::Display;
+
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-#[derive(TS, Deserialize, Debug, Serialize)]
+#[derive(TS, Deserialize, Serialize, Debug)]
 #[ts(export, export_to = "../src/entity/config/noteRange.ts")]
 pub struct NoteRange {
-	pub from: i8,
-	pub to: i8,
+	pub from: i32,
+	pub to: i32,
 }
 
 impl Default for NoteRange {
@@ -17,10 +19,16 @@ impl Default for NoteRange {
 	}
 }
 
-#[derive(TS, Deserialize, Debug, Serialize)]
+impl Display for NoteRange {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "{} - {}", self.from, self.to)
+	}
+}
+
+#[derive(TS, Deserialize, Serialize, Debug)]
 #[ts(export, export_to = "../src/entity/config/gradeModalDefaults.ts")]
 pub struct GradeModalDefaults {
-	pub grade_default: i8,
+	pub grade_default: i32,
 	pub subject_default: String,
 	pub type_default: String,
 	pub period_default: String,
@@ -40,5 +48,12 @@ impl Default for GradeModalDefaults {
 			not_final_default: false,
 			double_default: false,
 		}
+	}
+}
+
+impl Display for GradeModalDefaults {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "grade_default:{} subject_default:{} type_default:{} period_default:{} info_default:{} not_final_default:{} double_default:{}",
+		       self.grade_default, self.subject_default, self.type_default, self.period_default, self.info_default, self.not_final_default, self.double_default)
 	}
 }

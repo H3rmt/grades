@@ -2,41 +2,44 @@ on:
   push:
     branches:
       - release
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   create-release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.create-release.outputs.result }}
+      version: ${{ steps.get-json-version.outputs.prop }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get JSON Version
         id: get-json-version
         uses: notiz-dev/github-action-json-property@release
         with:
-          path: 'src-tauri/tauri.conf.json'
-          prop_path: 'package.version'
-      - name: Get JSON Name
-        id: get-json-name
-        uses: notiz-dev/github-action-json-property@release
-        with:
-          path: 'src-tauri/tauri.conf.json'
-          prop_path: 'package.productName'
+          path: "src-tauri/tauri.conf.json"
+          prop_path: "package.version"
       - name: create release
         id: create-release
         uses: actions/github-script@v6
         with:
+          retries: 3
           script: |
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `grade-app-v${{steps.get-json-version.outputs.prop}}`,
-              name: `${{steps.get-json-name.outputs.prop}} v${{steps.get-json-version.outputs.prop}}`,
-              body: 'Take a look at the assets to download and install this app.',
+              tag_name: `grades-app-v${{ steps.get-json-version.outputs.prop }}`,
+              name: `grades v${{ steps.get-json-version.outputs.prop }}`,
+              body: 'Assets getting generated...',
               draft: true,
               prerelease: false
             })
-            
+
+            core.notice(`created release: grades v${{ steps.get-json-version.outputs.prop }}`)
+
             return data.id
 
   build-tauri:
@@ -44,48 +47,88 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ macos-latest, ubuntu-20.04, windows-latest ]
-
+        platform: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.platform }}
+    env:
+      CARGO_TERM_COLOR: always
+    outputs:
+      winupdate: ${{ steps.build.outputs.winupdate }}
+      macupdate: ${{ steps.build.outputs.macupdate }}
+      linupdate: ${{ steps.build.outputs.linupdate }}
+      winsig: ${{ steps.build.outputs.winsig }}
+      macsig: ${{ steps.build.outputs.macsig }}
+      linsig: ${{ steps.build.outputs.linsig }}
+
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 16
+          cache: npm
       - name: install Rust stable
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+        uses: dtolnay/rust-toolchain@stable
       - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-20.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+        if: matrix.platform == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+      - name: Load Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+          prefix-key: rust-${{ matrix.platform }}
       - name: install app dependencies and build it
-        run: yarn && yarn build
-      - uses: tauri-apps/tauri-action@v0
+        run: yarn install --frozen-lockfile && yarn build
+      - uses: h3rmt/tauri-action@v0.1.1
+        id: build
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: ${{ secrets.PAT }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
+          version: ${{ needs.create-release.outputs.version }}
+          name: grades
 
   publish-release:
-    runs-on: ubuntu-20.04
-    needs: [ create-release, build-tauri ]
+    runs-on: ubuntu-latest
+    needs: [ build-tauri, create-release ]
 
     steps:
       - name: publish release
         id: publish-release
         uses: actions/github-script@v6
-        env:
-          release_id: ${{ needs.create-release.outputs.release_id }}
         with:
+          retries: 3
           script: |
-            github.rest.repos.updateRelease({
+            const { data } = await github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              release_id: process.env.release_id,
+              release_id: ${{ needs.create-release.outputs.release_id }},
+              body: 'Take a look at the assets to download and install this app.',
               draft: false,
               prerelease: false
             })
+
+            core.notice(`published release`);
+
+  update-update-json:
+    runs-on: ubuntu-latest
+    needs: [ publish-release, build-tauri, create-release ]
+
+    steps:
+      - name: update-update-json
+        uses: h3rmt/tauri-action@v0.1.1
+        env:
+          TOKEN: ${{ secrets.PAT }}
+        with:
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+          version: ${{ needs.create-release.outputs.version }}
+          gistId: 9f0a67b7ad425e9fb74b32f6afcab111
+          releaseNotes: ${{ github.event.head_commit.message }}
+          releaseTagName: grades-app-v${{ steps.get-json-version.outputs.prop }}
+
+          winsig: ${{ needs.build-tauri.outputs.winsig }}
+          macsig: ${{ needs.build-tauri.outputs.macsig }}
+          linsig: ${{ needs.build-tauri.outputs.linsig }}
+          winupdate: ${{ needs.build-tauri.outputs.winupdate }}
+          macupdate: ${{ needs.build-tauri.outputs.macupdate }}
+          linupdate: ${{ needs.build-tauri.outputs.linupdate }}

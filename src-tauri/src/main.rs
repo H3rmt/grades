@@ -3,19 +3,17 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
-extern crate core;
-
-use serde::{Deserialize, Serialize};
+use error_stack::{IntoReport, ResultExt};
 use tauri::Manager;
 use tokio::sync::Mutex;
 
-use cache::cache::Cache;
-use commands::cache::cache::{get_page_from_cache_js, store_page_in_cache_js};
-use commands::config::config::{get_grade_modal_defaults_js, get_note_rage_js, save_grade_modal_defaults_js, save_note_range_js};
+use commands::cache::{get_page_from_cache_js, save_page_in_cache_js};
+use commands::config::{get_grade_modal_defaults_js, get_note_rage_js, save_grade_modal_defaults_js, save_note_range_js};
 use commands::db::grades::{create_grade_js, delete_grade_js, edit_grade_js, get_grades_js};
 use commands::db::periods::{create_period_js, delete_period_js, edit_period_js, get_periods_js};
 use commands::db::subjects::{create_subject_js, delete_subject_js, edit_subject_js, get_subjects_js};
 use commands::db::types::{create_type_js, delete_type_js, edit_type_js, get_types_js};
+use commands::info::get_info_js;
 use migrations::{Migrator, MigratorTrait};
 
 mod db;
@@ -23,24 +21,39 @@ mod commands;
 mod dirs;
 mod cache;
 mod config;
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-struct Delete {
-	id: i32,
-}
+mod utils;
 
 #[tokio::main]
 async fn main() {
+	env_logger::init();
+	println!("target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}",
+	         built_info::TARGET.to_string(), built_info::HOST.to_string(), built_info::PROFILE.to_string(), built_info::GIT_COMMIT_HASH.unwrap_or_default().to_string(), built_info::CFG_OS.to_string());
+	
 	tauri::async_runtime::set(tokio::runtime::Handle::current());
 	
-	let connection = db::database::establish_connection().await.expect("Error connecting to DB");
-	Migrator::up(&connection, None).await.expect("Error running migrations");
+	let connection = db::database::establish_connection()
+			.await
+			.map_err(|e| {
+				log::error!("{}", e);
+			}).expect("Error connecting to DB");
 	
-	// dont panic on cache missing
-	let cache = Mutex::new(cache::init::connect().expect("Error connecting to cache"));
+	Migrator::up(&connection, None)
+			.await
+			.into_report()
+			.attach_printable("Error running migrations")
+			.map_err(|e| {
+				log::error!("{}", e);
+			}).expect("Error running migrations");
 	
-	// dont panic on config missing
-	let config = Mutex::new(config::init::connect().expect("Error connecting to config"));
+	let cache = Mutex::new(cache::create()
+			.map_err(|e| {
+				log::error!("{}", e);
+			}).expect("Error connecting to cache"));
+	
+	let config = Mutex::new(config::create()
+			.map_err(|e| {
+				log::error!("{}", e);
+			}).expect("Error connecting to config"));
 	
 	tauri::Builder::default()
 			.setup(|app| {
@@ -50,6 +63,8 @@ async fn main() {
 					window.open_devtools();
 					window.close_devtools();
 				}
+				
+				log::info!("version: {}", app.config().package.version.as_ref().unwrap_or(&"???".to_string()));
 				Ok(())
 			})
 			.manage(connection)
@@ -60,9 +75,18 @@ async fn main() {
 				get_periods_js, create_period_js, edit_period_js, delete_period_js,
 				get_types_js, create_type_js, edit_type_js, delete_type_js,
 				get_subjects_js, create_subject_js, edit_subject_js, delete_subject_js,
-				store_page_in_cache_js,get_page_from_cache_js,
+				save_page_in_cache_js,get_page_from_cache_js, get_info_js,
 				get_note_rage_js,get_grade_modal_defaults_js, save_note_range_js, save_grade_modal_defaults_js
         ])
 			.run(tauri::generate_context!())
-			.expect("error while running tauri application");
+			.into_report()
+			.attach_printable("Error running grades")
+			.map_err(|e| {
+				log::error!("{}", e);
+			}).expect("error while running tauri application");
+}
+
+pub mod built_info {
+	// The file has been placed there by the build script.
+	include!(concat!(env!("OUT_DIR"), "/built.rs"));
 }

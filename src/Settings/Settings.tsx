@@ -1,4 +1,4 @@
-import {Button, Grid, IconButton, MenuItem, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
+import {Button, Grid, IconButton, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import CAppBar from '../components/AppBar/CAppBar';
 import {nullableUseState, reactSet} from "../ts/utils";
@@ -6,7 +6,7 @@ import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
 import {loadPeriods, loadSubjects, loadTypes} from "../ts/load";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
-import {Period, Subject, Type} from "../entity";
+import {Info, Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {createPeriod, createSubject, createType} from "./create";
 import {createData} from "../components/table/util";
@@ -16,7 +16,8 @@ import {loadDefaults, loadNoteRange} from "../components/NewGradeModal/loadDefau
 import {GradeModalDefaults, NoteRange} from "../entity/config";
 import SaveButton from "@mui/icons-material/Save";
 import UndoIcon from "@mui/icons-material/Undo";
-import {saveNoteRange, saveDefaults} from "./save";
+import {saveDefaults, saveNoteRange} from "./save";
+import {loadInfo} from "./load";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -30,6 +31,8 @@ function Settings(props: Props) {
 
 	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
 	const [defaults, setDefaults] = nullableUseState<GradeModalDefaults>()
+
+	const [info, setInfo] = nullableUseState<Info>()
 
 	const toast = useToast()
 
@@ -72,6 +75,14 @@ function Settings(props: Props) {
 			setDefaults(data)
 		}).catch((error) => {
 			errorToast("Error loading Defaults", toast, error)
+		})
+	}
+
+	const getInfo = async () => {
+		await loadInfo().then((data) => {
+			setInfo(data)
+		}).catch((error) => {
+			errorToast("Error loading Data", toast, error)
 		})
 	}
 
@@ -263,6 +274,7 @@ function Settings(props: Props) {
 		getSubjects()
 		getNoteRange()
 		getDefaults()
+		getInfo()
 	}, [])
 
 	return (<>
@@ -369,6 +381,34 @@ function Settings(props: Props) {
 											</Stack>
 										</Grid>
 									</Grid>
+								</SettingsBox>
+							</Grid>
+					}
+					{info !== undefined &&
+							<Grid item xs={12} sm={6} md={6} xl={6}>
+								<SettingsBox title="Info">
+									<Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">
+										<Stack spacing={1} direction="column">
+											<Typography>
+												name: {info.name}
+											</Typography>
+											<Typography>
+												version: {info.version}
+											</Typography>
+											<Typography>
+												authors: {info.authors}
+											</Typography>
+											<Typography>
+												target: {info.target}
+											</Typography>
+											<Typography>
+												profile: {info.profile}
+											</Typography>
+											<Typography>
+												commit-hash: {info.commit_hash}
+											</Typography>
+										</Stack>
+									</Paper>
 								</SettingsBox>
 							</Grid>
 					}

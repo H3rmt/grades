@@ -1,6 +1,6 @@
 [package]
 name = "entity"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
 publish = false
 
@@ -9,6 +9,6 @@ name = "entity"
 path = "src/mod.rs"
 
 [dependencies]
-serde = { version = "1.0.145", features = ["derive"] }
-sea-orm = "0.10.1"
-ts-rs = "6.2.0"
+serde = { version = "1.0.147", features = ["derive"] }
+sea-orm = "0.10.2"
+ts-rs = "6.2.1"
