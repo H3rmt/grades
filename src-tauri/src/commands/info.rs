@@ -2,6 +2,7 @@ use error_stack::{IntoReport, ResultExt};
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Wry};
 use ts_rs::TS;
+use crate::built_info;
 
 use crate::commands::utils::{CommandError, LogAndString};
 
@@ -20,6 +21,10 @@ pub async fn get_info_js(app_handle: AppHandle<Wry>) -> Result<String, String> {
 	let info = Info {
 		name,
 		version,
+		authors: built_info::PKG_AUTHORS.to_string(),
+		target: built_info::TARGET.to_string(),
+		profile: built_info::PROFILE.to_string(),
+		commit_hash: built_info::GIT_COMMIT_HASH.unwrap_or_default().to_string(),
 	};
 	
 	let data = serde_json::to_string(&info)
@@ -38,4 +43,8 @@ pub async fn get_info_js(app_handle: AppHandle<Wry>) -> Result<String, String> {
 struct Info {
 	version: String,
 	name: String,
+	authors: String,
+	target: String,
+	profile: String,
+	commit_hash: String,
 }
