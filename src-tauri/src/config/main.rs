@@ -83,10 +83,17 @@ impl Config {
 				.attach_printable_lazy(|| format!("data: {:?}", self.data))
 				.change_context(ConfigError)?;
 		
+		file.set_len(0)
+		    .into_report()
+		    .attach_printable("error clearing config data file")
+		    .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
+		    .change_context(ConfigError)?;
+		
 		file.write_all(data.as_bytes())
 		    .into_report()
 		    .attach_printable("error writing config data to file")
 		    .attach_printable_lazy(|| format!("data: {}", data))
+		    .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
 		    .change_context(ConfigError)?;
 		Ok(())
 	}

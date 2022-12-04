@@ -43,12 +43,6 @@ impl MigrationTrait for Migration {
 pub enum Grade {
 	#[iden = "grades"]
 	Table,
-	Id,
-	Subject,
-	Type,
-	Info,
-	Grade,
-	Period,
 	NotFinal,
 	Double,
 }

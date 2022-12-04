@@ -44,7 +44,7 @@ impl Cache {
 		
 		file.read_to_string(&mut buffer)
 		    .into_report()
-		    .attach_printable("error reading cache file")
+		    .attach_printable("error reading cache data from file")
 		    .attach_printable_lazy(|| format!("buffer: {}", buffer))
 		    .change_context(CacheError)?;
 		
@@ -82,10 +82,17 @@ impl Cache {
 				.attach_printable_lazy(|| format!("data: {:?}", self.data))
 				.change_context(CacheError)?;
 		
+		file.set_len(0)
+		    .into_report()
+		    .attach_printable("error clearing cache data file")
+		    .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
+		    .change_context(CacheError)?;
+		
 		file.write_all(data.as_bytes())
 		    .into_report()
-		    .attach_printable("error parsing cache data to json")
+		    .attach_printable("error writing cache data to file")
 		    .attach_printable_lazy(|| format!("data: {}", data))
+		    .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
 		    .change_context(CacheError)?;
 		Ok(())
 	}

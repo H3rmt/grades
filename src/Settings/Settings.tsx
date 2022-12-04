@@ -18,6 +18,7 @@ import SaveButton from "@mui/icons-material/Save";
 import UndoIcon from "@mui/icons-material/Undo";
 import {saveDefaults, saveNoteRange} from "./save";
 import {loadInfo} from "./load";
+import {checkUpdate, installUpdate} from "@tauri-apps/api/updater";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -268,13 +269,27 @@ function Settings(props: Props) {
 		let closeClear = toastMessage("warning", "Reset Defaults", toast, undo)
 	}
 
+	const [text, setText] = useState("")
+
 	useEffect(() => {
 		getTypes()
 		getPeriods()
 		getSubjects()
 		getNoteRange()
 		getDefaults()
-		getInfo()
+		getInfo();
+
+		// (async () => {
+		// 	setText(text + "check update")
+		// 	const {shouldUpdate, manifest} = await checkUpdate().catch((error) => {
+		// 		errorToast("Error checking for update", toast, error)
+		// 		throw error
+		// 	});
+		// 	setText(text + `Should update: ${shouldUpdate}`);
+		// 	setText(text + manifest);
+		// 	await installUpdate();
+		// 	setText(text + "Installation complete, restart required.");
+		// })();
 	}, [])
 
 	return (<>
@@ -292,6 +307,7 @@ function Settings(props: Props) {
 						}><CTable data={createData(subjects)} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
 						</SettingsBox>
 					</Grid>
+					{text}
 					<Grid item xs={12} sm={12} md={12} xl={6}>
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreatePeriod}>Add</Button>
