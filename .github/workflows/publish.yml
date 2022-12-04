@@ -78,7 +78,7 @@ jobs:
           prefix-key: rust-${{ matrix.platform }}
       - name: install app dependencies and build it
         run: yarn install --frozen-lockfile && yarn build
-      - uses: h3rmt/tauri-action@v0.1.0
+      - uses: h3rmt/tauri-action@v0.1.1
         id: build
         env:
           TOKEN: ${{ secrets.PAT }}
@@ -116,7 +116,7 @@ jobs:
 
     steps:
       - name: update-update-json
-        uses: h3rmt/tauri-action@v0.1.0
+        uses: h3rmt/tauri-action@v0.1.1
         env:
           TOKEN: ${{ secrets.PAT }}
         with:
