@@ -76,8 +76,8 @@ jobs:
         with:
           workspaces: src-tauri
           prefix-key: rust-${{ matrix.platform }}
-      - name: install app dependencies and build it
-        run: yarn install --frozen-lockfile && yarn build
+#      - name: install app dependencies and build it
+#        run: yarn install --frozen-lockfile && yarn build
       - uses: h3rmt/tauri-action@v0.1.1
         id: build
         env:
