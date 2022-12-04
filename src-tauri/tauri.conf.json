@@ -6,7 +6,7 @@
 	},
 	"package": {
 		"productName": "Grades",
-		"version": "0.0.4"
+		"version": "0.0.5"
 	},
 	"tauri": {
 		"allowlist": {
@@ -63,7 +63,10 @@
 				"https://gist.githubusercontent.com/H3rmt/9f0a67b7ad425e9fb74b32f6afcab111/raw/"
 			],
 			"dialog": true,
-			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQ0ODhFRDEwQkFCODgyMTgKUldRWWdyaTZFTzJJUkd1VWQvZEt5eVFxRXViYnBnMkRUNUFwd3VmalU1bDBTU2RqL1dad29XVEQK"
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQ0ODhFRDEwQkFCODgyMTgKUldRWWdyaTZFTzJJUkd1VWQvZEt5eVFxRXViYnBnMkRUNUFwd3VmalU1bDBTU2RqL1dad29XVEQK",
+			"windows": {
+				"installMode": "basicUi"
+			}
 		},
 		"windows": [
 			{
