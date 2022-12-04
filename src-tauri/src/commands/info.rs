@@ -39,7 +39,7 @@ pub async fn get_info_js(app_handle: AppHandle<Wry>) -> Result<String, String> {
 }
 
 #[derive(TS, Serialize, Deserialize, Debug)]
-#[ts(export, export_to = "../../../src/entity/info.ts")]
+#[ts(export, export_to = "../src/entity/info.ts")]
 struct Info {
 	version: String,
 	name: String,
