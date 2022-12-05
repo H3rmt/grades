@@ -28,9 +28,9 @@ import {nullableUseState} from '../../ts/utils';
 
 function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate: () => void }) {
 	const [grade, setGrade] = nullableUseState<number>()
-	const [subject, setSubject] = nullableUseState<string>()
-	const [type, setType] = nullableUseState<string>()
-	const [period, setPeriod] = nullableUseState<string>()
+	const [subject, setSubject] = nullableUseState<number>()
+	const [type, setType] = nullableUseState<number>()
+	const [period, setPeriod] = nullableUseState<number>()
 	const [info, setInfo] = nullableUseState<string>()
 	const [notFinal, setNotFinal] = nullableUseState<boolean>()
 	const [double, setDouble] = nullableUseState<boolean>()
@@ -54,15 +54,15 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 	};
 
 	const handleSubjectSelectChange = (event: SelectChangeEvent) => {
-		setSubject(event.target.value)
+		setSubject(Number(event.target.value))
 	}
 
 	const handleTypeSelectChange = (event: SelectChangeEvent) => {
-		setType(event.target.value)
+		setType(Number(event.target.value))
 	}
 
 	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
-		setPeriod(event.target.value)
+		setPeriod(Number(event.target.value))
 	}
 
 	const handleInfoInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -167,7 +167,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 		getDefaults()
 	}, [])
 
-	let render = grade !== undefined && subject !== undefined && type !== undefined && period !== undefined && info !== undefined && notFinal !== undefined && double !== undefined && noteRange !== undefined
+	let render = grade !== null && subject !== null && type !== null && period !== null && info !== null && notFinal !== null && double !== null && noteRange !== null
 
 	return (<Dialog open={props.open} onClose={props.closeModal} fullWidth maxWidth="md">
 		<DialogTitle variant="h5">New Grade</DialogTitle>
@@ -178,7 +178,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Subject</Typography>
-									<Select value={subject} margin="none" fullWidth onChange={handleSubjectSelectChange}>
+									<Select value={subject?.toString()} margin="none" fullWidth onChange={handleSubjectSelectChange}>
 										{subjects.map((subject) => {
 											return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
 										})}
@@ -188,7 +188,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Type</Typography>
-									<Select value={type} margin="none" fullWidth onChange={handleTypeSelectChange}>
+									<Select value={type?.toString()} margin="none" fullWidth onChange={handleTypeSelectChange}>
 										{types.map((type) => {
 											return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
 										})}
@@ -198,7 +198,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Period</Typography>
-									<Select value={period} margin="none" fullWidth onChange={handlePeriodSelectChange}>
+									<Select value={period?.toString()} margin="none" fullWidth onChange={handlePeriodSelectChange}>
 										{periods.map((period) => {
 											return <MenuItem value={period.id}>
 												<Stack>
@@ -215,7 +215,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Grade</Typography>
 									<TextField value={grade} type="number" fullWidth margin="none" onChange={handleGradeInputChange}/>
-									<Slider value={grade} color="secondary" min={noteRange?.from} max={noteRange?.to}
+									<Slider value={grade || undefined} color="secondary" min={noteRange?.from} max={noteRange?.to}
 											  onChange={handleGradeSliderChange}/>
 								</Stack>
 							</Grid>
@@ -231,10 +231,10 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 									<Typography variant="h6" fontWeight="normal">Extra</Typography>
 									<FormGroup>
 										<FormControlLabel control={
-											<Checkbox color="secondary" checked={notFinal} onChange={handleNotFinalCheckboxChange}/>
+											<Checkbox color="secondary" checked={notFinal || undefined} onChange={handleNotFinalCheckboxChange}/>
 										} label="Not Final"/>
 										<FormControlLabel control={
-											<Checkbox color="secondary" checked={double} onChange={handleDoubleCheckboxChange}/>
+											<Checkbox color="secondary" checked={double || undefined} onChange={handleDoubleCheckboxChange}/>
 										} label="Double"/>
 									</FormGroup>
 								</Stack>

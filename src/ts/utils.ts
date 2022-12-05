@@ -3,7 +3,7 @@ import {Dispatch, SetStateAction, useState} from "react";
 type reactSet<T> = Dispatch<SetStateAction<T>>
 
 function nullableUseState<T>() {
-	return useState<T | undefined>(undefined)
+	return useState<T | null>(null)
 }
 
 function capitalizeFirstLetter(str: string) {

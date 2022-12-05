@@ -131,7 +131,7 @@ export default function Overview(props: Props) {
 						}}>New Grade</Button>
 					</Stack>
 				}/>
-				{noteRange !== undefined &&
+				{noteRange !== null &&
 						<CTable data={createData(data)} cols={getCols(noteRange, subjects, types)} delete={handleDeleteGrade}
 								  edit={handleEditGrade}/>
 				}

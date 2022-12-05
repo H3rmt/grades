@@ -299,7 +299,7 @@ function Settings(props: Props) {
 						}><CTable data={createData(periods)} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>
 					</Grid>
-					{defaults !== undefined &&
+					{defaults !== null &&
 							<Grid item xs={12} sm={12} md={6} xl={6}>
 								<SettingsBox title="Defaults" top={
 									<Stack direction="row">
@@ -351,7 +351,7 @@ function Settings(props: Props) {
 								</SettingsBox>
 							</Grid>
 					}
-					{noteRange !== undefined &&
+					{noteRange !== null &&
 							<Grid item xs={12} sm={12} md={6} xl={6}>
 								<SettingsBox title="Note Range" top={
 									<Stack direction="row">
@@ -386,7 +386,7 @@ function Settings(props: Props) {
 								</SettingsBox>
 							</Grid>
 					}
-					{info !== undefined &&
+					{info !== null &&
 							<Grid item xs={12} sm={6} md={6} xl={6}>
 								<SettingsBox title="Info">
 									<Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">

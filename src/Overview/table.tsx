@@ -47,7 +47,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 				}} renderDay={(day, value, DayComponentProps) => <Badge
 						key={day.toString()}
 						overlap="circular"
-						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == r.confirmed ? '✨' : undefined}>
+						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == r.confirmed ? '✨' : null}>
 					<PickersDay {...DayComponentProps} />
 				</Badge>
 				}/>
@@ -65,7 +65,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 				}} renderDay={(day, value, DayComponentProps) => <Badge
 						key={day.toString()}
 						overlap="circular"
-						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == r.date ? '✨' : undefined}>
+						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == r.date ? '✨' : null}>
 					<PickersDay {...DayComponentProps} />
 				</Badge>
 				}/>
