@@ -8,15 +8,17 @@
 
 		"tauri dev": "tauri dev",
 		"tauri build": "tauri build",
-		"build entity": "cd src-tauri/entity && cargo test && cd src-tauri && cargo test"
+		"build ts entity": "cd src-tauri/entity && cargo test && cd src-tauri && cargo test"
 	},
 	"dependencies": {
 		"@emotion/react": "11.10.5",
 		"@emotion/styled": "11.10.5",
+		"dayjs": "1.11.6",
 		"@babel/core": "7.19.6",
 
 		"@mui/icons-material": "5.10.15",
 		"@mui/material": "5.10.15",
+		"@mui/x-date-pickers": "5.0.9",
 		"notistack": "2.0.8",
 
 		"react": "18.2.0",

@@ -4,6 +4,8 @@ import {createRoot} from "react-dom/client";
 import App from "./App";
 import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
 import {SnackbarProvider} from "notistack";
+import {LocalizationProvider} from "@mui/x-date-pickers";
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 
 const darkTheme = createTheme({
 	palette: {
@@ -29,10 +31,12 @@ const darkTheme = createTheme({
 createRoot(document.getElementById("root") as HTMLElement).render(
 		<React.StrictMode>
 			<ThemeProvider theme={darkTheme}>
-				<CssBaseline enableColorScheme/>
-				<SnackbarProvider maxSnack={5}>
-					<App/>
-				</SnackbarProvider>
+				<LocalizationProvider dateAdapter={AdapterDayjs}>
+					<CssBaseline enableColorScheme/>
+					<SnackbarProvider maxSnack={5}>
+						<App/>
+					</SnackbarProvider>
+				</LocalizationProvider>
 			</ThemeProvider>
 		</React.StrictMode>
 )

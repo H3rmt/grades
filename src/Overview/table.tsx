@@ -1,9 +1,11 @@
 import {Grade, Subject, Type} from "../entity";
 import {cols, Column} from "../components/table/defs";
-import {Checkbox, TextField, Typography} from "@mui/material";
+import {Badge, Checkbox, TextField, Typography} from "@mui/material";
 import {map} from "../ts/utils";
 import React from "react";
 import {NoteRange} from "../entity/config";
+import {DatePicker, PickersDay} from "@mui/x-date-pickers";
+import dayjs, {Dayjs} from "dayjs";
 
 
 const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[]) => new Map<keyof Grade, Column<Grade>>(
@@ -19,14 +21,54 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 			"subject", {
 				sort: true,
 				format: subject => <Typography
-						sx={{color: subjects.find(sub => sub.id === subject)?.color || 'white'}}>{subjects.find(sub => sub.id === subject)?.name || (() => {console.error('subject:',subject);return '--notfound--'})() }</Typography>,
+						sx={{color: subjects.find(sub => sub.id === subject)?.color || 'white'}}>{subjects.find(sub => sub.id === subject)?.name || (() => {
+					console.error('subject:', subject);
+					return '--notfound--'
+				})()}</Typography>,
 			}
 		], [
 			"type", {
 				sort: true,
 				format: type => <Typography
-						sx={{color: types.find(typ => typ.id === type)?.color || 'white'}}>{types.find(typ => typ.id === type)?.name || (() => {console.error('type:',type);return '--notfound--'})()}</Typography>,
-
+						sx={{color: types.find(typ => typ.id === type)?.color || 'white'}}>{types.find(typ => typ.id === type)?.name || (() => {
+					console.error('type:', type);
+					return '--notfound--'
+				})()}</Typography>,
+			}
+		], [
+			"date", {
+				sort: true,
+				edit: (r) => <DatePicker value={dayjs(r.date, 'DD-MM-YYYY')} onChange={(i) => {
+					r.date = (i as unknown as Dayjs)?.format('DD-MM-YYYY')
+				}} renderInput={(props) => {
+					// @ts-ignore
+					props.inputProps.value = r.date;
+					return <TextField {...props} />
+				}} renderDay={(day, value, DayComponentProps) => <Badge
+						key={day.toString()}
+						overlap="circular"
+						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == r.confirmed ? '✨' : undefined}>
+					<PickersDay {...DayComponentProps} />
+				</Badge>
+				}/>
+			}
+		], [
+			"confirmed", {
+				sort: true,
+				format: confirmed => <Typography>{confirmed ?? "-"}</Typography>,
+				edit: (r) => <DatePicker value={dayjs(r.confirmed, 'DD-MM-YYYY')} onChange={(i) => {
+					r.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY') || null
+				}} renderInput={(props) => {
+					// @ts-ignore
+					props.inputProps.value = r.confirmed;
+					return <TextField {...props} />
+				}} renderDay={(day, value, DayComponentProps) => <Badge
+						key={day.toString()}
+						overlap="circular"
+						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == r.date ? '✨' : undefined}>
+					<PickersDay {...DayComponentProps} />
+				</Badge>
+				}/>
 			}
 		], [
 			"info", {
@@ -58,6 +100,8 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 			}
 		]]
 )
+
+Dayjs
 
 export {
 	getCols

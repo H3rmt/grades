@@ -1,4 +1,4 @@
-import {IRow, RowD} from "./table";
+import {IRow, RowD} from "./defs";
 
 function createData<Data extends IRow>(data: Data[]): RowD<Data>[] {
 	return data.map((row) => {
