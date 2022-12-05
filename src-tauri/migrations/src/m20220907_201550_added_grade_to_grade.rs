@@ -12,6 +12,7 @@ impl MigrationTrait for Migration {
 				.add_column(ColumnDef::new(Grade::Grade)
 						.integer()
 						.not_null()
+						.default(0)
 				)
 				.to_owned();
 		

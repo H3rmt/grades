@@ -17,14 +17,17 @@ impl MigrationTrait for Migration {
 				.col(ColumnDef::new(Period::Name)
 						.string()
 						.not_null()
+						.default(1)
 				)
 				.col(ColumnDef::new(Period::From)
 						.date()
 						.not_null()
+						.default("")
 				)
 				.col(ColumnDef::new(Period::To)
 						.date()
 						.not_null()
+						.default("")
 				)
 				.to_owned();
 		

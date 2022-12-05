@@ -12,6 +12,7 @@ impl MigrationTrait for Migration {
 				.add_column(ColumnDef::new(Grade::NotFinal)
 						.boolean()
 						.not_null()
+						.default(false)
 				)
 				.to_owned();
 		
@@ -20,6 +21,7 @@ impl MigrationTrait for Migration {
 				.add_column(ColumnDef::new(Grade::Double)
 						.boolean()
 						.not_null()
+						.default(false)
 				)
 				.to_owned();
 		

@@ -28,10 +28,12 @@ impl MigrationTrait for Migration {
 				.col(ColumnDef::new(Setting::Name)
 						.string()
 						.not_null()
+						.default("")
 				)
 				.col(ColumnDef::new(Setting::Value)
 						.string()
 						.not_null()
+						.default("")
 				)
 				.to_owned();
 		
