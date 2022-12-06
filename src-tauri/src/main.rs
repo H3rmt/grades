@@ -33,7 +33,7 @@ async fn main() {
 	let connection = db::database::establish_connection()
 			.await
 			.map_err(|e| {
-				log::error!("{}", e);
+				log::error!("{:?}", e);
 			}).expect("Error connecting to DB");
 	
 	Migrator::up(&connection, None)
@@ -41,17 +41,17 @@ async fn main() {
 			.into_report()
 			.attach_printable("Error running migrations")
 			.map_err(|e| {
-				log::error!("{}", e);
+				log::error!("{:?}", e);
 			}).expect("Error running migrations");
 	
 	let cache = Mutex::new(cache::create()
 			.map_err(|e| {
-				log::error!("{}", e);
+				log::error!("{:?}", e);
 			}).expect("Error connecting to cache"));
 	
 	let config = Mutex::new(config::create()
 			.map_err(|e| {
-				log::error!("{}", e);
+				log::error!("{:?}", e);
 			}).expect("Error connecting to config"));
 	
 	tauri::Builder::default()
@@ -100,7 +100,7 @@ async fn main() {
 			.into_report()
 			.attach_printable("Error running grades")
 			.map_err(|e| {
-				log::error!("{}", e);
+				log::error!("{:?}", e);
 			}).expect("error while running tauri application");
 }
 

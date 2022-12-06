@@ -1,17 +1,9 @@
 import {invoke} from "@tauri-apps/api/tauri";
+import {Grade} from "../../entity";
 
-function createGrade(grade: number, subject: string, type: string, info: string, period: string, notFinal: boolean, double: boolean): Promise<void> {
+function createGrade(grade: Grade): Promise<void> {
 	return invoke("create_grade_js", {
-		json: JSON.stringify({
-			id: -1,
-			grade: grade,
-			subject: Number(subject),
-			type: Number(type),
-			info: info,
-			period: Number(period),
-			not_final: notFinal,
-			double: double
-		})
+		json: JSON.stringify(grade)
 	}).then(() => {
 		console.log("Created new Grade")
 	}).catch((error) => {

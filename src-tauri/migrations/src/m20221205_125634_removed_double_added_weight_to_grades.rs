@@ -14,10 +14,10 @@ impl MigrationTrait for Migration {
 		
 		let statement2 = Table::alter()
 				.table(Grade::Table)
-				.add_column(ColumnDef::new(Grade::Multiplier)
-						.enumeration(Multiplier::Multiplier, [Multiplier::Double, Multiplier::Half, Multiplier::Default])
+				.add_column(ColumnDef::new(Grade::Weight)
+						.enumeration(Weight::Weight, [Weight::Double, Weight::Half, Weight::Default])
 						.not_null()
-						.default(format!("{:?}", Multiplier::Default))
+						.default(format!("{:?}", Weight::Default))
 				)
 				.to_owned();
 		
@@ -31,7 +31,7 @@ impl MigrationTrait for Migration {
 	async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
 		let statement = Statement::from_string(
 			manager.get_database_backend(),
-			"ALTER TABLE `grades` DROP COLUMN `multiplier`".to_string(),
+			"ALTER TABLE `grades` DROP COLUMN `weight`".to_string(),
 		);
 		
 		let statement2 = Table::alter()
@@ -57,14 +57,14 @@ pub enum Grade {
 	#[iden = "grades"]
 	Table,
 	Double,
-	Multiplier,
+	Weight,
 }
 
 #[derive(Iden, Debug)]
 #[allow(clippy::enum_variant_names)] // name for enum name in postgres
-pub enum Multiplier {
-	#[iden = "multiplier"]
-	Multiplier,
+pub enum Weight {
+	#[iden = "weight"]
+	Weight,
 	Default,
 	Double,
 	Half,

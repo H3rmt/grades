@@ -76,10 +76,8 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 				edit: (r) => <TextField fullWidth value={r.info} onChange={(i) => r.info = i.target.value}/>
 			}
 		], [
-			"double", {
-				sort: false,
-				format: double => <Checkbox checked={double as boolean} disabled/>,
-				edit: (r) => <Checkbox color="secondary" checked={r.double} onChange={i => r.double = i.target.checked}/>
+			"weight", {
+				sort: true,
 			}
 		], [
 			"not_final", {

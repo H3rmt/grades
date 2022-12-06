@@ -1,7 +1,6 @@
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {
 	Button,
-	Checkbox,
 	Dialog,
 	DialogActions,
 	DialogContent,
@@ -11,6 +10,8 @@ import {
 	Grid,
 	MenuItem,
 	Paper,
+	Radio,
+	RadioGroup,
 	Select,
 	SelectChangeEvent,
 	Slider,
@@ -19,21 +20,16 @@ import {
 	Typography
 } from "@mui/material";
 import {errorToast, toastMessage, useToast} from "../../ts/toast";
-import {Period, Subject, Type} from "../../entity";
+import {Grade, Period, Subject, Type} from "../../entity";
 import {loadPeriods, loadSubjects, loadTypes} from "../../ts/load";
 import {createGrade} from "./create";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
 import {loadDefaults, loadNoteRange} from "./loadDefaults";
 import {nullableUseState} from '../../ts/utils';
+import dayjs from "dayjs";
 
 function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate: () => void }) {
-	const [grade, setGrade] = nullableUseState<number>()
-	const [subject, setSubject] = nullableUseState<number>()
-	const [type, setType] = nullableUseState<number>()
-	const [period, setPeriod] = nullableUseState<number>()
-	const [info, setInfo] = nullableUseState<string>()
-	const [notFinal, setNotFinal] = nullableUseState<boolean>()
-	const [double, setDouble] = nullableUseState<boolean>()
+	const [grade, setGrade] = nullableUseState<Grade>()
 
 	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
 	const [defaults, setDefaults] = nullableUseState<GradeModalDefaults>()
@@ -44,42 +40,40 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 	const [types, setTypes] = useState<Type[]>([])
 	const [periods, setPeriods] = useState<Period[]>([])
 
-	const handleGradeSliderChange = (event: Event, newValue: number | number[]) => {
-		setGrade(newValue as number);
+	const handleGradeSliderChange = (value: number | number[], grade: Grade, noteRange: NoteRange) => {
+		setGrade({...grade, grade: Math.max(Math.min(Number(value), noteRange.to), noteRange.from)});
 	};
 
-	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-		// @ts-ignore
-		setGrade(Math.max(Math.min(Number(event.target.value), noteRange?.to), noteRange?.from));
+	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Grade, noteRange: NoteRange) => {
+		setGrade({...grade, grade: Math.max(Math.min(Number(event.target.value), noteRange.to), noteRange.from)});
 	};
 
-	const handleSubjectSelectChange = (event: SelectChangeEvent) => {
-		setSubject(Number(event.target.value))
+	const handleSubjectSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+		setGrade({...grade, subject: Number(event.target.value)})
 	}
 
-	const handleTypeSelectChange = (event: SelectChangeEvent) => {
-		setType(Number(event.target.value))
+	const handleTypeSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+		setGrade({...grade, type: Number(event.target.value)})
 	}
 
-	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
-		setPeriod(Number(event.target.value))
+	const handlePeriodSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+		setGrade({...grade, period: Number(event.target.value)})
 	}
 
-	const handleInfoInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-		setInfo(event.target.value)
+	const handleInfoInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Grade) => {
+		setGrade({...grade, info: event.target.value})
 	}
 
-	const handleNotFinalCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setNotFinal(event.target.checked)
+	const handleNotFinalCheckboxChange = (event: ChangeEvent<HTMLInputElement>, grade: Grade) => {
+		setGrade({...grade, not_final: event.target.checked})
 	}
 
-	const handleDoubleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setDouble(event.target.checked)
+	const handleWeightChange = (event: ChangeEvent<HTMLInputElement>, grade: Grade) => {
+		setGrade({...grade, weight: (event.target.value as 'Default' | 'Double' | 'Half')})
 	}
 
-	const handleCreateGrade = async () => {
-		// @ts-ignore
-		await createGrade(grade, subject, type, info, period, notFinal, double).then(() => {
+	const handleCreateGrade = async (grade: Grade) => {
+		await createGrade(grade).then(() => {
 			props.closeModal()
 			toastMessage("success", "Created Grade", toast)
 			props.onUpdate()
@@ -130,28 +124,27 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 	}
 
 	const setDefault = (defaults: GradeModalDefaults) => {
-		setGrade(defaults.grade_default)
-		setSubject(defaults.subject_default)
-		setType(defaults.type_default)
-		setPeriod(defaults.period_default)
-		setInfo(defaults.info_default)
-		setDouble(defaults.double_default)
-		setNotFinal(defaults.not_final_default)
+		setGrade({
+			id: -1,
+			confirmed: null,
+			date: dayjs().format("YYYY-MM-DD"),
+			grade: defaults.grade_default,
+			subject: defaults.subject_default || 0,
+			type: defaults.type_default || 0,
+			period: defaults.period_default || 0,
+			info: '',
+			not_final: defaults.not_final_default,
+			weight: 'Default'
+		})
 	}
 
 	const handleClear = async () => {
-		let old = {grade, subject, type, period, info, notFinal, double}
+		let old = Object.assign({}, grade)
 		// @ts-ignore
 		setDefault(defaults)
 
 		const undo = () => {
-			setGrade(old.grade)
-			setSubject(old.subject)
-			setType(old.type)
-			setPeriod(old.period)
-			setInfo(old.info)
-			setNotFinal(old.notFinal)
-			setDouble(old.double)
+			setGrade(old)
 			toastMessage("success", "Undid clear Note window", toast)
 			closeClear()
 		}
@@ -160,25 +153,24 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 	}
 
 	useEffect(() => {
-		getSubjects()
-		getTypes()
-		getPeriods()
-		getNoteRange()
-		getDefaults()
+		Promise.all([
+			getSubjects(), getPeriods(), getTypes(), getNoteRange()
+		]).then(async _ => {
+			await getDefaults()
+		})
 	}, [])
-
-	let render = grade !== null && subject !== null && type !== null && period !== null && info !== null && notFinal !== null && double !== null && noteRange !== null
 
 	return (<Dialog open={props.open} onClose={props.closeModal} fullWidth maxWidth="md">
 		<DialogTitle variant="h5">New Grade</DialogTitle>
 		<DialogContent>
-			{render && (
+			{grade !== null && noteRange !== null && (
 					<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
 						<Grid container spacing={4} padding={2}>
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Subject</Typography>
-									<Select value={subject?.toString()} margin="none" fullWidth onChange={handleSubjectSelectChange}>
+									<Select value={grade.subject.toString()} margin="none" fullWidth
+											  onChange={(event) => handleSubjectSelectChange(event, grade)}>
 										{subjects.map((subject) => {
 											return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
 										})}
@@ -188,7 +180,8 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Type</Typography>
-									<Select value={type?.toString()} margin="none" fullWidth onChange={handleTypeSelectChange}>
+									<Select value={grade.type.toString()} margin="none" fullWidth
+											  onChange={(event) => handleTypeSelectChange(event, grade)}>
 										{types.map((type) => {
 											return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
 										})}
@@ -198,7 +191,8 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Period</Typography>
-									<Select value={period?.toString()} margin="none" fullWidth onChange={handlePeriodSelectChange}>
+									<Select value={grade.period.toString()} margin="none" fullWidth
+											  onChange={(event) => handlePeriodSelectChange(event, grade)}>
 										{periods.map((period) => {
 											return <MenuItem value={period.id}>
 												<Stack>
@@ -214,28 +208,35 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 							<Grid item xs={12} sm={6} lg={12}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Grade</Typography>
-									<TextField value={grade} type="number" fullWidth margin="none" onChange={handleGradeInputChange}/>
-									<Slider value={grade || undefined} color="secondary" min={noteRange?.from} max={noteRange?.to}
-											  onChange={handleGradeSliderChange}/>
+									<TextField value={grade.grade} type="number" fullWidth margin="none"
+												  onChange={(event) => handleGradeInputChange(event, grade, noteRange)}/>
+									<Slider value={grade.grade || undefined} color="secondary" min={noteRange.from} max={noteRange.to}
+											  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange)}/>
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={8} lg={9}>
 								<Stack spacing={2} height={1}>
 									<Typography variant="h6" fontWeight="normal">Info</Typography>
-									<TextField multiline minRows={2} value={info} type="text" fullWidth margin="none"
-												  onChange={handleInfoInputChange}/>
+									<TextField multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
+												  onChange={(event) => handleInfoInputChange(event, grade)}/>
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={4} lg={3}>
 								<Stack spacing={1.5} height={1}> {/*spacing={1.5} to compensate margin of 1. Checkbox*/}
-									<Typography variant="h6" fontWeight="normal">Extra</Typography>
+									<Typography variant="h6" fontWeight="normal">Grade Weight</Typography>
 									<FormGroup>
-										<FormControlLabel control={
-											<Checkbox color="secondary" checked={notFinal || undefined} onChange={handleNotFinalCheckboxChange}/>
-										} label="Not Final"/>
-										<FormControlLabel control={
-											<Checkbox color="secondary" checked={double || undefined} onChange={handleDoubleCheckboxChange}/>
-										} label="Double"/>
+										<RadioGroup defaultValue="normal" value={grade.weight}
+														onChange={(event) => handleWeightChange(event, grade)}>
+											<FormControlLabel value="Default" control={
+												<Radio/>
+											} label="Default"/>
+											<FormControlLabel value="Double" control={
+												<Radio/>
+											} label="Double"/>
+											<FormControlLabel value="Half" control={
+												<Radio/>
+											} label="Half"/>
+										</RadioGroup>
 									</FormGroup>
 								</Stack>
 							</Grid>
@@ -246,7 +247,9 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 		<DialogActions sx={{gap: 0.7}}>
 			<Button onClick={handleClear} type="submit" variant="outlined" color="secondary">Clear</Button>
 			<Button onClick={props.closeModal} type="submit" variant="outlined" color="secondary">Close</Button>
-			<Button onClick={handleCreateGrade} type="submit" variant="outlined" color="success">Create</Button>
+			{grade !== null &&
+					<Button onClick={() => handleCreateGrade(grade)} type="submit" variant="outlined" color="success">Create</Button>
+			}
 		</DialogActions>
 	</Dialog>);
 }

@@ -63,7 +63,7 @@ pub async fn create_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade
 		info: ActiveValue::Set(grade.info.clone()),
 		grade: ActiveValue::Set(grade.grade),
 		period: ActiveValue::Set(grade.period),
-		double: ActiveValue::Set(grade.double),
+		weight: ActiveValue::Set(grade.weight.clone()),
 		not_final: ActiveValue::Set(grade.not_final),
 		confirmed: ActiveValue::Set(grade.confirmed.clone()),
 		date: ActiveValue::Set(grade.date.clone()),
@@ -73,8 +73,8 @@ pub async fn create_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade
 			.exec(db).await
 			.into_report()
 			.attach_printable("Error creating grade in DB")
-			.attach_printable(format!("insert:{:?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}",
-			                          insert, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.double, grade.not_final))
+			.attach_printable(format!("insert:{:?} subject:{} type:{} info:{} grade:{} period:{} weight:{} not_final:{}",
+			                          insert, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.weight, grade.not_final))
 			.change_context(DBError)?;
 	
 	log::info!("created grade, id:{}", res.last_insert_id);
@@ -128,7 +128,7 @@ pub async fn edit_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: 
 	edit.grade = ActiveValue::Set(grade.grade);
 	edit.period = ActiveValue::Set(grade.period);
 	edit.not_final = ActiveValue::Set(grade.not_final);
-	edit.double = ActiveValue::Set(grade.double);
+	edit.weight = ActiveValue::Set(grade.weight.clone());
 	edit.confirmed = ActiveValue::Set(grade.confirmed.clone());
 	edit.date = ActiveValue::Set(grade.date.clone());
 	
@@ -136,8 +136,8 @@ pub async fn edit_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: 
 	                     .update(db).await
 	                     .into_report()
 	                     .attach_printable("Error editing grade in DB")
-	                     .attach_printable(format!("edit:{:?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{} confirmed:{:?} date:{}",
-	                                               edit, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.double, grade.not_final, grade.confirmed, grade.date))
+	                     .attach_printable(format!("edit:{:?} subject:{} type:{} info:{} grade:{} period:{} weight:{} not_final:{} confirmed:{:?} date:{}",
+	                                               edit, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.weight, grade.not_final, grade.confirmed, grade.date))
 	                     .change_context(DBError)?;
 	
 	log::info!("edited grade:{:?}", res);
