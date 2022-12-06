@@ -23,9 +23,10 @@ pub struct Model {
 	pub grade: i32,
 	pub period: i32,
 	pub not_final: bool,
-	pub double: bool,
 	pub confirmed: Option<String>,
 	pub date: String,
+	#[ts(type = "'Default' | 'Double' | 'Half'")]
+	pub multiplier: Multiplier,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
@@ -37,9 +38,9 @@ pub enum Column {
 	Grade,
 	Period,
 	NotFinal,
-	Double,
 	Confirmed,
 	Date,
+	Multiplier,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -72,9 +73,9 @@ impl ColumnTrait for Column {
 			Self::Grade => ColumnType::Integer.def(),
 			Self::Period => ColumnType::Integer.def(),
 			Self::NotFinal => ColumnType::Boolean.def(),
-			Self::Double => ColumnType::Boolean.def(),
 			Self::Confirmed => ColumnType::String(None).def().null(),
 			Self::Date => ColumnType::String(None).def(),
+			Self::Multiplier => ColumnType::String(None).def(),
 		}
 	}
 }
@@ -117,3 +118,15 @@ impl Related<super::subjects::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
+
+
+#[derive(Clone, Debug, PartialEq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
+#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "multiplier")]
+pub enum Multiplier {
+	#[sea_orm(string_value = "Default")]
+	Default,
+	#[sea_orm(string_value = "Double")]
+	Double,
+	#[sea_orm(string_value = "Half")]
+	Half,
+}
