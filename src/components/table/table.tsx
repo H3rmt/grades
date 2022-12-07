@@ -95,14 +95,14 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 								{col.edit ?
 										<IconButton color="default" onClick={() => {
 											col.edit = false
-											setData(data);
+											setData(new Map(data));
 										}}><UndoIcon/>
 										</IconButton>
 										:
 										props.delete && <IconButton color="error" onClick={() => {
 											props.delete && props.delete(col.data.id)
 											data.delete(col.data.id)
-											setData(data);
+											setData(new Map(data));
 										}}><DeleteIcon/>
 										</IconButton>
 								}
@@ -111,7 +111,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 											col.edit = false
 											col.data = {...col.temp}
 											props.edit && props.edit(col.data)
-											setData(data);
+											setData(new Map(data));
 										}}><SaveButton/>
 										</IconButton>
 										:

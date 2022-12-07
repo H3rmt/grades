@@ -284,19 +284,19 @@ function Settings(props: Props) {
 					<Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Types" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreateType}>Add</Button>
-						}><CTable data={createData(types)} cols={getTypeCols()} delete={handleDeleteType} edit={handleEditType}/>
+						}><CTable data={types} cols={getTypeCols()} delete={handleDeleteType} edit={handleEditType}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Subjects" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreateSubject}>Add</Button>
-						}><CTable data={createData(subjects)} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
+						}><CTable data={subjects} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={12} xl={6}>
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={handleCreatePeriod}>Add</Button>
-						}><CTable data={createData(periods)} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
+						}><CTable data={periods} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>
 					</Grid>
 					{defaults !== null &&

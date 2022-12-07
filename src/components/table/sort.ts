@@ -1,4 +1,4 @@
-import {IRow, Column} from "./table";
+import {IRow, Column} from "./defs";
 
 function comp<Type>(a: Type, b: Type, orderBy: keyof Type) {
 	// debugger

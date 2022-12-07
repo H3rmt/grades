@@ -1,8 +1,8 @@
-import {cols, Column} from "../components/table/defs";
+import {cols, ColumnDef} from "../components/table/defs";
 import {Period, Subject, Type} from "../entity";
 import {Input, TextField, Typography} from "@mui/material";
 
-const getTypeCols: () => cols<Type> = () => new Map<keyof Type, Column<Type>>(
+const getTypeCols: () => cols<Type> = () => new Map<keyof Type, ColumnDef<Type>>(
 		[[
 			"name", {
 				sort: true,
@@ -22,7 +22,7 @@ const getTypeCols: () => cols<Type> = () => new Map<keyof Type, Column<Type>>(
 		]]
 )
 
-const getSubjectCols: () => cols<Subject> = () => new Map<keyof Subject, Column<Subject>>(
+const getSubjectCols: () => cols<Subject> = () => new Map<keyof Subject, ColumnDef<Subject>>(
 		[[
 			"name", {
 				sort: true,
@@ -42,7 +42,7 @@ const getSubjectCols: () => cols<Subject> = () => new Map<keyof Subject, Column<
 		]]
 )
 
-const getPeriodCols: () => cols<Period> = () => new Map<keyof Period, Column<Period>>(
+const getPeriodCols: () => cols<Period> = () => new Map<keyof Period, ColumnDef<Period>>(
 		[[
 			"name", {
 				sort: true,

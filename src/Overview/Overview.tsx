@@ -132,7 +132,7 @@ export default function Overview(props: Props) {
 					</Stack>
 				}/>
 				{noteRange !== null &&
-						<CTable data={createData(data)} cols={getCols(noteRange, subjects, types)} delete={handleDeleteGrade}
+						<CTable data={data} cols={getCols(noteRange, subjects, types)} delete={handleDeleteGrade}
 								  edit={handleEditGrade}/>
 				}
 				<NewGradeModal open={openModal} closeModal={() => {
