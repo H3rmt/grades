@@ -6,6 +6,7 @@ import React from "react";
 import {NoteRange} from "../entity/config";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 import dayjs, {Dayjs} from "dayjs";
+import ClearIcon from '@mui/icons-material/Clear';
 
 
 const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[]) => new Map<keyof Grade, ColumnDef<Grade>>(
@@ -56,19 +57,28 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 			"confirmed", {
 				sort: true,
 				format: confirmed => <Typography>{confirmed ?? "-"}</Typography>,
-				edit: (r) => <DatePicker value={dayjs(r.confirmed, 'DD-MM-YYYY')} onChange={(i) => {
-					r.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY') || null
-				}} renderInput={(props) => {
-					// @ts-ignore
-					props.inputProps.value = r.confirmed;
-					return <TextField {...props} />
-				}} renderDay={(day, value, DayComponentProps) => <Badge
-						key={day.toString()}
-						overlap="circular"
-						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == r.date ? '✨' : null}>
-					<PickersDay {...DayComponentProps} />
-				</Badge>
-				}/>
+				edit: (r, update) => <Stack direction="row" spacing={0.5}>
+					<DatePicker value={dayjs(r.confirmed, 'DD-MM-YYYY')} onChange={(i) => {
+						r.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY') || null
+						update()
+					}} renderInput={(props) => {
+						// @ts-ignore
+						props.inputProps.value = r.confirmed ?? "-";
+						return <TextField {...props} />
+					}} renderDay={(day, value, DayComponentProps) => <Badge
+							key={day.toString()}
+							overlap="circular"
+							badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == r.date ? '✨' : null}>
+						<PickersDay {...DayComponentProps} />
+					</Badge>
+					}/>
+					{r.confirmed && <IconButton color="default" onClick={() => {
+						r.confirmed = null
+						update()
+					}}><ClearIcon/>
+					</IconButton>
+					}
+				</Stack>
 			}
 		], [
 			"info", {
