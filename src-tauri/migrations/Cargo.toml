@@ -9,5 +9,5 @@ name = "migrations"
 path = "src/lib.rs"
 
 [dependencies]
-tokio = { version = "1.21.2", features = ["full"] }
-sea-orm-migration = { version = "0.10.2", features = ["sqlx-sqlite", "runtime-tokio-native-tls"] }
+tokio = { version = "^1.23", features = ["full"] }
+sea-orm-migration = { version = "0.10.5", features = ["sqlx-sqlite", "runtime-tokio-native-tls"] }
