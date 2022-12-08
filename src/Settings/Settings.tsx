@@ -9,7 +9,6 @@ import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Info, Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {createPeriod, createSubject, createType} from "./create";
-import {createData} from "../components/table/util";
 import {deletePeriod, deleteSubject, deleteType} from "./delete";
 import {editPeriod, editSubject, editType} from "./edit";
 import {loadDefaults, loadNoteRange} from "../components/NewGradeModal/loadDefaults";
@@ -243,12 +242,27 @@ function Settings(props: Props) {
 		setDefaults({...defaults, subject_default: Number(event.target.value)})
 	}
 
+	const handleGradeSliderChange = (event: Event, newValue: number | number[]) => {
+		// @ts-ignore
+		setDefaults({...defaults, grade_default: Number(newValue)})
+	}
+
+	const handleGradeInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
+		// @ts-ignore
+		setDefaults({...defaults, grade_default: Math.max(Math.min(Number(event.target.value), noteRange.to), noteRange.from)})
+	}
+
+	useEffect(() => {
+		// @ts-ignore
+		setDefaults({...defaults, grade_default: Math.max(Math.min(defaults.grade_default, noteRange.to), noteRange.from)})
+	}, [noteRange])
+
 	const handleSaveDefaults = async () => {
 		// @ts-ignore
 		await saveDefaults(defaults).then(async () => {
 			toastMessage("success", "Saved NoteRange", toast)
 			// TODO: add undo
-			await getNoteRange()
+			await getDefaults()
 		}).catch((error) => {
 			errorToast("Error saving NoteRange", toast, error)
 		})
@@ -299,7 +313,7 @@ function Settings(props: Props) {
 						}><CTable data={periods} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>
 					</Grid>
-					{defaults !== null &&
+					{defaults !== null && noteRange !== null &&
 							<Grid item xs={12} sm={12} md={6} xl={6}>
 								<SettingsBox title="Defaults" top={
 									<Stack direction="row">
@@ -313,7 +327,8 @@ function Settings(props: Props) {
 									<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
 										<Stack spacing={2} direction="row" alignItems="center">
 											<Typography variant="h6" fontWeight="normal">Type</Typography>
-											<Select value={defaults.type_default?.toString() ?? ''} margin="none" fullWidth onChange={handleTypeSelectChange}>
+											<Select value={defaults.type_default?.toString() ?? ''} margin="none" fullWidth
+													  onChange={handleTypeSelectChange}>
 												{types.map((type) => {
 													return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
 												})}
@@ -334,7 +349,8 @@ function Settings(props: Props) {
 									<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
 										<Stack spacing={2} direction="row" alignItems="center">
 											<Typography variant="h6" fontWeight="normal">Period</Typography>
-											<Select value={defaults.period_default?.toString() ?? ''} margin="none" fullWidth onChange={handlePeriodSelectChange}>
+											<Select value={defaults.period_default?.toString() ?? ''} margin="none" fullWidth
+													  onChange={handlePeriodSelectChange}>
 												{periods.map((period) => {
 													return <MenuItem value={period.id}>
 														<Stack>
@@ -345,6 +361,15 @@ function Settings(props: Props) {
 													</MenuItem>
 												})}
 											</Select>
+										</Stack>
+									</Grid>
+									<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
+										<Stack spacing={2} direction="row" alignItems="center">
+											<Typography variant="h6" fontWeight="normal">Grade</Typography>
+											<Slider value={defaults.grade_default} color="secondary" min={noteRange.from} max={noteRange.to}
+													  onChange={handleGradeSliderChange}/>
+											<TextField value={defaults.grade_default} type="number" margin="none"
+														  onChange={handleGradeInputChange}/>
 										</Stack>
 									</Grid>
 								</Grid>
@@ -362,27 +387,26 @@ function Settings(props: Props) {
 											<SaveButton/>
 										</IconButton>
 									</Stack>
-								}>
-									<Grid container spacing={4} padding={2}>
-										<Grid item xs={12} sm={6} lg={6}>
-											<Stack spacing={2}>
-												<Typography variant="h6" fontWeight="normal">From</Typography>
-												<TextField value={noteRange.from} type="number" fullWidth margin="none"
-															  onChange={handleNoteRangeFromInputChange}/>
-												<Slider value={noteRange.from} color="secondary" min={0} max={29}
-														  onChange={handleNoteRangeFromSliderChange}/>
-											</Stack>
-										</Grid>
-										<Grid item xs={12} sm={6} lg={6}>
-											<Stack spacing={2}>
-												<Typography variant="h6" fontWeight="normal">To</Typography>
-												<TextField value={noteRange.to} type="number" fullWidth margin="none"
-															  onChange={handleNoteRangeToInputChange}/>
-												<Slider value={noteRange.to} color="secondary" min={1} max={30}
-														  onChange={handleNoteRangeToSliderChange}/>
-											</Stack>
-										</Grid>
+								}><Grid container spacing={4} padding={2}>
+									<Grid item xs={12} sm={6} lg={6}>
+										<Stack spacing={2}>
+											<Typography variant="h6" fontWeight="normal">From</Typography>
+											<TextField value={noteRange.from} type="number" fullWidth margin="none"
+														  onChange={handleNoteRangeFromInputChange}/>
+											<Slider value={noteRange.from} color="secondary" min={0} max={29}
+													  onChange={handleNoteRangeFromSliderChange}/>
+										</Stack>
 									</Grid>
+									<Grid item xs={12} sm={6} lg={6}>
+										<Stack spacing={2}>
+											<Typography variant="h6" fontWeight="normal">To</Typography>
+											<TextField value={noteRange.to} type="number" fullWidth margin="none"
+														  onChange={handleNoteRangeToInputChange}/>
+											<Slider value={noteRange.to} color="secondary" min={1} max={30}
+													  onChange={handleNoteRangeToSliderChange}/>
+										</Stack>
+									</Grid>
+								</Grid>
 								</SettingsBox>
 							</Grid>
 					}

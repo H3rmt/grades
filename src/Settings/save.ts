@@ -23,7 +23,7 @@ function saveDefaults(defaults: GradeModalDefaults): Promise<void> {
 			period_default: defaults.period_default,
 			subject_default: defaults.subject_default,
 			type_default: defaults.type_default,
-			grade_default: 12,
+			grade_default: defaults.grade_default,
 			info_default: '',
 			not_final_default: false,
 			double_default: false,

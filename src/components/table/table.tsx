@@ -55,7 +55,6 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 	// check
 	if (change) {
 		setData(data)
-		console.log("change", data)
 	}
 
 	const handleRequestSort = (property: keyof Row,) => {
@@ -116,11 +115,8 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 										</IconButton>
 										:
 										props.edit && <IconButton color="default" onClick={() => {
-											console.log(data)
 											col.edit = true
 											col.temp = {...col.data}
-											console.log(col)
-											console.log(data)
 											setData(new Map(data))
 										}}><EditIcon/>
 										</IconButton>
@@ -134,10 +130,8 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 							let edit = ((row.edit) ?? (() => format(col.data[key]) as ReactNode))(col.temp, forceUpdate)
 							return col.edit ?
 									<TableCell key={key as Key} onChange={() => {
-										console.warn("onChange; TableCell");
 										forceUpdate()
-									}}>
-										{edit}
+									}}>{edit}
 									</TableCell>
 									:
 									<TableCell key={key as Key}>

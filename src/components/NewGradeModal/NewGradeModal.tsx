@@ -154,10 +154,8 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 
 	useEffect(() => {
 		Promise.all([
-			getSubjects(), getPeriods(), getTypes(), getNoteRange()
-		]).then(async _ => {
-			await getDefaults()
-		})
+			getSubjects(), getPeriods(), getTypes(), getNoteRange(), getDefaults()
+		])
 	}, [])
 
 	return (<Dialog open={props.open} onClose={props.closeModal} fullWidth maxWidth="md">
@@ -222,19 +220,18 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={4} lg={3}>
-								<Stack spacing={1.5} height={1}> {/*spacing={1.5} to compensate margin of 1. Checkbox*/}
+								<Stack spacing={1.5} height={1}>
 									<Typography variant="h6" fontWeight="normal">Grade Weight</Typography>
 									<FormGroup>
-										<RadioGroup defaultValue="normal" value={grade.weight}
-														onChange={(event) => handleWeightChange(event, grade)}>
+										<RadioGroup defaultValue="normal" value={grade.weight} onChange={(event) => handleWeightChange(event, grade)}>
 											<FormControlLabel value="Default" control={
-												<Radio/>
+												<Radio color="secondary"/>
 											} label="Default"/>
 											<FormControlLabel value="Double" control={
-												<Radio/>
+												<Radio color="secondary"/>
 											} label="Double"/>
 											<FormControlLabel value="Half" control={
-												<Radio/>
+												<Radio color="secondary"/>
 											} label="Half"/>
 										</RadioGroup>
 									</FormGroup>
