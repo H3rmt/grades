@@ -35,22 +35,30 @@ function Settings(props: Props) {
 		errorToast("Error loading Periods", toast, periodsS.error)
 
 	const [types, setTypes] = useState<Type[]>([])
-	const typesS = useTypes();
+	const typesS = useTypes({
+		onSuccess: (data) => setTypes(data)
+	});
 	if (typesS.isError)
 		errorToast("Error loading Types", toast, typesS.error)
 
 	const [subjects, setSubjects] = useState<Subject[]>([])
-	const subjectsS = useSubjects();
+	const subjectsS = useSubjects({
+		onSuccess: (data) => setSubjects(data)
+	});
 	if (subjectsS.isError)
 		errorToast("Error loading Subjects", toast, subjectsS.error)
 
 	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
-	const noteRangeS = useNoteRange();
+	const noteRangeS = useNoteRange({
+		onSuccess: (data) => setNoteRange(data)
+	});
 	if (noteRangeS.isError)
 		errorToast("Error loading noteRange", toast, noteRangeS.error)
 
 	const [gradeModalDefaults, setGradeModalDefaults] = nullableUseState<GradeModalDefaults>()
-	const gradeModalDefaultsS = useGradeModalDefaults();
+	const gradeModalDefaultsS = useGradeModalDefaults({
+		onSuccess: (data) => setGradeModalDefaults(data)
+	});
 	if (gradeModalDefaultsS.isError)
 		errorToast("Error loading gradeModalDefaults", toast, gradeModalDefaultsS.error)
 
