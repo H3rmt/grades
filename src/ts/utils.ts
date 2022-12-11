@@ -1,4 +1,6 @@
 import {Dispatch, SetStateAction, useState} from "react";
+import {UseQueryOptions} from "@tanstack/react-query/src/types";
+import {QueryKey} from "@tanstack/query-core/src/types";
 
 type reactSet<T> = Dispatch<SetStateAction<T>>
 
@@ -24,13 +26,24 @@ function nextFree(arr: string[], name: string) {
 	return newName
 }
 
+type UseQueryOpts<
+		TQueryFnData = unknown,
+		TError = unknown,
+		TData = TQueryFnData,
+		TQueryKey extends QueryKey = QueryKey,
+> = Omit<
+		UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>,
+		'initialData'
+> & { initialData?: () => undefined }
+
 export type {
 	reactSet,
+	UseQueryOpts
 }
 
 export {
 	nextFree,
 	capitalizeFirstLetter,
 	map,
-	nullableUseState
+	nullableUseState,
 }

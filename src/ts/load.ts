@@ -1,54 +1,116 @@
 import {invoke} from "@tauri-apps/api/tauri";
-import {Grade, Period, Subject, Type} from "../entity";
+import {Grade, Info, Period, Subject, Type} from "../entity";
+import {useQuery} from "@tanstack/react-query";
+import {GradeModalDefaults, NoteRange} from "../entity/config";
+import {UseQueryOpts} from "./utils";
 
-async function loadTypes(): Promise<Type[]> {
-	// @ts-ignore
-	return await invoke("get_types_js").then((data: string) => {
-		console.log(data)
-		return JSON.parse(data)
-	}).catch((error) => {
-		console.error("Load Types", error)
-		throw error
+
+function useTypes(options: UseQueryOpts<Type[]> = {}) {
+	return useQuery<Type[]>({
+		queryKey: ["types"],
+		queryFn: async () => {
+			// @ts-ignore
+			return await invoke("get_types_js").then((data: string) => {
+				console.debug("get_types_js", data)
+				return JSON.parse(data)
+			})
+		},
+		...options
+	});
+}
+
+function useSubjects(options: UseQueryOpts<Subject[]> = {}) {
+	return useQuery<Subject[]>({
+		queryKey: ["subjects"],
+		queryFn: async () => {
+			// @ts-ignore
+			return await invoke("get_subjects_js").then((data: string) => {
+				console.debug("get_subjects_js", data)
+				return JSON.parse(data)
+			})
+		},
+		...options
+	});
+}
+
+function usePeriods(options: UseQueryOpts<Period[]> = {}) {
+	return useQuery<Period[]>({
+		queryKey: ["periods"],
+		queryFn: async () => {
+			// @ts-ignore
+			return await invoke("get_periods_js").then((data: string) => {
+				console.debug("get_periods_js", data)
+				return JSON.parse(data)
+			})
+		},
+		...options
+	});
+}
+
+function useGrades(options: UseQueryOpts<Grade[]> = {}) {
+	return useQuery<Grade[]>({
+		queryKey: ["grades"],
+		queryFn: async () => {
+			// @ts-ignore
+			return await invoke("get_grades_js").then((data: string) => {
+				console.debug("get_grades_js", data)
+				return JSON.parse(data)
+			})
+		},
+		...options
+	});
+}
+
+
+function useNoteRange(options: UseQueryOpts<NoteRange> = {}) {
+	return useQuery<NoteRange>({
+		queryKey: ["noteRange"],
+		queryFn: async () => {
+			// @ts-ignore
+			return await invoke("get_note_rage_js").then((data: string) => {
+				console.debug("get_note_rage_js", data)
+				return JSON.parse(data)
+			})
+		},
+		...options
+	});
+}
+
+
+function useGradeModalDefaults(options: UseQueryOpts<GradeModalDefaults> = {}) {
+	return useQuery<GradeModalDefaults>({
+		queryKey: ["gradeModalDefaults"],
+		queryFn: async () => {
+			// @ts-ignore
+			return await invoke("get_grade_modal_defaults_js").then((data: string) => {
+				console.debug("get_grade_modal_defaults_js", data)
+				return JSON.parse(data)
+			})
+		},
+		...options
 	})
 }
 
-async function loadSubjects(): Promise<Subject[]> {
-	// @ts-ignore
-	return await invoke("get_subjects_js").then((data: string) => {
-		console.log(data)
-		return JSON.parse(data)
-	}).catch((error) => {
-		console.error("Load Subjects", error)
-		throw error
-	})
+function useInfo(options: UseQueryOpts<Info> = {}) {
+	return useQuery<Info>({
+		queryKey: ["info"],
+		queryFn: async () => {
+			// @ts-ignore
+			return await invoke("get_info_js").then((data: string) => {
+				console.debug("get_info_js", data)
+				return JSON.parse(data)
+			})
+		},
+		...options
+	});
 }
-
-async function loadPeriods(): Promise<Period[]> {
-	// @ts-ignore
-	return await invoke("get_periods_js").then((data: string) => {
-		console.log(data)
-		return JSON.parse(data)
-	}).catch((error) => {
-		console.error("Load Subjects", error)
-		throw error
-	})
-}
-
-async function loadGrades(): Promise<Grade[]> {
-	// @ts-ignore
-	return await invoke("get_grades_js").then((data: string) => {
-		console.log(data)
-		return JSON.parse(data)
-	}).catch((error) => {
-		console.error(error)
-		throw error
-	})
-}
-
 
 export {
-	loadTypes,
-	loadSubjects,
-	loadPeriods,
-	loadGrades
+	useTypes,
+	useSubjects,
+	usePeriods,
+	useGrades,
+	useNoteRange,
+	useGradeModalDefaults,
+	useInfo
 }

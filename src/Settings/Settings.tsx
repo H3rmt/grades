@@ -1,23 +1,22 @@
 import {Button, Grid, IconButton, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import CAppBar from '../components/AppBar/CAppBar';
 import {nullableUseState, reactSet} from "../ts/utils";
 import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
-import {loadPeriods, loadSubjects, loadTypes} from "../ts/load";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
-import {Info, Period, Subject, Type} from "../entity";
+import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {createPeriod, createSubject, createType} from "./create";
 import {createData} from "../components/table/util";
 import {deletePeriod, deleteSubject, deleteType} from "./delete";
 import {editPeriod, editSubject, editType} from "./edit";
-import {loadDefaults, loadNoteRange} from "../components/NewGradeModal/loadDefaults";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
 import SaveButton from "@mui/icons-material/Save";
 import UndoIcon from "@mui/icons-material/Undo";
-import {saveDefaults, saveNoteRange} from "./save";
-import {loadInfo} from "./load";
+import {saveGradeModalDefaults, saveNoteRange} from "./save";
+import {useGradeModalDefaults, useInfo, useNoteRange, usePeriods, useSubjects, useTypes} from "../ts/load";
+import {useQueryClient} from "@tanstack/react-query";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -25,199 +24,161 @@ type Props = {
 
 
 function Settings(props: Props) {
-	const [subjects, setSubjects] = useState<Subject[]>([])
-	const [types, setTypes] = useState<Type[]>([])
+	const toast = useToast()
+	const queryClient = useQueryClient()
+
 	const [periods, setPeriods] = useState<Period[]>([])
+	const periodsS = usePeriods({
+		onSuccess: (data) => setPeriods(data)
+	});
+	if (periodsS.isError)
+		errorToast("Error loading Periods", toast, periodsS.error)
+
+	const [types, setTypes] = useState<Type[]>([])
+	const typesS = useTypes();
+	if (typesS.isError)
+		errorToast("Error loading Types", toast, typesS.error)
+
+	const [subjects, setSubjects] = useState<Subject[]>([])
+	const subjectsS = useSubjects();
+	if (subjectsS.isError)
+		errorToast("Error loading Subjects", toast, subjectsS.error)
 
 	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
-	const [defaults, setDefaults] = nullableUseState<GradeModalDefaults>()
+	const noteRangeS = useNoteRange();
+	if (noteRangeS.isError)
+		errorToast("Error loading noteRange", toast, noteRangeS.error)
 
-	const [info, setInfo] = nullableUseState<Info>()
+	const [gradeModalDefaults, setGradeModalDefaults] = nullableUseState<GradeModalDefaults>()
+	const gradeModalDefaultsS = useGradeModalDefaults();
+	if (gradeModalDefaultsS.isError)
+		errorToast("Error loading gradeModalDefaults", toast, gradeModalDefaultsS.error)
 
-	const toast = useToast()
-
-	const getSubjects = async () => {
-		await loadSubjects().then((data) => {
-			setSubjects(data)
-		}).catch((error) => {
-			setSubjects([])
-			errorToast("Error loading Subjects", toast, error)
-		})
-	}
-
-	const getPeriods = async () => {
-		await loadPeriods().then((data) => {
-			setPeriods(data)
-		}).catch((error) => {
-			setPeriods([])
-			errorToast("Error loading Periods", toast, error)
-		})
-	}
-
-	const getTypes = async () => {
-		await loadTypes().then((data) => {
-			setTypes(data)
-		}).catch((error) => {
-			errorToast("Error loading Types", toast, error)
-		})
-	}
-
-	const getNoteRange = async () => {
-		await loadNoteRange().then((data) => {
-			setNoteRange(data)
-		}).catch((error) => {
-			errorToast("Error loading Note Range", toast, error)
-		})
-	}
-
-	const getDefaults = async () => {
-		await loadDefaults().then((data) => {
-			setDefaults(data)
-		}).catch((error) => {
-			errorToast("Error loading Defaults", toast, error)
-		})
-	}
-
-	const getInfo = async () => {
-		await loadInfo().then((data) => {
-			setInfo(data)
-		}).catch((error) => {
-			errorToast("Error loading Data", toast, error)
-		})
-	}
+	const info = useInfo();
+	if (info.isError)
+		errorToast("Error loading noteRange", toast, info.error)
 
 
-	const handleCreateType = async () => {
-		await createType(types).then(async () => {
+	const handleCreateType = async (types: Type[]) => {
+		await createType(types, queryClient).then(async () => {
 			toastMessage("success", "Created Type", toast)
-			await getTypes()
 		}).catch((error) => {
 			errorToast("Error creating Type", toast, error)
 		})
 	}
 
 	const handleDeleteType = async (id: number) => {
-		await deleteType(id).then(async () => {
+		await deleteType(id, queryClient).then(async () => {
 			toastMessage("success", "Deleted Type", toast)
 			// TODO: add undo
-			await getTypes()
 		}).catch((error) => {
 			errorToast("Error deleting Type", toast, error)
 		})
 	}
 
 	const handleEditType = async (period: Type) => {
-		await editType(period).then(async () => {
+		await editType(period, queryClient).then(async () => {
 			toastMessage("success", "Edited Type", toast)
 			// TODO: add undo
-			await getTypes()
 		}).catch((error) => {
 			errorToast("Error editing Type", toast, error)
 		})
 	}
 
-	const handleCreateSubject = async () => {
-		await createSubject(subjects).then(async () => {
+	const handleCreateSubject = async (subjects: Subject[]) => {
+		await createSubject(subjects, queryClient).then(async () => {
 			toastMessage("success", "Created Subject", toast)
-			await getSubjects()
 		}).catch((error) => {
 			errorToast("Error creating Subject", toast, error)
 		})
 	}
 
 	const handleDeleteSubject = async (id: number) => {
-		await deleteSubject(id).then(async () => {
+		await deleteSubject(id, queryClient).then(async () => {
 			toastMessage("success", "Deleted Subject", toast)
 			// TODO: add undo
-			await getSubjects()
 		}).catch((error) => {
 			errorToast("Error deleting Subject", toast, error)
 		})
 	}
 
 	const handleEditSubject = async (subject: Subject) => {
-		await editSubject(subject).then(async () => {
+		await editSubject(subject, queryClient).then(async () => {
 			toastMessage("success", "Edited Subject", toast)
 			// TODO: add undo
-			await getSubjects()
 		}).catch((error) => {
 			errorToast("Error editing Subject", toast, error)
 		})
 	}
 
 
-	const handleCreatePeriod = async () => {
-		await createPeriod(periods).then(async () => {
+	const handleCreatePeriod = async (periods: Period[]) => {
+		await createPeriod(periods, queryClient).then(async () => {
 			toastMessage("success", "Created Period", toast)
-			await getPeriods()
 		}).catch((error) => {
 			errorToast("Error creating Period", toast, error)
 		})
 	}
 
 	const handleDeletePeriod = async (id: number) => {
-		await deletePeriod(id).then(async () => {
+		await deletePeriod(id, queryClient).then(async () => {
 			toastMessage("success", "Deleted Period", toast)
 			// TODO: add undo
-			await getPeriods()
 		}).catch((error) => {
 			errorToast("Error deleting Period", toast, error)
 		})
 	}
 
 	const handleEditPeriod = async (period: Period) => {
-		await editPeriod(period).then(async () => {
+		await editPeriod(period, queryClient).then(async () => {
 			toastMessage("success", "Edited Period", toast)
 			// TODO: add undo
-			await getPeriods()
 		}).catch((error) => {
 			errorToast("Error editing Period", toast, error)
 		})
 	}
 
-	const handleNoteRangeToInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
-		setNoteRange({// @ts-ignore
+	const handleNoteRangeToInputChange = async (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, noteRange: NoteRange) => {
+		setNoteRange({
 			from: Math.min(noteRange.from, Math.max(Math.min(Number(event.target.value), 30), 1) - 1),
 			to: Math.max(Math.min(Number(event.target.value), 30), 1)
 		})
 	}
 
-	const handleNoteRangeToSliderChange = async (event: Event, newValue: number | number[]) => {
-		setNoteRange({// @ts-ignore
-			from: Math.min(noteRange.from, newValue - 1),
+	const handleNoteRangeToSliderChange = async (event: Event, newValue: number | number[], noteRange: NoteRange) => {
+		setNoteRange({
+			from: Math.min(noteRange.from, Number(newValue) - 1),
 			to: Number(newValue)
 		})
 	}
 
-	const handleNoteRangeFromInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
-		setNoteRange({// @ts-ignore
+	const handleNoteRangeFromInputChange = async (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, noteRange: NoteRange) => {
+		setNoteRange({
 			to: Math.max(noteRange.to, Math.max(Math.min(Number(event.target.value), 29), 0) + 1),
 			from: Math.max(Math.min(Number(event.target.value), 29), 0)
 		})
 	}
 
-	const handleNoteRangeFromSliderChange = async (event: Event, newValue: number | number[]) => {
-		setNoteRange({// @ts-ignore
-			to: Math.max(noteRange.to, newValue + 1),
+	const handleNoteRangeFromSliderChange = async (event: Event, newValue: number | number[], noteRange: NoteRange) => {
+		setNoteRange({
+			to: Math.max(noteRange.to, Number(newValue) + 1),
 			from: Number(newValue)
 		})
 	}
 
-	const handleSaveNoteRange = async () => {
-		// @ts-ignore
-		await saveNoteRange(noteRange).then(async () => {
+	const handleSaveNoteRange = async (noteRange: NoteRange) => {
+		await saveNoteRange(noteRange, queryClient).then(async () => {
 			toastMessage("success", "Saved NoteRange", toast)
 			// TODO: add undo
-			await getNoteRange()
 		}).catch((error) => {
 			errorToast("Error saving NoteRange", toast, error)
 		})
 	}
 
-	const handleNoteRangeReset = async () => {
+	const handleNoteRangeReset = async (noteRange: NoteRange, noteRangeS: NoteRange) => {
 		let old = Object.assign({}, noteRange)
 
-		await getNoteRange()
+		setNoteRange(noteRangeS)
 
 		const undo = () => {
 			setNoteRange(old)
@@ -228,39 +189,34 @@ function Settings(props: Props) {
 		let closeClear = toastMessage("warning", "Reset NoteRange", toast, undo)
 	}
 
-	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
-		// @ts-ignore
-		setDefaults({...defaults, period_default: Number(event.target.value)})
+	const handlePeriodSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
+		setGradeModalDefaults({...gradeModalDefaults, period_default: Number(event.target.value)})
 	}
 
-	const handleTypeSelectChange = (event: SelectChangeEvent) => {
-		// @ts-ignore
-		setDefaults({...defaults, type_default: Number(event.target.value)})
+	const handleTypeSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
+		setGradeModalDefaults({...gradeModalDefaults, type_default: Number(event.target.value)})
 	}
 
-	const handleSubjectSelectChange = (event: SelectChangeEvent) => {
-		// @ts-ignore
-		setDefaults({...defaults, subject_default: Number(event.target.value)})
+	const handleSubjectSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
+		setGradeModalDefaults({...gradeModalDefaults, subject_default: Number(event.target.value)})
 	}
 
-	const handleSaveDefaults = async () => {
-		// @ts-ignore
-		await saveDefaults(defaults).then(async () => {
+	const handleSaveGradeModalDefaults = async (gradeModalDefaults: GradeModalDefaults) => {
+		await saveGradeModalDefaults(gradeModalDefaults, queryClient).then(async () => {
 			toastMessage("success", "Saved NoteRange", toast)
 			// TODO: add undo
-			await getNoteRange()
 		}).catch((error) => {
 			errorToast("Error saving NoteRange", toast, error)
 		})
 	}
 
-	const handleDefaultsReset = async () => {
-		let old = Object.assign({}, defaults)
+	const handleDefaultsReset = async (gradeModalDefaults: GradeModalDefaults, gradeModalDefaultsS: GradeModalDefaults) => {
+		let old = Object.assign({}, gradeModalDefaults)
 
-		await getDefaults()
+		setGradeModalDefaults(gradeModalDefaultsS)
 
 		const undo = () => {
-			setDefaults(old)
+			setGradeModalDefaults(old)
 			toastMessage("success", "Undid reset Defaults", toast)
 			closeClear()
 		}
@@ -268,52 +224,43 @@ function Settings(props: Props) {
 		let closeClear = toastMessage("warning", "Reset Defaults", toast, undo)
 	}
 
-	useEffect(() => {
-		getTypes()
-		getPeriods()
-		getSubjects()
-		getNoteRange()
-		getDefaults()
-		getInfo();
-
-	}, [])
-
 	return (<>
 				<CAppBar name="Settings" setOpenNav={props.setOpenNav}/>
 				<Grid container spacing={2} padding={2}>
 					<Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Types" top={
-							<Button color="secondary" variant="contained" size="small" onClick={handleCreateType}>Add</Button>
+							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateType(types)}>Add</Button>
 						}><CTable data={createData(types)} cols={getTypeCols()} delete={handleDeleteType} edit={handleEditType}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Subjects" top={
-							<Button color="secondary" variant="contained" size="small" onClick={handleCreateSubject}>Add</Button>
+							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateSubject(subjects)}>Add</Button>
 						}><CTable data={createData(subjects)} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={12} xl={6}>
 						<SettingsBox title="Periods" top={
-							<Button color="secondary" variant="contained" size="small" onClick={handleCreatePeriod}>Add</Button>
+							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreatePeriod(periods)}>Add</Button>
 						}><CTable data={createData(periods)} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>
 					</Grid>
-					{defaults !== null &&
+					{gradeModalDefaults !== null && gradeModalDefaultsS.isSuccess &&
 							<Grid item xs={12} sm={12} md={6} xl={6}>
 								<SettingsBox title="Defaults" top={
 									<Stack direction="row">
-										<IconButton color="error" onClick={handleDefaultsReset}>
+										<IconButton color="error" onClick={() => handleDefaultsReset(gradeModalDefaults, gradeModalDefaultsS.data)}>
 											<UndoIcon/>
 										</IconButton>
-										<IconButton color="success" onClick={handleSaveDefaults}><SaveButton/>
+										<IconButton color="success" onClick={() => handleSaveGradeModalDefaults(gradeModalDefaults)}><SaveButton/>
 										</IconButton>
 									</Stack>
 								}><Grid container spacing={4} padding={2}>
 									<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
 										<Stack spacing={2} direction="row" alignItems="center">
 											<Typography variant="h6" fontWeight="normal">Type</Typography>
-											<Select value={defaults.type_default?.toString() ?? ''} margin="none" fullWidth onChange={handleTypeSelectChange}>
+											<Select value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
+													  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
 												{types.map((type) => {
 													return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
 												})}
@@ -323,8 +270,8 @@ function Settings(props: Props) {
 									<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
 										<Stack spacing={2} direction="row" alignItems="center">
 											<Typography variant="h6" fontWeight="normal">Subject</Typography>
-											<Select value={defaults.subject_default?.toString() ?? ''} margin="none" fullWidth
-													  onChange={handleSubjectSelectChange}>
+											<Select value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
+													  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
 												{subjects.map((subject) => {
 													return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
 												})}
@@ -334,7 +281,8 @@ function Settings(props: Props) {
 									<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
 										<Stack spacing={2} direction="row" alignItems="center">
 											<Typography variant="h6" fontWeight="normal">Period</Typography>
-											<Select value={defaults.period_default?.toString() ?? ''} margin="none" fullWidth onChange={handlePeriodSelectChange}>
+											<Select value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none" fullWidth
+													  onChange={(e) => handlePeriodSelectChange(e, gradeModalDefaults)}>
 												{periods.map((period) => {
 													return <MenuItem value={period.id}>
 														<Stack>
@@ -351,14 +299,14 @@ function Settings(props: Props) {
 								</SettingsBox>
 							</Grid>
 					}
-					{noteRange !== null &&
+					{noteRange !== null && noteRangeS.isSuccess &&
 							<Grid item xs={12} sm={12} md={6} xl={6}>
 								<SettingsBox title="Note Range" top={
 									<Stack direction="row">
-										<IconButton color="error" onClick={handleNoteRangeReset}>
+										<IconButton color="error" onClick={() => handleNoteRangeReset(noteRange, noteRangeS.data)}>
 											<UndoIcon/>
 										</IconButton>
-										<IconButton color="success" onClick={handleSaveNoteRange}>
+										<IconButton color="success" onClick={() => handleSaveNoteRange(noteRange)}>
 											<SaveButton/>
 										</IconButton>
 									</Stack>
@@ -368,46 +316,46 @@ function Settings(props: Props) {
 											<Stack spacing={2}>
 												<Typography variant="h6" fontWeight="normal">From</Typography>
 												<TextField value={noteRange.from} type="number" fullWidth margin="none"
-															  onChange={handleNoteRangeFromInputChange}/>
+															  onChange={(e) => handleNoteRangeFromInputChange(e, noteRange)}/>
 												<Slider value={noteRange.from} color="secondary" min={0} max={29}
-														  onChange={handleNoteRangeFromSliderChange}/>
+														  onChange={(e, v) => handleNoteRangeFromSliderChange(e, v, noteRange)}/>
 											</Stack>
 										</Grid>
 										<Grid item xs={12} sm={6} lg={6}>
 											<Stack spacing={2}>
 												<Typography variant="h6" fontWeight="normal">To</Typography>
 												<TextField value={noteRange.to} type="number" fullWidth margin="none"
-															  onChange={handleNoteRangeToInputChange}/>
+															  onChange={(e) => handleNoteRangeToInputChange(e, noteRange)}/>
 												<Slider value={noteRange.to} color="secondary" min={1} max={30}
-														  onChange={handleNoteRangeToSliderChange}/>
+														  onChange={(e, v) => handleNoteRangeToSliderChange(e, v, noteRange)}/>
 											</Stack>
 										</Grid>
 									</Grid>
 								</SettingsBox>
 							</Grid>
 					}
-					{info !== null &&
+					{info.isSuccess &&
 							<Grid item xs={12} sm={6} md={6} xl={6}>
 								<SettingsBox title="Info">
 									<Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">
 										<Stack spacing={1} direction="column">
 											<Typography>
-												name: {info.name}
+												name: {info.data.name}
 											</Typography>
 											<Typography>
-												version: {info.version}
+												version: {info.data.version}
 											</Typography>
 											<Typography>
-												authors: {info.authors}
+												authors: {info.data.authors}
 											</Typography>
 											<Typography>
-												target: {info.target}
+												target: {info.data.target}
 											</Typography>
 											<Typography>
-												profile: {info.profile}
+												profile: {info.data.profile}
 											</Typography>
 											<Typography>
-												commit-hash: {info.commit_hash}
+												commit-hash: {info.data.commit_hash}
 											</Typography>
 										</Stack>
 									</Paper>
