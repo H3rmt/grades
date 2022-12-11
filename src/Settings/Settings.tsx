@@ -5,7 +5,7 @@ import {nullableUseState, reactSet} from "../ts/utils";
 import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
-import {Period, Subject, Type} from "../entity";
+import {Grade, Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {createPeriod, createSubject, createType} from "./create";
 import {deletePeriod, deleteSubject, deleteType} from "./delete";
@@ -208,9 +208,13 @@ function Settings(props: Props) {
 		setGradeModalDefaults({...gradeModalDefaults, subject_default: Number(event.target.value)})
 	}
 
-	const handleGradeSliderChange = (event: Event, newValue: number | number[], gradeModalDefaults: GradeModalDefault) => {
+	const handleGradeSliderChange = (event: Event, newValue: number | number[], gradeModalDefaults: GradeModalDefaults) => {
 		setGradeModalDefaults({...gradeModalDefaults, grade_default: Number(newValue)})
 	}
+
+	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, gradeModalDefaults: GradeModalDefaults) => {
+		setGradeModalDefaults({...gradeModalDefaults, grade_default: Number(event.target.value)})
+	};
 
 	const handleSaveGradeModalDefaults = async (gradeModalDefaults: GradeModalDefaults) => {
 		await saveGradeModalDefaults(gradeModalDefaults, queryClient).then(async () => {
@@ -256,7 +260,7 @@ function Settings(props: Props) {
 						}><CTable data={periods} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>
 					</Grid>
-					{gradeModalDefaults !== null && gradeModalDefaultsS.isSuccess &&
+					{gradeModalDefaults !== null && gradeModalDefaultsS.isSuccess && noteRange !== null &&
 							<Grid item xs={12} sm={12} md={6} xl={6}>
 								<SettingsBox title="Defaults" top={
 									<Stack direction="row">
@@ -309,10 +313,10 @@ function Settings(props: Props) {
 									<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
 										<Stack spacing={2} direction="row" alignItems="center">
 											<Typography variant="h6" fontWeight="normal">Grade</Typography>
-											<Slider value={defaults.grade_default} color="secondary" min={noteRange.from} max={noteRange.to}
-													  onChange={handleGradeSliderChange}/>
-											<TextField value={defaults.grade_default} type="number" margin="none"
-														  onChange={handleGradeInputChange}/>
+											<Slider value={gradeModalDefaults.grade_default} color="secondary" min={noteRange.from} max={noteRange.to}
+													  onChange={(e, v) => handleGradeSliderChange(e, v, gradeModalDefaults)}/>
+											<TextField value={gradeModalDefaults.grade_default} type="number" margin="none"
+														  onChange={(e) => handleGradeInputChange(e, gradeModalDefaults)}/>
 										</Stack>
 									</Grid>
 								</Grid>
