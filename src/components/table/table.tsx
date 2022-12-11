@@ -12,10 +12,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveButton from '@mui/icons-material/Save';
 import UndoIcon from '@mui/icons-material/Undo';
-import {cols, Column, IRow, RowD} from "./defs";
+import {cols, ColumnDef, IRow, Column} from "./defs";
 
 type Props<Row extends IRow> = {
-	data: RowD<Row>[]
+	data: Array<Row>
 	cols: cols<Row>
 	delete?: (id: number) => void
 	edit?: (row: Row) => void
@@ -27,6 +27,35 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 
 	const [, updateState] = useState<object>();
 	const forceUpdate = useCallback(() => updateState({}), []);
+
+	const [data, setData] = useState<Map<number, Column<Row>>>(new Map())
+
+	let change = false
+
+	// remove deleted rows
+	for (const col of data.values()) {
+		if (props.data.find(row => row.id === col.data.id) === undefined) {
+			data.delete(col.data.id)
+			change = true
+		}
+	}
+
+	for (const col of props.data) {
+		let co = data.get(col.id)
+		// update existing rows
+		if (co) {
+			co.data = col
+		} else {
+			// add new rows
+			data.set(col.id, {data: col, edit: false, temp: {...col}});
+			change = true
+		}
+	}
+
+	// check
+	if (change) {
+		setData(data)
+	}
 
 	const handleRequestSort = (property: keyof Row,) => {
 		const [newOrder, newOrderBy] = setSort(property, order, orderBy)
@@ -58,54 +87,55 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 				</TableRow>
 			</TableHead>
 			<TableBody>
-				{props.data.slice().sort(getComparator<Row>(order, orderBy)).map((grade) => {
-					return <TableRow hover key={grade.data.id}>
+				{[...data.values()].sort(getComparator<Row>(order, orderBy)).map((col) => {
+					return <TableRow hover key={col.data.id}>
 						{(props.delete || props.edit) && <TableCell>
 							<Stack direction="row">
-								{grade.edit ?
-										<IconButton color="error" onClick={() => {
-											grade.edit = false
-											forceUpdate();
+								{col.edit ?
+										<IconButton color="default" onClick={() => {
+											col.edit = false
+											setData(new Map(data));
 										}}><UndoIcon/>
 										</IconButton>
 										:
 										props.delete && <IconButton color="error" onClick={() => {
-											props.delete && props.delete(grade.data.id)
-											forceUpdate();
+											props.delete && props.delete(col.data.id)
+											data.delete(col.data.id)
+											setData(new Map(data));
 										}}><DeleteIcon/>
 										</IconButton>
 								}
-								{grade.edit ?
+								{col.edit ?
 										<IconButton color="success" onClick={() => {
-											grade.edit = false
-											grade.data = {...grade.temp}
-											forceUpdate();
-											// @ts-ignore
-											props.edit(grade.data)
+											col.edit = false
+											col.data = {...col.temp}
+											props.edit && props.edit(col.data)
+											setData(new Map(data));
 										}}><SaveButton/>
 										</IconButton>
 										:
 										props.edit && <IconButton color="default" onClick={() => {
-											grade.edit = true
-											grade.temp = {...grade.data}
-											forceUpdate();
+											col.edit = true
+											col.temp = {...col.data}
+											setData(new Map(data))
 										}}><EditIcon/>
 										</IconButton>
 								}
 							</Stack>
 						</TableCell>
 						}
-						{Array.from(props.cols.entries()).filter(([, col]) => !col.hide).map((entry: [keyof Row, Column<Row>]) => {
+						{Array.from(props.cols.entries()).filter(([, col]) => !col.hide).map((entry: [keyof Row, ColumnDef<Row>]) => {
 							const [key, row] = entry
 							let format = row.format ?? ((t) => t)
-							let edit = ((row.edit) ?? (() => format(grade.data[key]) as ReactNode))(grade.temp)
-							return grade.edit ?
-									<TableCell key={key as Key} onChange={forceUpdate}>
-										{edit}
+							let edit = ((row.edit) ?? (() => format(col.data[key]) as ReactNode))(col.temp, forceUpdate)
+							return col.edit ?
+									<TableCell key={key as Key} onChange={() => {
+										forceUpdate()
+									}}>{edit}
 									</TableCell>
 									:
 									<TableCell key={key as Key}>
-										{format(grade.data[key]) as ReactNode}
+										{format(col.data[key]) as ReactNode}
 									</TableCell>
 						})}
 					</TableRow>;
@@ -118,6 +148,6 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 export type {
 	IRow,
 	cols,
-	Column,
-	RowD
+	ColumnDef,
+	Column
 }

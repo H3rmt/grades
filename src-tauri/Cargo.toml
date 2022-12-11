@@ -8,24 +8,24 @@ license = "MIT"
 repository = "https://github.com/H3rmt/grades/"
 
 [build-dependencies]
-tauri-build = { version = "1.2.0", features = [] }
-built = { version = "0.5.1", features = ["git2"] }
+tauri-build = { version = "1.2.1", features = [] }
+built = { version = "^0.5.2", features = ["git2"] }
 
 [workspace]
 members = [".", "entity", "migrations"]
 
 [dependencies]
-serde_json = "1.0.87"
-serde = { version = "1.0.147", features = ["derive"] }
-tauri = { version = "1.2.0", features = ["devtools", "fs-write-file", "path-all", "updater"] }
-dirs = "4.0.0"
-tokio = { version = "1.21.2", features = ["full"] }
-sea-orm = { version = "0.10.2", features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"] }
-ts-rs = "6.2.1"
-toml = "0.5.9"
+serde_json = "^1.0"
+serde = { version = "^1.0", features = ["derive"] }
+tauri = { version = "1.2.1", features = ["devtools", "fs-write-file", "path-all", "updater"] }
+dirs = "^4.0.0"
+tokio = { version = "^1.23", features = ["full"] }
+sea-orm = { version = "0.10.5", features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"] }
+ts-rs = "^6.2"
+toml = "^0.5"
 error-stack = "0.2.4"
-log = "0.4.17"
-env_logger = "0.10.0"
+log = "^0.4"
+env_logger = "^0.10"
 
 entity = { path = "entity" }
 migration = { path = "migrations" }

@@ -193,16 +193,15 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 								<Stack spacing={1.5} height={1}>
 									<Typography variant="h6" fontWeight="normal">Grade Weight</Typography>
 									<FormGroup>
-										<RadioGroup defaultValue="normal" value={grade.weight}
-														onChange={(event) => handleWeightChange(event, grade)}>
+										<RadioGroup defaultValue="normal" value={grade.weight} onChange={(event) => handleWeightChange(event, grade)}>
 											<FormControlLabel value="Default" control={
-												<Radio/>
+												<Radio color="secondary"/>
 											} label="Default"/>
 											<FormControlLabel value="Double" control={
-												<Radio/>
+												<Radio color="secondary"/>
 											} label="Double"/>
 											<FormControlLabel value="Half" control={
-												<Radio/>
+												<Radio color="secondary"/>
 											} label="Half"/>
 										</RadioGroup>
 									</FormGroup>

@@ -9,7 +9,6 @@ import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material"
 import {reactSet} from "../ts/utils";
 import CAppBar from "../components/AppBar/CAppBar";
 import {deleteGrade} from "./delete";
-import {createData} from "../components/table/util";
 import NewGradeModal from "../components/NewGradeModal/NewGradeModal";
 import {editGrade} from "./edit";
 import {useQueryClient} from "@tanstack/react-query";
@@ -87,7 +86,7 @@ export default function Overview(props: Props) {
 					</Stack>
 				}/>
 				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && <CTable
-						data={createData(grades.data.filter(grade => grade.period === Number(period) || period == "-1"))}
+						data={grades.data.filter(grade => grade.period === Number(period) || period == "-1")}
 						cols={getCols(noteRange.data, subjects.data, types.data)} delete={handleDeleteGrade}
 						edit={handleEditGrade}/>
 

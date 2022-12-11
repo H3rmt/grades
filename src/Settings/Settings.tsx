@@ -8,7 +8,6 @@ import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {createPeriod, createSubject, createType} from "./create";
-import {createData} from "../components/table/util";
 import {deletePeriod, deleteSubject, deleteType} from "./delete";
 import {editPeriod, editSubject, editType} from "./edit";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
@@ -209,6 +208,10 @@ function Settings(props: Props) {
 		setGradeModalDefaults({...gradeModalDefaults, subject_default: Number(event.target.value)})
 	}
 
+	const handleGradeSliderChange = (event: Event, newValue: number | number[], gradeModalDefaults: GradeModalDefault) => {
+		setGradeModalDefaults({...gradeModalDefaults, grade_default: Number(newValue)})
+	}
+
 	const handleSaveGradeModalDefaults = async (gradeModalDefaults: GradeModalDefaults) => {
 		await saveGradeModalDefaults(gradeModalDefaults, queryClient).then(async () => {
 			toastMessage("success", "Saved NoteRange", toast)
@@ -238,19 +241,19 @@ function Settings(props: Props) {
 					<Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Types" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateType(types)}>Add</Button>
-						}><CTable data={createData(types)} cols={getTypeCols()} delete={handleDeleteType} edit={handleEditType}/>
+						}><CTable data={types} cols={getTypeCols()} delete={handleDeleteType} edit={handleEditType}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Subjects" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateSubject(subjects)}>Add</Button>
-						}><CTable data={createData(subjects)} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
+						}><CTable data={subjects} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
 						</SettingsBox>
 					</Grid>
 					<Grid item xs={12} sm={12} md={12} xl={6}>
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreatePeriod(periods)}>Add</Button>
-						}><CTable data={createData(periods)} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
+						}><CTable data={periods} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>
 					</Grid>
 					{gradeModalDefaults !== null && gradeModalDefaultsS.isSuccess &&
@@ -301,6 +304,15 @@ function Settings(props: Props) {
 													</MenuItem>
 												})}
 											</Select>
+										</Stack>
+									</Grid>
+									<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
+										<Stack spacing={2} direction="row" alignItems="center">
+											<Typography variant="h6" fontWeight="normal">Grade</Typography>
+											<Slider value={defaults.grade_default} color="secondary" min={noteRange.from} max={noteRange.to}
+													  onChange={handleGradeSliderChange}/>
+											<TextField value={defaults.grade_default} type="number" margin="none"
+														  onChange={handleGradeInputChange}/>
 										</Stack>
 									</Grid>
 								</Grid>
