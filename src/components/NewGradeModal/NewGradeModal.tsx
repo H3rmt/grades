@@ -34,30 +34,39 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	const toast = useToast()
 	const queryClient = useQueryClient()
 
-	const periods = usePeriods();
-	if (periods.isError)
-		errorToast("Error loading Periods", toast, periods.error)
+	const periods = usePeriods({
+		onError: (error) => {
+			errorToast("Error loading Periods", toast, error)
+		}
+	});
 
-	const types = useTypes();
-	if (types.isError)
-		errorToast("Error loading Types", toast, types.error)
+	const types = useTypes({
+		onError: (error) => {
+			errorToast("Error loading Types", toast, error)
+		}
+	});
 
-	const subjects = useSubjects();
-	if (subjects.isError)
-		errorToast("Error loading Subjects", toast, subjects.error)
+	const subjects = useSubjects({
+		onError: (error) => {
+			errorToast("Error loading Subjects", toast, error)
+		}
+	});
 
-	const noteRange = useNoteRange();
-	if (noteRange.isError)
-		errorToast("Error loading noteRange", toast, noteRange.error)
+	const noteRange = useNoteRange({
+		onError: (error) => {
+			errorToast("Error loading noteRange", toast, error)
+		}
+	});
 
 	const gradeModalDefaults = useGradeModalDefaults({
 		onSuccess: (data) => {
 			if (grade === null)
 				setDefault(data)
+		},
+		onError: (error) => {
+			errorToast("Error loading gradeModalDefaults", toast, error)
 		}
 	});
-	if (gradeModalDefaults.isError)
-		errorToast("Error loading gradeModalDefaults", toast, gradeModalDefaults.error)
 
 	const handleGradeSliderChange = (value: number | number[], grade: Grade, noteRange: NoteRange) => {
 		setGrade({...grade, grade: Math.max(Math.min(Number(value), noteRange.to), noteRange.from)});

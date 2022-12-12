@@ -5,7 +5,7 @@ import {nullableUseState, reactSet} from "../ts/utils";
 import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
-import {Grade, Period, Subject, Type} from "../entity";
+import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {createPeriod, createSubject, createType} from "./create";
 import {deletePeriod, deleteSubject, deleteType} from "./delete";
@@ -28,42 +28,49 @@ function Settings(props: Props) {
 
 	const [periods, setPeriods] = useState<Period[]>([])
 	const periodsS = usePeriods({
-		onSuccess: (data) => setPeriods(data)
+		onSuccess: (data) => setPeriods(data),
+		onError: (error) => {
+			errorToast("Error loading Periods", toast, error)
+		}
 	});
-	if (periodsS.isError)
-		errorToast("Error loading Periods", toast, periodsS.error)
 
 	const [types, setTypes] = useState<Type[]>([])
 	const typesS = useTypes({
-		onSuccess: (data) => setTypes(data)
+		onSuccess: (data) => setTypes(data),
+		onError: (error) => {
+			errorToast("Error loading Types", toast, error)
+		}
 	});
-	if (typesS.isError)
-		errorToast("Error loading Types", toast, typesS.error)
 
 	const [subjects, setSubjects] = useState<Subject[]>([])
 	const subjectsS = useSubjects({
-		onSuccess: (data) => setSubjects(data)
+		onSuccess: (data) => setSubjects(data),
+		onError: (error) => {
+			errorToast("Error loading Subjects", toast, error)
+		}
 	});
-	if (subjectsS.isError)
-		errorToast("Error loading Subjects", toast, subjectsS.error)
 
 	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
 	const noteRangeS = useNoteRange({
-		onSuccess: (data) => setNoteRange(data)
+		onSuccess: (data) => setNoteRange(data),
+		onError: (error) => {
+			errorToast("Error loading noteRange", toast, error)
+		}
 	});
-	if (noteRangeS.isError)
-		errorToast("Error loading noteRange", toast, noteRangeS.error)
 
 	const [gradeModalDefaults, setGradeModalDefaults] = nullableUseState<GradeModalDefaults>()
 	const gradeModalDefaultsS = useGradeModalDefaults({
-		onSuccess: (data) => setGradeModalDefaults(data)
+		onSuccess: (data) => setGradeModalDefaults(data),
+		onError: (error) => {
+			errorToast("Error loading gradeModalDefaults", toast, error)
+		}
 	});
-	if (gradeModalDefaultsS.isError)
-		errorToast("Error loading gradeModalDefaults", toast, gradeModalDefaultsS.error)
 
-	const info = useInfo();
-	if (info.isError)
-		errorToast("Error loading noteRange", toast, info.error)
+	const info = useInfo({
+		onError: (error) => {
+			errorToast("Error loading info", toast, error)
+		}
+	});
 
 
 	const handleCreateType = async (types: Type[]) => {
@@ -242,24 +249,27 @@ function Settings(props: Props) {
 	return (<>
 				<CAppBar name="Settings" setOpenNav={props.setOpenNav}/>
 				<Grid container spacing={2} padding={2}>
-					<Grid item xs={12} sm={12} md={6} xl={6}>
+					{typesS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Types" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateType(types)}>Add</Button>
 						}><CTable data={types} cols={getTypeCols()} delete={handleDeleteType} edit={handleEditType}/>
 						</SettingsBox>
 					</Grid>
-					<Grid item xs={12} sm={12} md={6} xl={6}>
+					}
+					{subjectsS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Subjects" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateSubject(subjects)}>Add</Button>
 						}><CTable data={subjects} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
 						</SettingsBox>
 					</Grid>
-					<Grid item xs={12} sm={12} md={12} xl={6}>
+					}
+					{periodsS.isSuccess && <Grid item xs={12} sm={12} md={12} xl={6}>
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreatePeriod(periods)}>Add</Button>
 						}><CTable data={periods} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
 						</SettingsBox>
 					</Grid>
+					}
 					{gradeModalDefaults !== null && gradeModalDefaultsS.isSuccess && noteRange !== null &&
 							<Grid item xs={12} sm={12} md={6} xl={6}>
 								<SettingsBox title="Defaults" top={
