@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {useState} from 'react';
-import {Grade} from "../entity";
 import {useGrades, useNoteRange, usePeriods, useSubjects, useTypes} from "../ts/load";
 import {CTable} from "../components/table/table";
 import {getCols} from "./table";
@@ -8,10 +7,11 @@ import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material";
 import {reactSet} from "../ts/utils";
 import CAppBar from "../components/AppBar/CAppBar";
-import {deleteGrade} from "./delete";
 import NewGradeModal from "../components/NewGradeModal/NewGradeModal";
-import {editGrade} from "./edit";
+import {useEditGrade} from "./edit";
 import {useQueryClient} from "@tanstack/react-query";
+import {useDeleteGrade} from "./delete";
+import { Grade } from '../entity';
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -44,29 +44,28 @@ export default function Overview(props: Props) {
 	if (noteRange.isError)
 		errorToast("Error loading noteRange", toast, noteRange.error)
 
+	const deleteGrade = useDeleteGrade(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Deleted Grade", toast)
+		},
+		onError: (error) => {
+			errorToast("Error deleting grade", toast, error)
+		}
+	})
+
+	const editGrade = useEditGrade(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Edited Grade", toast)
+		},
+		onError: (error) => {
+			errorToast("Error editing grade", toast, error)
+		}
+	})
 
 	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
 		setPeriod(event.target.value)
 	}
 
-	const handleDeleteGrade = async (id: number) => {
-		await deleteGrade(id, queryClient).then(async () => {
-			toastMessage("success", "Deleted Grade", toast)
-			// Todo: add undo
-		}).catch((error) => {
-			errorToast("Error deleting Grade", toast, error)
-		})
-	}
-
-	const handleEditGrade = async (grade: Grade) => {
-		await editGrade(grade, queryClient).then(async () => {
-			toastMessage("success", "Edited Grade", toast)
-			// TODO: add undo
-			await queryClient.invalidateQueries({queryKey: ["grades"]})
-		}).catch((error) => {
-			errorToast("Error editing Grade", toast, error)
-		})
-	}
 	return (<>
 				<CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
 					<Stack spacing={2} direction="row" alignItems="start">
@@ -85,10 +84,16 @@ export default function Overview(props: Props) {
 						}}>New Grade</Button>
 					</Stack>
 				}/>
-				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && <CTable
-						data={grades.data.filter(grade => grade.period === Number(period) || period == "-1")}
-						cols={getCols(noteRange.data, subjects.data, types.data)} delete={handleDeleteGrade}
-						edit={handleEditGrade}/>
+				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess &&
+						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period == "-1")}
+								  cols={getCols(noteRange.data, subjects.data, types.data)}
+								  delete={(id) => {
+									  deleteGrade.mutate(id)
+								  }}
+								  edit={(grade: Grade) => {
+									  editGrade.mutate(grade)
+								  }}
+						/>
 
 				}
 				<NewGradeModal open={openModal} closeModal={() => {

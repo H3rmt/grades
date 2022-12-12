@@ -6,74 +6,69 @@ import {UseQueryOpts} from "./utils";
 
 
 function useTypes(options: UseQueryOpts<Type[]> = {}) {
-	return useQuery<Type[]>({
-		queryKey: ["types"],
-		queryFn: async () => {
-			// @ts-ignore
-			return await invoke("get_types_js").then((data: string) => {
-				console.debug("get_types_js", data)
-				return JSON.parse(data)
-			})
-		},
-		...options
-	});
+	return useQuery<Type[]>(["types"],
+			async () => {
+				// @ts-ignore
+				return await invoke("get_types_js").then((data: string) => {
+					console.debug("get_types_js", data)
+					return JSON.parse(data)
+				})
+			},
+			options
+	);
 }
 
 function useSubjects(options: UseQueryOpts<Subject[]> = {}) {
-	return useQuery<Subject[]>({
-		queryKey: ["subjects"],
-		queryFn: async () => {
-			// @ts-ignore
-			return await invoke("get_subjects_js").then((data: string) => {
-				console.debug("get_subjects_js", data)
-				return JSON.parse(data)
-			})
-		},
-		...options
-	});
+	return useQuery<Subject[]>(["subjects"],
+			async () => {
+				// @ts-ignore
+				return await invoke("get_subjects_js").then((data: string) => {
+					console.debug("get_subjects_js", data)
+					return JSON.parse(data)
+				})
+			},
+			options
+	);
 }
 
 function usePeriods(options: UseQueryOpts<Period[]> = {}) {
-	return useQuery<Period[]>({
-		queryKey: ["periods"],
-		queryFn: async () => {
-			// @ts-ignore
-			return await invoke("get_periods_js").then((data: string) => {
-				console.debug("get_periods_js", data)
-				return JSON.parse(data)
-			})
-		},
-		...options
-	});
+	return useQuery<Period[]>(["periods"],
+			async () => {
+				// @ts-ignore
+				return await invoke("get_periods_js").then((data: string) => {
+					console.debug("get_periods_js", data)
+					return JSON.parse(data)
+				})
+			},
+			options
+	);
 }
 
 function useGrades(options: UseQueryOpts<Grade[]> = {}) {
-	return useQuery<Grade[]>({
-		queryKey: ["grades"],
-		queryFn: async () => {
-			// @ts-ignore
-			return await invoke("get_grades_js").then((data: string) => {
-				console.debug("get_grades_js", data)
-				return JSON.parse(data)
-			})
-		},
-		...options
-	});
+	return useQuery<Grade[]>(["grades"],
+			async () => {
+				// @ts-ignore
+				return await invoke("get_grades_js").then((data: string) => {
+					console.debug("get_grades_js", data)
+					return JSON.parse(data)
+				})
+			},
+			options
+	);
 }
 
 
 function useNoteRange(options: UseQueryOpts<NoteRange> = {}) {
-	return useQuery<NoteRange>({
-		queryKey: ["noteRange"],
-		queryFn: async () => {
-			// @ts-ignore
-			return await invoke("get_note_rage_js").then((data: string) => {
-				console.debug("get_note_rage_js", data)
-				return JSON.parse(data)
-			})
-		},
-		...options
-	});
+	return useQuery<NoteRange>(["noteRange"],
+			async () => {
+				// @ts-ignore
+				return await invoke("get_note_rage_js").then((data: string) => {
+					console.debug("get_note_rage_js", data)
+					return JSON.parse(data)
+				})
+			},
+			options
+	);
 }
 
 

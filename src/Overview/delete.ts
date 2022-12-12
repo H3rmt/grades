@@ -1,18 +1,24 @@
 import {invoke} from "@tauri-apps/api/tauri";
-import {QueryClient} from "@tanstack/react-query";
+import {QueryClient, useMutation} from "@tanstack/react-query";
+import {UseMutationOpts} from "../ts/utils";
 
-function deleteGrade(id: number, queryClient: QueryClient): Promise<void> {
-	return invoke("delete_grade_js", {
-		json: JSON.stringify({id: id})
-	}).then(async () => {
-		console.log("Deleted Grade")
-		await queryClient.invalidateQueries({queryKey: ["grades"]})
-	}).catch((error) => {
-		console.error("Delete Grade", error)
-		throw error
-	})
+
+function useDeleteGrade(queryClient: QueryClient, options: UseMutationOpts<void, number> = {}) {
+	return useMutation(["grades"],
+			async (id: number) => {
+				// @ts-ignore
+				return await invoke("delete_grade_js", {
+					json: JSON.stringify({id: id})
+				}).then(async () => {
+					console.log("Deleted Grade")
+					await queryClient.invalidateQueries({queryKey: ["grades"]})
+				})
+			},
+			options
+	);
 }
 
+
 export {
-	deleteGrade
+	useDeleteGrade
 }
