@@ -24,25 +24,35 @@ export default function Overview(props: Props) {
 	const toast = useToast()
 	const queryClient = useQueryClient()
 
-	const grades = useGrades();
-	if (grades.isError)
-		errorToast("Error loading Grades", toast, grades.error)
+	const grades = useGrades({
+		onError: (error) => {
+			errorToast("Error loading Grades", toast, error)
+		}
+	});
 
-	const periods = usePeriods();
-	if (periods.isError)
-		errorToast("Error loading Periods", toast, periods.error)
+	const periods = usePeriods({
+		onError: (error) => {
+			errorToast("Error loading Periods", toast, error)
+		}
+	});
 
-	const types = useTypes();
-	if (types.isError)
-		errorToast("Error loading Types", toast, types.error)
+	const types = useTypes({
+		onError: (error) => {
+			errorToast("Error loading Types", toast, error)
+		}
+	});
 
-	const subjects = useSubjects();
-	if (subjects.isError)
-		errorToast("Error loading Subjects", toast, subjects.error)
+	const subjects = useSubjects({
+		onError: (error) => {
+			errorToast("Error loading Subjects", toast, error)
+		}
+	});
 
-	const noteRange = useNoteRange();
-	if (noteRange.isError)
-		errorToast("Error loading noteRange", toast, noteRange.error)
+	const noteRange = useNoteRange({
+		onError: (error) => {
+			errorToast("Error loading noteRange", toast, error)
+		}
+	});
 
 	const deleteGrade = useDeleteGrade(queryClient, {
 		onSuccess: () => {
