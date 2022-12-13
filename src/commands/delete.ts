@@ -2,7 +2,6 @@ import {invoke} from "@tauri-apps/api/tauri";
 import {QueryClient, useMutation} from "@tanstack/react-query";
 import {UseMutationOpts} from "../ts/utils";
 
-
 function useDeleteGrade(queryClient: QueryClient, options: UseMutationOpts<void, number> = {}) {
 	return useMutation(["grades"],
 			async (id: number) => {

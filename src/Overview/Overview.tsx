@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useState} from 'react';
-import {useGrades, useNoteRange, usePeriods, useSubjects, useTypes} from "../ts/load";
+import {useGrades, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/load";
 import {CTable} from "../components/table/table";
 import {getCols} from "./table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
@@ -8,10 +8,10 @@ import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material"
 import {reactSet} from "../ts/utils";
 import CAppBar from "../components/AppBar/CAppBar";
 import NewGradeModal from "../components/NewGradeModal/NewGradeModal";
-import {useEditGrade} from "./edit";
+import {useEditGrade} from "../commands/edit";
 import {useQueryClient} from "@tanstack/react-query";
-import {useDeleteGrade} from "./delete";
-import { Grade } from '../entity';
+import {useDeleteGrade} from "../commands/delete";
+import {Grade} from '../entity';
 
 type Props = {
 	setOpenNav: reactSet<boolean>

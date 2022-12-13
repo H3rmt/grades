@@ -2,7 +2,7 @@ import {invoke} from "@tauri-apps/api/tauri";
 import {Grade, Info, Period, Subject, Type} from "../entity";
 import {useQuery} from "@tanstack/react-query";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
-import {UseQueryOpts} from "./utils";
+import {UseQueryOpts} from "../ts/utils";
 
 
 function useTypes(options: UseQueryOpts<Type[]> = {}) {

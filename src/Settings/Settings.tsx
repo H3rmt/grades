@@ -1,5 +1,5 @@
 import {Button, Grid, IconButton, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
-import React, {ChangeEvent, useState} from 'react';
+import {ChangeEvent, useState} from 'react';
 import CAppBar from '../components/AppBar/CAppBar';
 import {nullableUseState, reactSet} from "../ts/utils";
 import {SettingsBox} from "../components/SettingsBox/SettingsBox";
@@ -14,7 +14,7 @@ import {GradeModalDefaults, NoteRange} from "../entity/config";
 import SaveButton from "@mui/icons-material/Save";
 import UndoIcon from "@mui/icons-material/Undo";
 import {saveGradeModalDefaults, saveNoteRange} from "./save";
-import {useGradeModalDefaults, useInfo, useNoteRange, usePeriods, useSubjects, useTypes} from "../ts/load";
+import {useGradeModalDefaults, useInfo, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/load";
 import {useQueryClient} from "@tanstack/react-query";
 
 type Props = {

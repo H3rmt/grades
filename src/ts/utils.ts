@@ -44,6 +44,7 @@ type UseMutationOpts<
 		UseMutationOptions<TData, unknown, TVariables, TContext>,
 		'mutationFn' | 'mutationKey'
 >
+
 export type {
 	reactSet,
 	UseQueryOpts,

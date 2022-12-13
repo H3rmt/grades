@@ -21,8 +21,8 @@ import {
 } from "@mui/material";
 import {errorToast, toastMessage, useToast} from "../../ts/toast";
 import {Grade} from "../../entity";
-import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes} from "../../ts/load";
-import {createGrade} from "./create";
+import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes} from "../../commands/load";
+import {useCreateGrade} from "../../commands/create";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
 import {nullableUseState} from '../../ts/utils';
 import dayjs from "dayjs";
@@ -68,6 +68,15 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		}
 	});
 
+	const createGrade = useCreateGrade(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Created Grade", toast)
+		},
+		onError: (error) => {
+			errorToast("Error creating grade", toast, error)
+		}
+	})
+
 	const handleGradeSliderChange = (value: number | number[], grade: Grade, noteRange: NoteRange) => {
 		setGrade({...grade, grade: Math.max(Math.min(Number(value), noteRange.to), noteRange.from)});
 	};
@@ -96,15 +105,6 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		setGrade({...grade, weight: (event.target.value as 'Default' | 'Double' | 'Half')})
 	}
 
-	const handleCreateGrade = async (grade: Grade) => {
-		await createGrade(grade, queryClient).then(() => {
-			toastMessage("success", "Created Grade", toast)
-			props.closeModal()
-		}).catch((error) => {
-			errorToast("Error creating Grade", toast, error)
-		})
-	}
-
 	const setDefault = (defaults: GradeModalDefaults) => {
 		setGrade({
 			id: -1,
@@ -122,7 +122,6 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 
 	const handleClear = async (gradeModalDefaults: GradeModalDefaults) => {
 		let oldGrade = Object.assign({}, grade)
-		// @ts-ignore
 		setDefault(gradeModalDefaults)
 
 		const undo = () => {
@@ -227,7 +226,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 			}
 			<Button onClick={props.closeModal} type="submit" variant="outlined" color="secondary">Close</Button>
 			{grade !== null &&
-					<Button onClick={() => handleCreateGrade(grade)} type="submit" variant="outlined" color="success">Create</Button>
+					<Button onClick={() => createGrade.mutate(grade)} type="submit" variant="outlined" color="success">Create</Button>
 			}
 		</DialogActions>
 	</Dialog>);
