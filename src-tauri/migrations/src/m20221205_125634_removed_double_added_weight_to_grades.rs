@@ -61,9 +61,9 @@ pub enum Grade {
 }
 
 #[derive(Iden, Debug)]
-#[allow(clippy::enum_variant_names)] // name for enum name in postgres
+#[allow(clippy::enum_variant_names)]
 pub enum Weight {
-	#[iden = "weight"]
+	#[iden = "weight"]  // name for enum name in postgres
 	Weight,
 	Default,
 	Double,

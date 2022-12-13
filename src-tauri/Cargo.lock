@@ -909,7 +909,7 @@ dependencies = [
 
 [[package]]
 name = "entity"
-version = "0.12.0"
+version = "0.13.0"
 dependencies = [
  "sea-orm",
  "serde",
@@ -1406,7 +1406,7 @@ dependencies = [
 
 [[package]]
 name = "grades"
-version = "0.0.5"
+version = "0.1.0"
 dependencies = [
  "built",
  "dirs",
@@ -1994,7 +1994,7 @@ dependencies = [
 
 [[package]]
 name = "migration"
-version = "0.12.0"
+version = "0.13.0"
 dependencies = [
  "sea-orm-migration",
  "tokio",

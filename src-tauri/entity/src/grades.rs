@@ -13,16 +13,15 @@ impl EntityName for Entity {
 	}
 }
 
-#[derive(TS, Clone, Debug, PartialEq, DeriveModel, DeriveActiveModel, Serialize, Deserialize)]
+#[derive(TS, Clone, Debug, PartialEq, Eq, DeriveModel, DeriveActiveModel, Serialize, Deserialize)]
 #[ts(export, export_to = "../../src/entity/grade.ts")]
 pub struct Model {
 	pub id: i32,
 	pub subject: i32,
 	pub r#type: i32,
 	pub info: String,
-	pub grade: i32,
+	pub grade: Option<i32>,
 	pub period: i32,
-	pub not_final: bool,
 	pub confirmed: Option<String>,
 	pub date: String,
 	#[ts(type = "'Default' | 'Double' | 'Half'")]
@@ -37,7 +36,6 @@ pub enum Column {
 	Info,
 	Grade,
 	Period,
-	NotFinal,
 	Confirmed,
 	Date,
 	Weight,
@@ -72,7 +70,6 @@ impl ColumnTrait for Column {
 			Self::Info => ColumnType::String(None).def(),
 			Self::Grade => ColumnType::Integer.def(),
 			Self::Period => ColumnType::Integer.def(),
-			Self::NotFinal => ColumnType::Boolean.def(),
 			Self::Confirmed => ColumnType::String(None).def().null(),
 			Self::Date => ColumnType::String(None).def(),
 			Self::Weight => ColumnType::String(None).def(),
@@ -120,7 +117,7 @@ impl Related<super::subjects::Entity> for Entity {
 impl ActiveModelBehavior for ActiveModel {}
 
 
-#[derive(Clone, Debug, PartialEq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "weight")]
 pub enum Weight {
 	#[sea_orm(string_value = "Default")]
