@@ -64,24 +64,26 @@ async fn main() {
 					window.close_devtools();
 				}
 				
-				let handle = app.handle();
-				tauri::async_runtime::spawn(async move {
-					match tauri::updater::builder(handle).check().await {
-						Ok(update) => {
-							if update.is_update_available() {
-								log::info!("Update available: {}", update.latest_version());
-								if let Err(e) = update.download_and_install().await {
-									log::error!("Error downloading update: {}", e);
+				#[cfg(not(debug_assertions))] {
+					let handle = app.handle();
+					tauri::async_runtime::spawn(async move {
+						match tauri::updater::builder(handle).check().await {
+							Ok(update) => {
+								if update.is_update_available() {
+									log::info!("Update available: {}", update.latest_version());
+									if let Err(e) = update.download_and_install().await {
+										log::error!("Error downloading update: {}", e);
+									}
+								} else {
+									log::info!("No update available");
 								}
-							} else {
-								log::info!("No update available");
+							}
+							Err(e) => {
+								log::error!("Error checking for update: {}", e);
 							}
 						}
-						Err(e) => {
-							log::error!("Error checking for update: {}", e);
-						}
-					}
-				});
+					});
+				}
 				
 				Ok(())
 			})
