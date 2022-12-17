@@ -4,10 +4,6 @@
 		"devPath": "http://localhost:1420",
 		"distDir": "../dist"
 	},
-	"package": {
-		"productName": "Grades",
-		"version": "0.0.5"
-	},
 	"tauri": {
 		"allowlist": {
 			"all": false,
