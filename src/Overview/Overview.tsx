@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useState} from 'react';
-import {useGrades, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/load";
+import {useGrades, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/get";
 import {CTable} from "../components/table/table";
 import {getCols} from "./table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";

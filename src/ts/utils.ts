@@ -2,6 +2,7 @@ import {Dispatch, SetStateAction, useState} from "react";
 import {UseQueryOptions} from "@tanstack/react-query/src/types";
 import {QueryKey} from "@tanstack/query-core/src/types";
 import {UseMutationOptions} from "@tanstack/react-query";
+import {invoke as inv} from "@tauri-apps/api/tauri";
 
 type reactSet<T> = Dispatch<SetStateAction<T>>
 
@@ -25,6 +26,49 @@ function nextFree(arr: string[], name: string) {
 		i++
 	}
 	return newName
+}
+
+function randColor(): string {
+	return "#" + Math.floor(Math.random() * 16777215).toString(16)
+}
+
+function create<T>(cmd: string, args?: any): Promise<void> { // change to Promise<T> if id returned
+	return inv("create_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
+		// return id
+		console.debug("create_" + cmd, "success", args)
+	}).catch((e) => {
+		console.debug("create_" + cmd, "fail", e, args)
+		throw e
+	})
+}
+
+function del(cmd: string, id: any): Promise<void> {
+	return inv("delete_" + cmd + "_js", {json: JSON.stringify({id: id})}).then(() => {
+		console.debug("delete_" + cmd, "success", id)
+	}).catch((e) => {
+		console.debug("delete_" + cmd, "fail", e, id)
+		throw e
+	})
+}
+
+function edit<T>(cmd: string, args: any): Promise<void> { // change to Promise<T> if entity returned
+	return inv("edit_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
+		// return entity
+		console.debug("edit_" + cmd, "success", args)
+	}).catch((e) => {
+		console.debug("edit_" + cmd, "fail", e, args)
+		throw e
+	})
+}
+
+function get<T>(cmd: string): Promise<T> {
+	return inv<string>("get_" + cmd + "_js").then((data: string) => {
+		console.debug("get_" + cmd, "success")
+		return JSON.parse(data)
+	}).catch((e) => {
+		console.debug("get_" + cmd, "fail", e)
+		throw e
+	})
 }
 
 type UseQueryOpts<
@@ -56,4 +100,9 @@ export {
 	capitalizeFirstLetter,
 	map,
 	nullableUseState,
+	edit,
+	get,
+	create,
+	del,
+	randColor
 }

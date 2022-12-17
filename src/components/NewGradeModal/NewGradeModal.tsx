@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import {errorToast, toastMessage, useToast} from "../../ts/toast";
 import {Grade} from "../../entity";
-import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes} from "../../commands/load";
+import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes} from "../../commands/get";
 import {useCreateGrade} from "../../commands/create";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
 import {nullableUseState} from '../../ts/utils';
@@ -73,7 +73,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 			toastMessage("success", "Created Grade", toast)
 		},
 		onError: (error) => {
-			errorToast("Error creating grade", toast, error)
+			errorToast("Error creating Grade", toast, error)
 		}
 	})
 
@@ -226,7 +226,10 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 			}
 			<Button onClick={props.closeModal} type="submit" variant="outlined" color="secondary">Close</Button>
 			{grade !== null &&
-					<Button onClick={() => createGrade.mutate(grade)} type="submit" variant="outlined" color="success">Create</Button>
+					<Button onClick={() => {
+						createGrade.mutate(grade);
+						props.closeModal()
+					}} type="submit" variant="outlined" color="success">Create</Button>
 			}
 		</DialogActions>
 	</Dialog>);

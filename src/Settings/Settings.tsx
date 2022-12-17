@@ -1,21 +1,21 @@
 import {Button, Grid, IconButton, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
 import {ChangeEvent, useState} from 'react';
 import CAppBar from '../components/AppBar/CAppBar';
-import {nullableUseState, reactSet} from "../ts/utils";
+import {nextFree, nullableUseState, randColor, reactSet} from "../ts/utils";
 import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
-import {createPeriod, createSubject, createType} from "./create";
-import {deletePeriod, deleteSubject, deleteType} from "./delete";
-import {editPeriod, editSubject, editType} from "./edit";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
 import SaveButton from "@mui/icons-material/Save";
 import UndoIcon from "@mui/icons-material/Undo";
-import {saveGradeModalDefaults, saveNoteRange} from "./save";
-import {useGradeModalDefaults, useInfo, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/load";
+import {useGradeModalDefaults, useInfo, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/get";
 import {useQueryClient} from "@tanstack/react-query";
+import {useCreatePeriod, useCreateSubject, useCreateType} from "../commands/create";
+import dayjs from "dayjs";
+import {useDeletePeriod, useDeleteSubject, useDeleteType} from "../commands/delete";
+import {useEditGradeModalDefaults, useEditNoteRange, useEditPeriod, useEditSubject, useEditType} from "../commands/edit";
 
 type Props = {
 	setOpenNav: reactSet<boolean>
@@ -72,83 +72,128 @@ function Settings(props: Props) {
 		}
 	});
 
+	const createType = useCreateType(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Created Type", toast)
+		},
+		onError: (error) => {
+			errorToast("Error creating Type", toast, error)
+		}
+	})
+
+	const createSubject = useCreateSubject(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Created Subject", toast)
+		},
+		onError: (error) => {
+			errorToast("Error creating Subject", toast, error)
+		}
+	})
+
+	const createPeriod = useCreatePeriod(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Created Period", toast)
+		},
+		onError: (error) => {
+			errorToast("Error creating Period", toast, error)
+		}
+	})
+
+	const deleteType = useDeleteType(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Deleted Type", toast)
+		},
+		onError: (error) => {
+			errorToast("Error deleting Type", toast, error)
+		}
+	})
+
+	const deleteSubject = useDeleteSubject(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Deleted Subject", toast)
+		},
+		onError: (error) => {
+			errorToast("Error deleting Subject", toast, error)
+		}
+	})
+
+	const deletePeriod = useDeletePeriod(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Deleted Period", toast)
+		},
+		onError: (error) => {
+			errorToast("Error deleting Period", toast, error)
+		}
+	})
+
+	const editType = useEditType(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Edited Type", toast)
+		},
+		onError: (error) => {
+			errorToast("Error editing Type", toast, error)
+		}
+	})
+
+	const editSubject = useEditSubject(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Edited Subject", toast)
+		},
+		onError: (error) => {
+			errorToast("Error editing Subject", toast, error)
+		}
+	})
+
+	const editPeriod = useEditPeriod(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Edited Period", toast)
+		},
+		onError: (error) => {
+			errorToast("Error editing Period", toast, error)
+		}
+	})
+
+	const editNoteRange = useEditNoteRange(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Saved Note Range", toast)
+		},
+		onError: (error) => {
+			errorToast("Error saving Note Range", toast, error)
+		}
+	})
+
+	const editGradeModalDefaults = useEditGradeModalDefaults(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Saved Grade Modal Defaults", toast)
+		},
+		onError: (error) => {
+			errorToast("Error saving Grade Modal Defaults", toast, error)
+		}
+	})
+
 
 	const handleCreateType = async (types: Type[]) => {
-		await createType(types, queryClient).then(async () => {
-			toastMessage("success", "Created Type", toast)
-		}).catch((error) => {
-			errorToast("Error creating Type", toast, error)
-		})
-	}
-
-	const handleDeleteType = async (id: number) => {
-		await deleteType(id, queryClient).then(async () => {
-			toastMessage("success", "Deleted Type", toast)
-			// TODO: add undo
-		}).catch((error) => {
-			errorToast("Error deleting Type", toast, error)
-		})
-	}
-
-	const handleEditType = async (period: Type) => {
-		await editType(period, queryClient).then(async () => {
-			toastMessage("success", "Edited Type", toast)
-			// TODO: add undo
-		}).catch((error) => {
-			errorToast("Error editing Type", toast, error)
+		await createType.mutate({
+			color: randColor(),
+			name: nextFree(types.map(i => i.name), "New Type"),
+			id: -1
 		})
 	}
 
 	const handleCreateSubject = async (subjects: Subject[]) => {
-		await createSubject(subjects, queryClient).then(async () => {
-			toastMessage("success", "Created Subject", toast)
-		}).catch((error) => {
-			errorToast("Error creating Subject", toast, error)
+		await createSubject.mutate({
+			color: randColor(),
+			name: nextFree(subjects.map(i => i.name), "New Subject"),
+			id: -1
 		})
 	}
-
-	const handleDeleteSubject = async (id: number) => {
-		await deleteSubject(id, queryClient).then(async () => {
-			toastMessage("success", "Deleted Subject", toast)
-			// TODO: add undo
-		}).catch((error) => {
-			errorToast("Error deleting Subject", toast, error)
-		})
-	}
-
-	const handleEditSubject = async (subject: Subject) => {
-		await editSubject(subject, queryClient).then(async () => {
-			toastMessage("success", "Edited Subject", toast)
-			// TODO: add undo
-		}).catch((error) => {
-			errorToast("Error editing Subject", toast, error)
-		})
-	}
-
 
 	const handleCreatePeriod = async (periods: Period[]) => {
-		await createPeriod(periods, queryClient).then(async () => {
-			toastMessage("success", "Created Period", toast)
-		}).catch((error) => {
-			errorToast("Error creating Period", toast, error)
-		})
-	}
-
-	const handleDeletePeriod = async (id: number) => {
-		await deletePeriod(id, queryClient).then(async () => {
-			toastMessage("success", "Deleted Period", toast)
-			// TODO: add undo
-		}).catch((error) => {
-			errorToast("Error deleting Period", toast, error)
-		})
-	}
-
-	const handleEditPeriod = async (period: Period) => {
-		await editPeriod(period, queryClient).then(async () => {
-			toastMessage("success", "Edited Period", toast)
-			// TODO: add undo
-		}).catch((error) => {
-			errorToast("Error editing Period", toast, error)
+		await createPeriod.mutate({
+			to: dayjs().add(6, "months").format("YYYY-MM-DD"),
+			from: dayjs().format("YYYY-MM-DD"),
+			name: nextFree(periods.map(i => i.name), "New Period"),
+			id: -1
 		})
 	}
 
@@ -180,14 +225,14 @@ function Settings(props: Props) {
 		})
 	}
 
-	const handleSaveNoteRange = async (noteRange: NoteRange) => {
-		await saveNoteRange(noteRange, queryClient).then(async () => {
-			toastMessage("success", "Saved NoteRange", toast)
-			// TODO: add undo
-		}).catch((error) => {
-			errorToast("Error saving NoteRange", toast, error)
-		})
-	}
+	// const handleSaveNoteRange = async (noteRange: NoteRange) => {
+	// 	await saveNoteRange(noteRange, queryClient).then(async () => {
+	// 		toastMessage("success", "Saved NoteRange", toast)
+	// 		// TODO: add undo
+	// 	}).catch((error) => {
+	// 		errorToast("Error saving NoteRange", toast, error)
+	// 	})
+	// }
 
 	const handleNoteRangeReset = async (noteRange: NoteRange, noteRangeS: NoteRange) => {
 		let old = Object.assign({}, noteRange)
@@ -223,14 +268,14 @@ function Settings(props: Props) {
 		setGradeModalDefaults({...gradeModalDefaults, grade_default: Number(event.target.value)})
 	};
 
-	const handleSaveGradeModalDefaults = async (gradeModalDefaults: GradeModalDefaults) => {
-		await saveGradeModalDefaults(gradeModalDefaults, queryClient).then(async () => {
-			toastMessage("success", "Saved NoteRange", toast)
-			// TODO: add undo
-		}).catch((error) => {
-			errorToast("Error saving NoteRange", toast, error)
-		})
-	}
+	// const handleSaveGradeModalDefaults = async (gradeModalDefaults: GradeModalDefaults) => {
+	// 	await saveGradeModalDefaults(gradeModalDefaults, queryClient).then(async () => {
+	// 		toastMessage("success", "Saved NoteRange", toast)
+	// 		// TODO: add undo
+	// 	}).catch((error) => {
+	// 		errorToast("Error saving NoteRange", toast, error)
+	// 	})
+	// }
 
 	const handleDefaultsReset = async (gradeModalDefaults: GradeModalDefaults, gradeModalDefaultsS: GradeModalDefaults) => {
 		let old = Object.assign({}, gradeModalDefaults)
@@ -252,21 +297,24 @@ function Settings(props: Props) {
 					{typesS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Types" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateType(types)}>Add</Button>
-						}><CTable data={types} cols={getTypeCols()} delete={handleDeleteType} edit={handleEditType}/>
+						}><CTable data={types} cols={getTypeCols()} delete={(id) => deleteType.mutate(id)}
+									 edit={(type) => editType.mutate(type)}/>
 						</SettingsBox>
 					</Grid>
 					}
 					{subjectsS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
 						<SettingsBox title="Subjects" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateSubject(subjects)}>Add</Button>
-						}><CTable data={subjects} cols={getSubjectCols()} delete={handleDeleteSubject} edit={handleEditSubject}/>
+						}><CTable data={subjects} cols={getSubjectCols()} delete={(id) => deleteSubject.mutate(id)}
+									 edit={(subject) => editSubject.mutate(subject)}/>
 						</SettingsBox>
 					</Grid>
 					}
 					{periodsS.isSuccess && <Grid item xs={12} sm={12} md={12} xl={6}>
 						<SettingsBox title="Periods" top={
 							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreatePeriod(periods)}>Add</Button>
-						}><CTable data={periods} cols={getPeriodCols()} delete={handleDeletePeriod} edit={handleEditPeriod}/>
+						}><CTable data={periods} cols={getPeriodCols()} delete={(id) => deletePeriod.mutate(id)}
+									 edit={(period) => editPeriod.mutate(period)}/>
 						</SettingsBox>
 					</Grid>
 					}
@@ -277,7 +325,7 @@ function Settings(props: Props) {
 										<IconButton color="error" onClick={() => handleDefaultsReset(gradeModalDefaults, gradeModalDefaultsS.data)}>
 											<UndoIcon/>
 										</IconButton>
-										<IconButton color="success" onClick={() => handleSaveGradeModalDefaults(gradeModalDefaults)}><SaveButton/>
+										<IconButton color="success" onClick={() => editGradeModalDefaults.mutate(gradeModalDefaults)}><SaveButton/>
 										</IconButton>
 									</Stack>
 								}><Grid container spacing={4} padding={2}>
@@ -340,7 +388,7 @@ function Settings(props: Props) {
 										<IconButton color="error" onClick={() => handleNoteRangeReset(noteRange, noteRangeS.data)}>
 											<UndoIcon/>
 										</IconButton>
-										<IconButton color="success" onClick={() => handleSaveNoteRange(noteRange)}>
+										<IconButton color="success" onClick={() => editNoteRange.mutate(noteRange)}>
 											<SaveButton/>
 										</IconButton>
 									</Stack>

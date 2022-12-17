@@ -31,7 +31,7 @@ const darkTheme = createTheme({
 	},
 });
 
-const queryClient = new QueryClient({defaultOptions: {queries: {networkMode: 'always'}}});
+const queryClient = new QueryClient({defaultOptions: {queries: {networkMode: 'always', refetchOnWindowFocus: false}}});
 
 createRoot(document.getElementById("root") as HTMLElement).render(
 		<React.StrictMode>
