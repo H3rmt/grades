@@ -14,7 +14,7 @@ export default function CAppBar(props: Props) {
 	return <>
 		<AppBar component="nav" enableColorOnDark position="fixed">
 			<Toolbar variant="regular">
-				<IconButton color="inherit" aria-label="open drawer" edge="start" size="normal" onClick={() => {
+				<IconButton color="inherit" aria-label="open drawer" edge="start" size="medium" onClick={() => {
 					props.setOpenNav(true)
 				}}><MenuIcon/>
 				</IconButton>
