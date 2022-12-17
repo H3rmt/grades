@@ -23,5 +23,14 @@ export default defineConfig({
 		minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
 		// produce sourcemaps for debug builds
 		sourcemap: !!process.env.TAURI_DEBUG,
+
+		rollupOptions: {
+			output: {
+				manualChunks: {
+					react: ["react", "react-dom"],
+					mui: ["@mui/material", "@mui/system", "@mui/x-date-pickers"],
+				}
+			}
+		}
 	},
 });
