@@ -41,6 +41,7 @@ jobs:
             return data.id
 
   tauri:
+    name: build tauri
     needs: create-release
     strategy:
       fail-fast: false
