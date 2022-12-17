@@ -8,7 +8,7 @@
 
 		"tauri dev": "tauri dev",
 		"tauri build": "tauri build",
-		"build ts entity": "cd src-tauri/entity && cargo test && cd src-tauri && cargo test"
+		"build ts entity": "cd src-tauri/entity && cargo test && cd .. && cargo test"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.10",

@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from 'react';
+import {ChangeEvent} from 'react';
 import {
 	Button,
 	Dialog,
@@ -115,7 +115,6 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 			type: defaults.type_default || 0,
 			period: defaults.period_default || 0,
 			info: '',
-			not_final: defaults.not_final_default,
 			weight: 'Default'
 		})
 	}

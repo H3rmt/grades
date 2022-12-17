@@ -1,8 +1,7 @@
 import {Grade, Subject, Type} from "../entity";
 import {cols, ColumnDef} from "../components/table/defs";
-import {Badge, Checkbox, IconButton, Stack, TextField, Typography} from "@mui/material";
+import {Badge, IconButton, Stack, TextField, Typography} from "@mui/material";
 import {map} from "../ts/utils";
-import React from "react";
 import {NoteRange} from "../entity/config";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 import dayjs, {Dayjs} from "dayjs";
@@ -89,13 +88,6 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 		], [
 			"weight", {
 				sort: true,
-			}
-		], [
-			"not_final", {
-				sort: false,
-				name: "Not Final",
-				format: notFinal => <Checkbox checked={notFinal as boolean} disabled/>,
-				edit: (r) => <Checkbox color="secondary" checked={r.not_final} onChange={i => r.not_final = i.target.checked}/>
 			}
 		], [
 			"id", {
