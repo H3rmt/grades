@@ -24,10 +24,29 @@ export default defineConfig({
 
 		rollupOptions: {
 			output: {
-				manualChunks: {
-					react: ["react", "react-dom"],
-					mui: ["@mui/material", "@mui/system", "@mui/x-date-pickers"],
-				}
+				minifyInternalExports: true,
+				manualChunks: (id) => {
+					if (id.includes("node_modules")) {
+						if (id.includes("@mui/material")) {
+							return "mui/material";
+						} else if (id.includes("@mui/icons-material")) {
+							return "mui/icons-material";
+						} else if (id.includes("@mui/system")) {
+							return "mui/system";
+						} else if (id.includes("@mui/x-date-pickers")) {
+							return "mui/x-date-pickers";
+						} else if (id.includes("@mui")) {
+							return "mui/index";
+						} else if (id.includes("react")) {
+							return "react";
+						} else if (id.includes("notistack") || id.includes("dayjs")) {
+							return "utils";
+						} else if (id.includes("@fontsource")) {
+							return "fontsource";
+						}
+						return "vendor";
+					}
+				},
 			}
 		}
 	},
