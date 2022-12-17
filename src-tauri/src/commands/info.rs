@@ -1,6 +1,5 @@
 use error_stack::{IntoReport, ResultExt};
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Wry};
 use ts_rs::TS;
 use crate::built_info;
 

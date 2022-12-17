@@ -114,7 +114,6 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 			subject: defaults.subject_default || 0,
 			type: defaults.type_default || 0,
 			period: defaults.period_default || 0,
-			not_final: defaults.not_final_default,
 			info: '',
 			weight: 'Default'
 		})
