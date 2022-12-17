@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-tauri:
+  tauri:
     strategy:
       fail-fast: false
       matrix:

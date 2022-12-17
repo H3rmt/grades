@@ -5,10 +5,6 @@ on:
     branches:
       - release
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
   create-release:
     runs-on: ubuntu-latest
@@ -44,7 +40,7 @@ jobs:
 
             return data.id
 
-  build-tauri:
+  tauri:
     needs: create-release
     strategy:
       fail-fast: false
@@ -93,7 +89,7 @@ jobs:
 
   publish-release:
     runs-on: ubuntu-latest
-    needs: [ build-tauri, create-release ]
+    needs: [ tauri, create-release ]
 
     steps:
       - name: publish release
@@ -115,7 +111,7 @@ jobs:
 
   update-update-json:
     runs-on: ubuntu-latest
-    needs: [ publish-release, build-tauri, create-release ]
+    needs: [ publish-release, tauri, create-release ]
 
     steps:
       - name: update-update-json
@@ -129,9 +125,9 @@ jobs:
           releaseNotes: ${{ github.event.head_commit.message }}
           releaseTagName: grades-app-v${{ needs.create-release.outputs.version }}
 
-          winsig: ${{ needs.build-tauri.outputs.winsig }}
-          macsig: ${{ needs.build-tauri.outputs.macsig }}
-          linsig: ${{ needs.build-tauri.outputs.linsig }}
-          winupdate: ${{ needs.build-tauri.outputs.winupdate }}
-          macupdate: ${{ needs.build-tauri.outputs.macupdate }}
-          linupdate: ${{ needs.build-tauri.outputs.linupdate }}
+          winsig: ${{ needs.tauri.outputs.winsig }}
+          macsig: ${{ needs.tauri.outputs.macsig }}
+          linsig: ${{ needs.tauri.outputs.linsig }}
+          winupdate: ${{ needs.tauri.outputs.winupdate }}
+          macupdate: ${{ needs.tauri.outputs.macupdate }}
+          linupdate: ${{ needs.tauri.outputs.linupdate }}
