@@ -7,6 +7,11 @@ import {SnackbarProvider} from "notistack";
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 
+import '@fontsource/roboto/latin-300.css';
+import '@fontsource/roboto/latin-400.css';
+import '@fontsource/roboto/latin-500.css';
+import '@fontsource/roboto/latin-700.css';
+
 const darkTheme = createTheme({
 	palette: {
 		mode: 'dark',
