@@ -1,8 +1,6 @@
 import {Box} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import MailIcon from "@mui/icons-material/Mail"
 import SettingsIcon from "@mui/icons-material/Settings"
-import React, {ReactElement, useEffect, useState} from "react";
+import {ReactElement, useEffect, useState} from "react";
 import Overview from "./Overview/Overview";
 import Analysis from "./Analysis/Analysis";
 import Navbar from "./components/Navbar/Navbar";
@@ -10,6 +8,8 @@ import Settings from "./Settings/Settings";
 import {invoke} from "@tauri-apps/api/tauri";
 import {errorToast, useToast} from "./ts/toast";
 import {Page as SPage} from "./entity"
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 
 type Pages = {
 	overview: Page
@@ -34,13 +34,13 @@ const App = () => {
 			page: <Overview setOpenNav={setOpenNav}/>,
 			name: "Overview",
 			description: "Overview of all grades",
-			icon: <MenuIcon/>,
+			icon: <FormatListNumberedIcon/>,
 		},
 		analysis: {
 			page: <Analysis setOpenNav={setOpenNav}/>,
 			name: "Analysis",
 			description: "Analysis of all grades",
-			icon: <MailIcon/>
+			icon: <QueryStatsIcon/>
 		},
 		settings: {
 			page: <Settings setOpenNav={setOpenNav}/>,
