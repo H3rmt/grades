@@ -78,16 +78,17 @@ export default function Overview(props: Props) {
 	return (<>
 				<CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
 					<Stack spacing={2} direction="row" alignItems="start">
-						{periods.isSuccess && <Select color="secondary" variant="outlined" sx={{padding: 0}} value={period} size="small"
+						<Select color="secondary" variant="outlined" sx={{padding: 0}} value={period} size="small"
 																onChange={handlePeriodSelectChange}>
-							{[{id: -1, name: "All", from: "", to: ""}].concat(periods.data)
-									.map((period) => {
+                            <MenuItem value="-1">
+                                All&nbsp;&nbsp;&nbsp;
+                            </MenuItem>
+                            {periods.isSuccess && periods.data.map((period) => {
 										return <MenuItem value={period.id}>
 											{period.name}&nbsp;&nbsp;&nbsp;{period.from != "" && period.to != "" ? `${period.from} - ${period.to}` : ""}
 										</MenuItem>
 									})}
 						</Select>
-						}
 						<Button color="secondary" variant="contained" onClick={() => {
 							setOpenModal(true)
 						}}>New Grade</Button>
