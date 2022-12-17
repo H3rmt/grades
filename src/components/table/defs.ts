@@ -12,7 +12,7 @@ interface IRow {
 }
 
 interface ColumnDef<Row> {
-	format?: format<Row>
+	format?: (row: Row) => ReactNode | Row[keyof Row]
 	// function returning elements to be displayed instead of the data, with event listeners to update the row
 	edit?: (row: Row, update: () => void) => ReactNode
 	hide?: boolean
@@ -22,12 +22,9 @@ interface ColumnDef<Row> {
 
 type cols<Row> = Map<keyof Row, ColumnDef<Row>>
 
-type format<Row> = (data: Row[keyof Row]) => ReactNode | Row[keyof Row]
-
 
 export type {
 	cols,
-	format,
 	ColumnDef,
 	Column,
 	IRow,

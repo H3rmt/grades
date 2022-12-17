@@ -126,23 +126,25 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 						}
 						{Array.from(props.cols.entries()).filter(([, col]) => !col.hide).map((entry: [keyof Row, ColumnDef<Row>]) => {
 							const [key, row] = entry
-							let format = row.format ?? ((t) => t)
-							let edit = ((row.edit) ?? (() => format(col.data[key]) as ReactNode))(col.temp, forceUpdate)
+							let format = row.format ?? (() => col.data[key])
+							let edit = (row.edit ?? (() => format(col.data)))
 							return col.edit ?
 									<TableCell key={key as Key} onChange={() => {
 										forceUpdate()
-									}}>{edit}
+									}}>
+										{edit(col.temp, forceUpdate) as ReactNode}
 									</TableCell>
 									:
 									<TableCell key={key as Key}>
-										{format(col.data[key]) as ReactNode}
+										{format(col.data) as ReactNode}
 									</TableCell>
 						})}
 					</TableRow>;
 				})}
 			</TableBody>
 		</Table>
-	</TableContainer>;
+	</TableContainer>
+			;
 }
 
 export type {
