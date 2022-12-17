@@ -11,7 +11,7 @@ function errorToast(
 		error: any,
 		opts?: OptionsObject
 ): () => void {
-	return toastMessage("error", message, toast, undefined, error, opts)
+	return toastMessage("error", message, toast, undefined, error.toString(), opts)
 }
 
 function toastMessage(
