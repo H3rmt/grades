@@ -1,19 +1,20 @@
-import React from 'react'
 import './index.css'
-import {createRoot} from "react-dom/client";
+import '@fontsource/roboto/latin-300.css';
+import '@fontsource/roboto/latin-400.css';
+import '@fontsource/roboto/latin-500.css';
+import '@fontsource/roboto/latin-700.css';
+
 import App from "./App";
+
+import {createRoot} from "react-dom/client";
 import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
 import {SnackbarProvider} from "notistack";
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {QueryClient, QueryClientProvider,} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import {StrictMode} from "react";
 
-
-import '@fontsource/roboto/latin-300.css';
-import '@fontsource/roboto/latin-400.css';
-import '@fontsource/roboto/latin-500.css';
-import '@fontsource/roboto/latin-700.css';
 
 const darkTheme = createTheme({
 	palette: {
@@ -39,7 +40,7 @@ const darkTheme = createTheme({
 const queryClient = new QueryClient({defaultOptions: {queries: {networkMode: 'always', refetchOnWindowFocus: false}}});
 
 createRoot(document.getElementById("root") as HTMLElement).render(
-		<React.StrictMode>
+		<StrictMode>
 			<ThemeProvider theme={darkTheme}>
 				<LocalizationProvider dateAdapter={AdapterDayjs}>
 					<QueryClientProvider client={queryClient}>
@@ -51,5 +52,5 @@ createRoot(document.getElementById("root") as HTMLElement).render(
 					</QueryClientProvider>
 				</LocalizationProvider>
 			</ThemeProvider>
-		</React.StrictMode>
+		</StrictMode>
 )
