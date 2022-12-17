@@ -48,8 +48,8 @@ pub async fn get_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>>
 }
 
 #[tauri::command]
-pub async fn save_note_range_js(config: tauri::State<'_, Mutex<Config>>, json: String) -> Result<(), String> {
-	log::debug!("save_note_range_js json: {}", json);
+pub async fn edit_note_range_js(config: tauri::State<'_, Mutex<Config>>, json: String) -> Result<(), String> {
+	log::debug!("edit_note_range_js json: {}", json);
 	
 	let json: NoteRange = serde_json::from_str(&json)
 			.into_report()
@@ -72,8 +72,8 @@ pub async fn save_note_range_js(config: tauri::State<'_, Mutex<Config>>, json: S
 }
 
 #[tauri::command]
-pub async fn save_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>>, json: String) -> Result<(), String> {
-	log::debug!("save_grade_modal_defaults_js json: {}", json);
+pub async fn edit_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>>, json: String) -> Result<(), String> {
+	log::debug!("edit_grade_modal_defaults_js json: {}", json);
 	
 	let json: GradeModalDefaults = serde_json::from_str(&json)
 			.into_report()

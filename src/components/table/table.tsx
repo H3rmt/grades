@@ -57,7 +57,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 		setData(data)
 	}
 
-	const handleRequestSort = (property: keyof Row,) => {
+	const handleRequestSort = (property: keyof Row) => {
 		const [newOrder, newOrderBy] = setSort(property, order, orderBy)
 		setOrder(newOrder)
 		setOrderBy(newOrderBy)

@@ -39,6 +39,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 		], [
 			"date", {
 				sort: true,
+				format: date => <Typography>{date}</Typography>,
 				edit: (r) => <DatePicker value={dayjs(r.date, 'DD-MM-YYYY')} onChange={(i) => {
 					r.date = (i as unknown as Dayjs)?.format('DD-MM-YYYY')
 				}} renderInput={(props) => {

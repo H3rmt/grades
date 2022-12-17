@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent} from 'react';
 import {
 	Button,
 	Dialog,
@@ -20,25 +20,62 @@ import {
 	Typography
 } from "@mui/material";
 import {errorToast, toastMessage, useToast} from "../../ts/toast";
-import {Grade, Period, Subject, Type} from "../../entity";
-import {loadPeriods, loadSubjects, loadTypes} from "../../ts/load";
-import {createGrade} from "./create";
+import {Grade} from "../../entity";
+import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes} from "../../commands/get";
+import {useCreateGrade} from "../../commands/create";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
-import {loadDefaults, loadNoteRange} from "./loadDefaults";
 import {nullableUseState} from '../../ts/utils';
 import dayjs from "dayjs";
+import {useQueryClient} from "@tanstack/react-query";
 
-function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate: () => void }) {
+function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	const [grade, setGrade] = nullableUseState<Grade>()
 
-	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
-	const [defaults, setDefaults] = nullableUseState<GradeModalDefaults>()
-
 	const toast = useToast()
+	const queryClient = useQueryClient()
 
-	const [subjects, setSubjects] = useState<Subject[]>([])
-	const [types, setTypes] = useState<Type[]>([])
-	const [periods, setPeriods] = useState<Period[]>([])
+	const periods = usePeriods({
+		onError: (error) => {
+			errorToast("Error loading Periods", toast, error)
+		}
+	});
+
+	const types = useTypes({
+		onError: (error) => {
+			errorToast("Error loading Types", toast, error)
+		}
+	});
+
+	const subjects = useSubjects({
+		onError: (error) => {
+			errorToast("Error loading Subjects", toast, error)
+		}
+	});
+
+	const noteRange = useNoteRange({
+		onError: (error) => {
+			errorToast("Error loading noteRange", toast, error)
+		}
+	});
+
+	const gradeModalDefaults = useGradeModalDefaults({
+		onSuccess: (data) => {
+			if (grade === null)
+				setDefault(data)
+		},
+		onError: (error) => {
+			errorToast("Error loading gradeModalDefaults", toast, error)
+		}
+	});
+
+	const createGrade = useCreateGrade(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Created Grade", toast)
+		},
+		onError: (error) => {
+			errorToast("Error creating Grade", toast, error)
+		}
+	})
 
 	const handleGradeSliderChange = (value: number | number[], grade: Grade, noteRange: NoteRange) => {
 		setGrade({...grade, grade: Math.max(Math.min(Number(value), noteRange.to), noteRange.from)});
@@ -64,63 +101,8 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 		setGrade({...grade, info: event.target.value})
 	}
 
-	const handleNotFinalCheckboxChange = (event: ChangeEvent<HTMLInputElement>, grade: Grade) => {
-		setGrade({...grade, not_final: event.target.checked})
-	}
-
 	const handleWeightChange = (event: ChangeEvent<HTMLInputElement>, grade: Grade) => {
 		setGrade({...grade, weight: (event.target.value as 'Default' | 'Double' | 'Half')})
-	}
-
-	const handleCreateGrade = async (grade: Grade) => {
-		await createGrade(grade).then(() => {
-			props.closeModal()
-			toastMessage("success", "Created Grade", toast)
-			props.onUpdate()
-		}).catch((error) => {
-			errorToast("Error creating Grade", toast, error)
-		})
-	}
-
-	const getSubjects = async () => {
-		await loadSubjects().then((data) => {
-			setSubjects(data)
-		}).catch((error) => {
-			errorToast("Error loading Subjects", toast, error)
-		})
-	}
-
-	const getPeriods = async () => {
-		await loadPeriods().then((data) => {
-			setPeriods(data)
-		}).catch((error) => {
-			errorToast("Error loading Periods", toast, error)
-		})
-	}
-
-	const getTypes = async () => {
-		await loadTypes().then((data) => {
-			setTypes(data)
-		}).catch((error) => {
-			errorToast("Error loading Types", toast, error)
-		})
-	}
-
-	const getNoteRange = async () => {
-		await loadNoteRange().then((data) => {
-			setNoteRange(data)
-		}).catch((error) => {
-			errorToast("Error loading Note Range", toast, error)
-		})
-	}
-
-	const getDefaults = async () => {
-		await loadDefaults().then((data) => {
-			setDefaults(data)
-			setDefault(data)
-		}).catch((error) => {
-			errorToast("Error loading Modal Defaults", toast, error)
-		})
 	}
 
 	const setDefault = (defaults: GradeModalDefaults) => {
@@ -138,13 +120,12 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 		})
 	}
 
-	const handleClear = async () => {
-		let old = Object.assign({}, grade)
-		// @ts-ignore
-		setDefault(defaults)
+	const handleClear = async (gradeModalDefaults: GradeModalDefaults) => {
+		let oldGrade = Object.assign({}, grade)
+		setDefault(gradeModalDefaults)
 
 		const undo = () => {
-			setGrade(old)
+			setGrade(oldGrade)
 			toastMessage("success", "Undid clear Note window", toast)
 			closeClear()
 		}
@@ -152,46 +133,40 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 		let closeClear = toastMessage("warning", "Cleared create Note window", toast, undo)
 	}
 
-	useEffect(() => {
-		Promise.all([
-			getSubjects(), getPeriods(), getTypes(), getNoteRange(), getDefaults()
-		])
-	}, [])
-
 	return (<Dialog open={props.open} onClose={props.closeModal} fullWidth maxWidth="md">
 		<DialogTitle variant="h5">New Grade</DialogTitle>
 		<DialogContent>
-			{grade !== null && noteRange !== null && (
+			{grade !== null && (
 					<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
 						<Grid container spacing={4} padding={2}>
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Subject</Typography>
-									<Select value={grade.subject.toString()} margin="none" fullWidth
-											  onChange={(event) => handleSubjectSelectChange(event, grade)}>
-										{subjects.map((subject) => {
+									{subjects.isSuccess && <Select value={grade.subject.toString()} margin="none" fullWidth
+																			 onChange={(event) => handleSubjectSelectChange(event, grade)}>
+										{subjects.data.map((subject) => {
 											return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
 										})}
-									</Select>
+									</Select>}
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Type</Typography>
-									<Select value={grade.type.toString()} margin="none" fullWidth
-											  onChange={(event) => handleTypeSelectChange(event, grade)}>
-										{types.map((type) => {
+									{types.isSuccess && <Select value={grade.type.toString()} margin="none" fullWidth
+																		 onChange={(event) => handleTypeSelectChange(event, grade)}>
+										{types.data.map((type) => {
 											return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
 										})}
-									</Select>
+									</Select>}
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Period</Typography>
-									<Select value={grade.period.toString()} margin="none" fullWidth
-											  onChange={(event) => handlePeriodSelectChange(event, grade)}>
-										{periods.map((period) => {
+									{periods.isSuccess && <Select value={grade.period.toString()} margin="none" fullWidth
+																			onChange={(event) => handlePeriodSelectChange(event, grade)}>
+										{periods.data.map((period) => {
 											return <MenuItem value={period.id}>
 												<Stack>
 													{period.name}
@@ -201,15 +176,18 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 											</MenuItem>
 										})}
 									</Select>
+									}
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={6} lg={12}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Grade</Typography>
-									<TextField value={grade.grade} type="number" fullWidth margin="none"
-												  onChange={(event) => handleGradeInputChange(event, grade, noteRange)}/>
-									<Slider value={grade.grade || undefined} color="secondary" min={noteRange.from} max={noteRange.to}
-											  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange)}/>
+									{noteRange.isSuccess && <>
+										<TextField value={grade.grade} type="number" fullWidth margin="none"
+													  onChange={(event) => handleGradeInputChange(event, grade, noteRange.data)}/>
+										<Slider value={grade.grade || undefined} color="secondary" min={noteRange.data.from} max={noteRange.data.to}
+												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange.data)}/>
+									</>}
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={8} lg={9}>
@@ -242,10 +220,16 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 			}
 		</DialogContent>
 		<DialogActions sx={{gap: 0.7}}>
-			<Button onClick={handleClear} type="submit" variant="outlined" color="secondary">Clear</Button>
+			{gradeModalDefaults.isSuccess &&
+					<Button onClick={() => handleClear(gradeModalDefaults.data)} type="submit" variant="outlined"
+							  color="secondary">Clear</Button>
+			}
 			<Button onClick={props.closeModal} type="submit" variant="outlined" color="secondary">Close</Button>
 			{grade !== null &&
-					<Button onClick={() => handleCreateGrade(grade)} type="submit" variant="outlined" color="success">Create</Button>
+					<Button onClick={() => {
+						createGrade.mutate(grade);
+						props.closeModal()
+					}} type="submit" variant="outlined" color="success">Create</Button>
 			}
 		</DialogActions>
 	</Dialog>);
