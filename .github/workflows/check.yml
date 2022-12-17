@@ -4,18 +4,14 @@ on:
   push:
 
 jobs:
-  check:
+  tauri:
+    name: check-rust
     runs-on: ubuntu-latest
     env:
       CARGO_TERM_COLOR: always
 
     steps:
       - uses: actions/checkout@v3
-      - name: setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: yarn
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
       - name: install dependencies
@@ -25,9 +21,21 @@ jobs:
         with:
           workspaces: src-tauri
           prefix-key: rust-${{ matrix.platform }}
+      - name: Run tests
+        run: cd src-tauri && cargo test --verbose
+
+  js:
+    name: check-js
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: yarn
       - name: install app dependencies
         run: yarn install --frozen-lockfile
       - name: build
         run: yarn build
-      - name: Run tests
-        run: cd src-tauri && cargo test --verbose
