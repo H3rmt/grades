@@ -254,7 +254,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, confirmed
 											handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
 										}} renderInput={(params) => {
 											// @ts-ignore
-											params?.inputProps.value = grade.confirmed ? grade.confirmed : "";
+											params.inputProps.value = grade.confirmed ? grade.confirmed : "";
 											return <TextField {...params} />
 										}} renderDay={(day, value, DayComponentProps) => {
 											if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
