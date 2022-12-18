@@ -1,11 +1,11 @@
 import {IRow, Column} from "./defs";
 
-function comp<Type>(a: Type, b: Type, orderBy: keyof Type) {
+function comp<Type>(a: Type, b: Type, orderFn: (d: Type) => any) {
 	// debugger
-	if (b[orderBy] < a[orderBy]) {
+	if (orderFn(b) < orderFn(a)) {
 		return -1;
 	}
-	if (b[orderBy] > a[orderBy]) {
+	if (orderFn(b) > orderFn(a)) {
 		return 1;
 	}
 	return 0;
@@ -13,8 +13,12 @@ function comp<Type>(a: Type, b: Type, orderBy: keyof Type) {
 
 export type Order = 'asc' | 'desc';
 
-export function getComparator<Type extends IRow>(order: Order, orderBy: keyof Type): (a: Column<Type>, b: Column<Type>) => number {
-	return order === 'desc' ? (a, b) => comp(a.data, b.data, orderBy) : (a, b) => -comp(a.data, b.data, orderBy);
+export function getComparator<Type extends IRow>(order: Order, orderBy: keyof Type, orderFn?: (d: Type) => any): (a: Column<Type>, b: Column<Type>) => number {
+	let fn = orderFn || ((d: Type) => d[orderBy]);
+	return order === 'desc' ?
+			(a, b) => comp(a.data, b.data, fn)
+			:
+			(a, b) => -comp(a.data, b.data, fn);
 }
 
 export function setSort<Type extends IRow>(property: keyof Type, order: Order, orderBy: keyof Type): [Order, keyof Type] {
