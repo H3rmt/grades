@@ -190,8 +190,8 @@ function Settings(props: Props) {
 
 	const handleCreatePeriod = async (periods: Period[]) => {
 		await createPeriod.mutate({
-			to: dayjs().add(6, "months").format("YYYY-MM-DD"),
-			from: dayjs().format("YYYY-MM-DD"),
+			to: dayjs().add(6, "months").format("DD-MM-YYYY"),
+			from: dayjs().format("DD-MM-YYYY"),
 			name: nextFree(periods.map(i => i.name), "New Period"),
 			id: -1
 		})
@@ -224,15 +224,6 @@ function Settings(props: Props) {
 			from: Number(newValue)
 		})
 	}
-
-	// const handleSaveNoteRange = async (noteRange: NoteRange) => {
-	// 	await saveNoteRange(noteRange, queryClient).then(async () => {
-	// 		toastMessage("success", "Saved NoteRange", toast)
-	// 		// TODO: add undo
-	// 	}).catch((error) => {
-	// 		errorToast("Error saving NoteRange", toast, error)
-	// 	})
-	// }
 
 	const handleNoteRangeReset = async (noteRange: NoteRange, noteRangeS: NoteRange) => {
 		let old = Object.assign({}, noteRange)
@@ -267,15 +258,6 @@ function Settings(props: Props) {
 	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, gradeModalDefaults: GradeModalDefaults) => {
 		setGradeModalDefaults({...gradeModalDefaults, grade_default: Number(event.target.value)})
 	};
-
-	// const handleSaveGradeModalDefaults = async (gradeModalDefaults: GradeModalDefaults) => {
-	// 	await saveGradeModalDefaults(gradeModalDefaults, queryClient).then(async () => {
-	// 		toastMessage("success", "Saved NoteRange", toast)
-	// 		// TODO: add undo
-	// 	}).catch((error) => {
-	// 		errorToast("Error saving NoteRange", toast, error)
-	// 	})
-	// }
 
 	const handleDefaultsReset = async (gradeModalDefaults: GradeModalDefaults, gradeModalDefaultsS: GradeModalDefaults) => {
 		let old = Object.assign({}, gradeModalDefaults)

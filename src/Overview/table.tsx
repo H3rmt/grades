@@ -45,7 +45,6 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 		], [
 			"date", {
 				sort: true,
-				format: g => <Typography>{g.date}</Typography>,
 				edit: g => <DatePicker value={dayjs(g.date, 'DD-MM-YYYY')} onChange={d => {
 					g.date = (d as unknown as Dayjs)?.format('DD-MM-YYYY')
 				}} renderInput={(props) => {
@@ -63,7 +62,6 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 		], [
 			"confirmed", {
 				sort: true,
-				format: g => <Typography>{g.confirmed}</Typography>,
 				edit: (g, update) => <Stack direction="row" spacing={0.5}>
 					<DatePicker value={dayjs(g.confirmed, 'DD-MM-YYYY')} onChange={(i) => {
 						g.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY')
