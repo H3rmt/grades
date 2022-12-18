@@ -27,7 +27,6 @@ impl Display for NoteRange {
 
 #[derive(TS, Deserialize, Serialize, Debug)]
 #[ts(export, export_to = "../src/entity/config/gradeModalDefaults.ts")]
-#[serde(default)]
 pub struct GradeModalDefaults {
 	pub grade_default: i32,
 	pub subject_default: Option<i32>,
