@@ -9,30 +9,30 @@ impl MigrationTrait for Migration {
 	async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
 		let statement = Table::alter()
 				.table(Grade::Table)
-				.add_column(ColumnDef::new(Grade::Grade)
-						.integer()
+				.add_column(ColumnDef::new(Grade::Confirmed)
+						.date()
+						.null()
+				)
+				.to_owned();
+		
+		let statement2 = Table::alter()
+				.table(Grade::Table)
+				.add_column(ColumnDef::new(Grade::Date)
+						.date()
 						.not_null()
-						.default(0)
+						.default("")
 				)
 				.to_owned();
 		
 		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
+		println!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
 		
-		manager.alter_table(statement).await
+		manager.alter_table(statement).await?;
+		manager.alter_table(statement2).await
 	}
 	
 	async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-//		let test = Table::alter()
-//				.table(Grade::Table)
-//				.drop_column(Grade::Grade)
-//				.to_owned();
-//		println!("SQL:{}", test.to_string(SqliteQueryBuilder));
-//		manager.alter_table(
-//			test
-//		).await
-		
-		// sea-orm thinks drop table not supported on SQLite, but it is
-		let sql = "ALTER TABLE `grades` DROP COLUMN `grade`";
+		let sql = "ALTER TABLE `grades` DROP COLUMN `date`;ALTER TABLE `grades` DROP COLUMN `confiremd`";
 		println!("SQL:{}", sql);
 		
 		let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
@@ -40,10 +40,11 @@ impl MigrationTrait for Migration {
 	}
 }
 
+
 #[derive(Iden)]
 pub enum Grade {
 	#[iden = "grades"]
 	Table,
-	Grade,
+	Date,
+	Confirmed,
 }
-

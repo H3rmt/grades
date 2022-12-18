@@ -7,11 +7,11 @@ use error_stack::{IntoReport, Result, ResultExt};
 
 use crate::utils::StrError;
 
-const APPLICATION_NAME: &str = "grades";
+const APPLICATION_NAME: &str = "grades-dev";
 const DB_NAME: &str = "db.db";
 const CONF_NAME: &str = "conf.toml";
 const CACHE_NAME: &str = "cache.json";
-
+const LOG_NAME: &str = "log.txt";
 
 fn create_data_folder() -> Result<PathBuf, DirError> {
 	let dir = dirs::data_dir()
@@ -93,6 +93,19 @@ pub fn create_cache_json() -> Result<PathBuf, DirError> {
 				.attach_printable(format!("path: {:?}", cache_path))
 				.change_context(DirError)?;
         log::warn!("created cache json: {:?}", cache_path);
+	}
+	Ok(cache_path)
+}
+
+pub fn create_cache_log() -> Result<PathBuf, DirError> {
+	let cache_path = create_cache_folder()?.join(LOG_NAME);
+	if !cache_path.exists() {
+		std::fs::write(cache_path.as_path(), b"")
+				.into_report()
+				.attach_printable("error creating log file")
+				.attach_printable(format!("path: {:?}", cache_path))
+				.change_context(DirError)?;
+		log::warn!("created log file: {:?}", cache_path);
 	}
 	Ok(cache_path)
 }

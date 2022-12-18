@@ -1,11 +1,9 @@
+name: "publish release"
+
 on:
   push:
     branches:
       - release
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
 
 jobs:
   create-release:
@@ -42,12 +40,13 @@ jobs:
 
             return data.id
 
-  build-tauri:
+  tauri:
+    name: build tauri
     needs: create-release
     strategy:
       fail-fast: false
       matrix:
-        platform: [ macos-latest, ubuntu-latest, windows-latest ]
+        platform: [ macos-latest, ubuntu-20.04, windows-latest ]
     runs-on: ${{ matrix.platform }}
     env:
       CARGO_TERM_COLOR: always
@@ -69,7 +68,7 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
       - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-latest'
+        if: matrix.platform == 'ubuntu-20.04'
         run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
       - name: Load Rust Cache
         uses: Swatinem/rust-cache@v2
@@ -91,7 +90,7 @@ jobs:
 
   publish-release:
     runs-on: ubuntu-latest
-    needs: [ build-tauri, create-release ]
+    needs: [ tauri, create-release ]
 
     steps:
       - name: publish release
@@ -113,7 +112,7 @@ jobs:
 
   update-update-json:
     runs-on: ubuntu-latest
-    needs: [ publish-release, build-tauri, create-release ]
+    needs: [ publish-release, tauri, create-release ]
 
     steps:
       - name: update-update-json
@@ -127,9 +126,9 @@ jobs:
           releaseNotes: ${{ github.event.head_commit.message }}
           releaseTagName: grades-app-v${{ needs.create-release.outputs.version }}
 
-          winsig: ${{ needs.build-tauri.outputs.winsig }}
-          macsig: ${{ needs.build-tauri.outputs.macsig }}
-          linsig: ${{ needs.build-tauri.outputs.linsig }}
-          winupdate: ${{ needs.build-tauri.outputs.winupdate }}
-          macupdate: ${{ needs.build-tauri.outputs.macupdate }}
-          linupdate: ${{ needs.build-tauri.outputs.linupdate }}
+          winsig: ${{ needs.tauri.outputs.winsig }}
+          macsig: ${{ needs.tauri.outputs.macsig }}
+          linsig: ${{ needs.tauri.outputs.linsig }}
+          winupdate: ${{ needs.tauri.outputs.winupdate }}
+          macupdate: ${{ needs.tauri.outputs.macupdate }}
+          linupdate: ${{ needs.tauri.outputs.linupdate }}

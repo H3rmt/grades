@@ -1,13 +1,5 @@
 use error_stack::{IntoReport, Result, ResultExt};
-use sea_orm::{
-	ActiveModelTrait,
-	ActiveValue,
-	DatabaseConnection,
-	DbErr,
-	DeleteResult,
-	EntityTrait,
-	InsertResult,
-};
+use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, DbErr, DeleteResult, EntityTrait};
 use tokio::sync::Mutex;
 
 use entity::prelude::{*};
@@ -47,12 +39,14 @@ pub async fn create_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade
 		let mutex = config.lock().await;
 		let note_range = &mutex.get().note_range;
 		
-		if grade.grade < note_range.from || grade.grade > note_range.to {
-			return Err(StrError("Grade out of range".to_string()))
-					.into_report()
-					.attach_printable(format!("grade: {}", grade.grade))
-					.attach_printable(format!("range: {}", note_range))
-					.change_context(DBError);
+		if let Some(i) = grade.grade {
+			if i < note_range.from || i > note_range.to {
+				return Err(StrError("Grade out of range".to_string()))
+						.into_report()
+						.attach_printable(format!("grade: {:?}", grade.grade))
+						.attach_printable(format!("range: {}", note_range))
+						.change_context(DBError);
+			}
 		}
 	}
 	
@@ -63,20 +57,21 @@ pub async fn create_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade
 		info: ActiveValue::Set(grade.info.clone()),
 		grade: ActiveValue::Set(grade.grade),
 		period: ActiveValue::Set(grade.period),
-		double: ActiveValue::Set(grade.double),
-		not_final: ActiveValue::Set(grade.not_final),
+		weight: ActiveValue::Set(grade.weight.clone()),
+		confirmed: ActiveValue::Set(grade.confirmed.clone()),
+		date: ActiveValue::Set(grade.date.clone()),
 	};
 	
-	let res: InsertResult<ActiveGrade> = Grades::insert(insert.clone())
-			.exec(db).await
-			.into_report()
-			.attach_printable("Error creating grade in DB")
-			.attach_printable(format!("insert:{:?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}",
-			                          insert, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.double, grade.not_final))
-			.change_context(DBError)?;
+	let res: Grade = insert.clone()
+	                           .insert(db).await
+	                           .into_report()
+	                           .attach_printable("Error creating grade in DB")
+	                           .attach_printable(format!("insert:{:?} subject:{} type:{} info:{} grade:{:?} period:{} weight:{}",
+	                                                     insert, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.weight))
+	                           .change_context(DBError)?;
 	
-	log::info!("created grade, id:{}", res.last_insert_id);
-	Ok(res.last_insert_id)
+	log::info!("created grade:{:?}", res);
+	Ok(res.id)
 }
 
 pub async fn edit_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: Grade) -> Result<Grade, DBError> {
@@ -111,29 +106,32 @@ pub async fn edit_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: 
 		let mutex = config.lock().await;
 		let note_range = &mutex.get().note_range;
 		
-		if grade.grade < note_range.from || grade.grade > note_range.to {
-			return Err(StrError("Grade out of range".to_string()))
-					.into_report()
-					.attach_printable(format!("grade: {}", grade.grade))
-					.attach_printable(format!("range: {}", note_range))
-					.change_context(DBError);
+		if let Some(i) = grade.grade {
+			if i < note_range.from || i > note_range.to {
+				return Err(StrError("Grade out of range".to_string()))
+						.into_report()
+						.attach_printable(format!("grade: {:?}", grade.grade))
+						.attach_printable(format!("range: {}", note_range))
+						.change_context(DBError);
+			}
 		}
 	}
 	
-	edit.subject = ActiveValue::Set(grade.subject + 12); // TODO remove
+	edit.subject = ActiveValue::Set(grade.subject);
 	edit.r#type = ActiveValue::Set(grade.r#type);
 	edit.info = ActiveValue::Set(grade.info.clone());
 	edit.grade = ActiveValue::Set(grade.grade);
 	edit.period = ActiveValue::Set(grade.period);
-	edit.not_final = ActiveValue::Set(grade.not_final);
-	edit.double = ActiveValue::Set(grade.double);
+	edit.weight = ActiveValue::Set(grade.weight.clone());
+	edit.confirmed = ActiveValue::Set(grade.confirmed.clone());
+	edit.date = ActiveValue::Set(grade.date.clone());
 	
 	let res: Grade = edit.clone()
 	                     .update(db).await
 	                     .into_report()
 	                     .attach_printable("Error editing grade in DB")
-	                     .attach_printable(format!("edit:{:?} subject:{} type:{} info:{} grade:{} period:{} double:{} not_final:{}",
-	                                               edit, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.double, grade.not_final))
+	                     .attach_printable(format!("edit:{:?} subject:{} type:{} info{} grade:{:?} period:{} weight:{} confirmed:{:?} date:{}",
+	                                               edit, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.weight, grade.confirmed, grade.date))
 	                     .change_context(DBError)?;
 	
 	log::info!("edited grade:{:?}", res);

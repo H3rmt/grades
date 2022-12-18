@@ -13,7 +13,7 @@ impl EntityName for Entity {
 	}
 }
 
-#[derive(TS, Clone, Debug, PartialEq, DeriveModel, DeriveActiveModel, Serialize, Deserialize)]
+#[derive(TS, Clone, Debug, PartialEq, Eq, DeriveModel, DeriveActiveModel, Serialize, Deserialize)]
 #[ts(export, export_to = "../../src/entity/type.ts")]
 pub struct Model {
 	pub id: i32,

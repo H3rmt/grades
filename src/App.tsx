@@ -1,15 +1,15 @@
 import {Box} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import MailIcon from "@mui/icons-material/Mail"
 import SettingsIcon from "@mui/icons-material/Settings"
-import React, {ReactElement, useEffect, useState} from "react";
+import {ReactElement, useEffect, useState} from "react";
 import Overview from "./Overview/Overview";
 import Analysis from "./Analysis/Analysis";
 import Navbar from "./components/Navbar/Navbar";
 import Settings from "./Settings/Settings";
-import {invoke} from "@tauri-apps/api/tauri";
-import {errorToast, useToast} from "./ts/toast";
+import {useToast} from "./ts/toast";
 import {Page as SPage} from "./entity"
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import {edit, get} from "./ts/utils";
 
 type Pages = {
 	overview: Page
@@ -27,20 +27,20 @@ type Page = {
 const App = () => {
 	const [openNav, setOpenNav] = useState(false);
 
-	const toast = useToast()
+	// const toast = useToast()
 
 	const pages: Pages = {
 		overview: {
 			page: <Overview setOpenNav={setOpenNav}/>,
 			name: "Overview",
 			description: "Overview of all grades",
-			icon: <MenuIcon/>,
+			icon: <FormatListNumberedIcon/>,
 		},
 		analysis: {
 			page: <Analysis setOpenNav={setOpenNav}/>,
 			name: "Analysis",
 			description: "Analysis of all grades",
-			icon: <MailIcon/>
+			icon: <QueryStatsIcon/>
 		},
 		settings: {
 			page: <Settings setOpenNav={setOpenNav}/>,
@@ -55,27 +55,27 @@ const App = () => {
 		setOpenNav(false)
 	}, [openPage])
 
+	// cache has special logging, no errorToast and console.error
 	const SetPage = (page: Page) => {
-		invoke("save_page_in_cache_js", {
-			json: JSON.stringify({"name": page.name})
-		}).then(() => {
-			console.log("Stored page in cache")
+		edit("page_in_cache", {"name": page.name}).then(() => {
+			console.debug("Stored page in cache")
 		}).catch((error) => {
-			console.error("Error storing page in cache", error)
-			errorToast("Error storing page in cache", toast, error)
+			console.warn("Error storing page in cache", error)
+			// errorToast("Error storing page in cache", toast, error)
 		})
 		setPage(page)
 	}
 
 	const GetPage = () => {
-		// @ts-ignore
-		invoke("get_page_from_cache_js").then((data: string) => {
+		get<SPage>("page_from_cache").then((data: SPage) => {
 			console.log("loaded site from cache", data)
-			let page: SPage = JSON.parse(data)
 			// @ts-ignore
-			setPage(pages[page.name.toLowerCase()])
+			if (pages[data.name]) {
+				// @ts-ignore
+				setPage(pages[data.name])
+			}
 		}).catch((error) => {
-			console.error("Error loading site cache", error)
+			console.warn("Error loading site cache", error)
 		})
 	}
 

@@ -1,26 +1,15 @@
 use error_stack::{IntoReport, ResultExt};
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Wry};
 use ts_rs::TS;
 use crate::built_info;
 
 use crate::commands::utils::{CommandError, LogAndString};
 
 #[tauri::command]
-pub async fn get_info_js(app_handle: AppHandle<Wry>) -> Result<String, String> {
-	let version = app_handle.config().package.version.clone().unwrap_or_else(|| {
-		log::warn!("No version found");
-		"version not found".to_string()
-	});
-	
-	let name = app_handle.config().package.product_name.clone().unwrap_or_else(|| {
-		log::warn!("No name found");
-		"name not found".to_string()
-	});
-	
+pub async fn get_info_js() -> Result<String, String> {
 	let info = Info {
-		name,
-		version,
+		name: built_info::PKG_NAME.to_string(),
+		version: built_info::PKG_VERSION.to_string(),
 		authors: built_info::PKG_AUTHORS.to_string(),
 		target: built_info::TARGET.to_string(),
 		profile: built_info::PROFILE.to_string(),
@@ -39,7 +28,7 @@ pub async fn get_info_js(app_handle: AppHandle<Wry>) -> Result<String, String> {
 }
 
 #[derive(TS, Serialize, Deserialize, Debug)]
-#[ts(export, export_to = "../../../src/entity/info.ts")]
+#[ts(export, export_to = "../src/entity/info.ts")]
 struct Info {
 	version: String,
 	name: String,

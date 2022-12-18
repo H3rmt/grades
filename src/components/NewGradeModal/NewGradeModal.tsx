@@ -1,16 +1,18 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import {ChangeEvent, useEffect} from 'react';
 import {
+	Badge,
 	Button,
-	Checkbox,
 	Dialog,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
 	FormControlLabel,
 	FormGroup,
-	Grid,
+	Grid, IconButton,
 	MenuItem,
 	Paper,
+	Radio,
+	RadioGroup,
 	Select,
 	SelectChangeEvent,
 	Slider,
@@ -19,139 +21,141 @@ import {
 	Typography
 } from "@mui/material";
 import {errorToast, toastMessage, useToast} from "../../ts/toast";
-import {Period, Subject, Type} from "../../entity";
-import {loadPeriods, loadSubjects, loadTypes} from "../../ts/load";
-import {createGrade} from "./create";
+import {Grade} from "../../entity";
+import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes} from "../../commands/get";
+import {useCreateGrade} from "../../commands/create";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
-import {loadDefaults, loadNoteRange} from "./loadDefaults";
 import {nullableUseState} from '../../ts/utils';
+import dayjs, {Dayjs} from "dayjs";
+import {useQueryClient} from "@tanstack/react-query";
+import ClearIcon from "@mui/icons-material/Clear";
+import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 
-function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate: () => void }) {
-	const [grade, setGrade] = nullableUseState<number>()
-	const [subject, setSubject] = nullableUseState<string>()
-	const [type, setType] = nullableUseState<string>()
-	const [period, setPeriod] = nullableUseState<string>()
-	const [info, setInfo] = nullableUseState<string>()
-	const [notFinal, setNotFinal] = nullableUseState<boolean>()
-	const [double, setDouble] = nullableUseState<boolean>()
-
-	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
-	const [defaults, setDefaults] = nullableUseState<GradeModalDefaults>()
+function NewGradeModal(props: { open: boolean, closeModal: () => void, confirmed: boolean }) {
+	const [grade, setGrade] = nullableUseState<Grade>()
 
 	const toast = useToast()
+	const queryClient = useQueryClient()
 
-	const [subjects, setSubjects] = useState<Subject[]>([])
-	const [types, setTypes] = useState<Type[]>([])
-	const [periods, setPeriods] = useState<Period[]>([])
-
-	const handleGradeSliderChange = (event: Event, newValue: number | number[]) => {
-		setGrade(newValue as number);
-	};
-
-	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-		// @ts-ignore
-		setGrade(Math.max(Math.min(Number(event.target.value), noteRange?.to), noteRange?.from));
-	};
-
-	const handleSubjectSelectChange = (event: SelectChangeEvent) => {
-		setSubject(event.target.value)
-	}
-
-	const handleTypeSelectChange = (event: SelectChangeEvent) => {
-		setType(event.target.value)
-	}
-
-	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
-		setPeriod(event.target.value)
-	}
-
-	const handleInfoInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-		setInfo(event.target.value)
-	}
-
-	const handleNotFinalCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setNotFinal(event.target.checked)
-	}
-
-	const handleDoubleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setDouble(event.target.checked)
-	}
-
-	const handleCreateGrade = async () => {
-		// @ts-ignore
-		await createGrade(grade, subject, type, info, period, notFinal, double).then(() => {
-			props.closeModal()
-			toastMessage("success", "Created Grade", toast)
-			props.onUpdate()
-		}).catch((error) => {
-			errorToast("Error creating Grade", toast, error)
-		})
-	}
-
-	const getSubjects = async () => {
-		await loadSubjects().then((data) => {
-			setSubjects(data)
-		}).catch((error) => {
-			errorToast("Error loading Subjects", toast, error)
-		})
-	}
-
-	const getPeriods = async () => {
-		await loadPeriods().then((data) => {
-			setPeriods(data)
-		}).catch((error) => {
+	const periods = usePeriods({
+		onError: (error) => {
 			errorToast("Error loading Periods", toast, error)
-		})
-	}
+		}
+	});
 
-	const getTypes = async () => {
-		await loadTypes().then((data) => {
-			setTypes(data)
-		}).catch((error) => {
+	const types = useTypes({
+		onError: (error) => {
 			errorToast("Error loading Types", toast, error)
-		})
+		}
+	});
+
+	const subjects = useSubjects({
+		onError: (error) => {
+			errorToast("Error loading Subjects", toast, error)
+		}
+	});
+
+	const noteRange = useNoteRange({
+		onError: (error) => {
+			errorToast("Error loading noteRange", toast, error)
+		}
+	});
+
+	const gradeModalDefaults = useGradeModalDefaults({
+		onSuccess: (data) => {
+			if (grade === null)
+				setDefault(data)
+		},
+		onError: (error) => {
+			errorToast("Error loading gradeModalDefaults", toast, error)
+		}
+	});
+
+	const createGrade = useCreateGrade(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Created Grade", toast)
+		},
+		onError: (error) => {
+			errorToast("Error creating Grade", toast, error)
+		}
+	})
+
+	useEffect(() => {
+		if (props.open && gradeModalDefaults.isSuccess) {
+			setDefault(gradeModalDefaults.data)
+		}
+	}, [props.open])
+
+	const handleGradeSliderChange = (value: number | number[], grade: Grade, noteRange: NoteRange) => {
+		setGrade({...grade, grade: Math.max(Math.min(Number(value), noteRange.to), noteRange.from)});
+	};
+
+	const handleGradeDateChange = (date: string, grade: Grade) => {
+		setGrade({...grade, date: date});
 	}
 
-	const getNoteRange = async () => {
-		await loadNoteRange().then((data) => {
-			setNoteRange(data)
-		}).catch((error) => {
-			errorToast("Error loading Note Range", toast, error)
-		})
+	const handleGradeConfirmedDateChange = (date: string | null, grade: Grade) => {
+		console.warn("handleGradeConfirmedDateChange", date)
+		setGrade({...grade, confirmed: date});
 	}
 
-	const getDefaults = async () => {
-		await loadDefaults().then((data) => {
-			setDefaults(data)
-			setDefault(data)
-		}).catch((error) => {
-			errorToast("Error loading Modal Defaults", toast, error)
-		})
+	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Grade, noteRange: NoteRange) => {
+		setGrade({...grade, grade: Math.max(Math.min(Number(event.target.value), noteRange.to), noteRange.from)});
+	};
+
+	const handleSubjectSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+		setGrade({...grade, subject: Number(event.target.value)})
+	}
+
+	const handleTypeSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+		setGrade({...grade, type: Number(event.target.value)})
+	}
+
+	const handlePeriodSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+		setGrade({...grade, period: Number(event.target.value)})
+	}
+
+	const handleInfoInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Grade) => {
+		setGrade({...grade, info: event.target.value})
+	}
+
+	const handleWeightChange = (event: ChangeEvent<HTMLInputElement>, grade: Grade) => {
+		setGrade({...grade, weight: (event.target.value as 'Default' | 'Double' | 'Half')})
 	}
 
 	const setDefault = (defaults: GradeModalDefaults) => {
-		setGrade(defaults.grade_default)
-		setSubject(defaults.subject_default)
-		setType(defaults.type_default)
-		setPeriod(defaults.period_default)
-		setInfo(defaults.info_default)
-		setDouble(defaults.double_default)
-		setNotFinal(defaults.not_final_default)
+		if (props.confirmed)
+			setGrade({
+				id: -1,
+				confirmed: dayjs().format("DD-MM-YYYY"),
+				date: dayjs().add(-7, "day").format("DD-MM-YYYY"),
+				grade: defaults.grade_default,
+				subject: defaults.subject_default ?? 0,
+				type: defaults.type_default ?? 0,
+				period: defaults.period_default ?? 0,
+				info: '',
+				weight: 'Default'
+			})
+		else
+			setGrade({
+				id: -1,
+				confirmed: null,
+				date: dayjs().format("DD-MM-YYYY"),
+				grade: null,
+				subject: defaults.subject_default ?? 0,
+				type: defaults.type_default ?? 0,
+				period: defaults.period_default ?? 0,
+				info: '',
+				weight: 'Default'
+			})
 	}
 
-	const handleClear = async () => {
-		let old = {grade, subject, type, period, info, notFinal, double}
-		// @ts-ignore
-		setDefault(defaults)
+	const handleClear = async (gradeModalDefaults: GradeModalDefaults) => {
+		let oldGrade = Object.assign({}, grade)
+		setDefault(gradeModalDefaults)
 
 		const undo = () => {
-			setGrade(old.grade)
-			setSubject(old.subject)
-			setType(old.type)
-			setPeriod(old.period)
-			setInfo(old.info)
-			setNotFinal(old.notFinal)
-			setDouble(old.double)
+			setGrade(oldGrade)
 			toastMessage("success", "Undid clear Note window", toast)
 			closeClear()
 		}
@@ -159,47 +163,40 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 		let closeClear = toastMessage("warning", "Cleared create Note window", toast, undo)
 	}
 
-	useEffect(() => {
-		getSubjects()
-		getTypes()
-		getPeriods()
-		getNoteRange()
-		getDefaults()
-	}, [])
-
-	let render = grade !== undefined && subject !== undefined && type !== undefined && period !== undefined && info !== undefined && notFinal !== undefined && double !== undefined && noteRange !== undefined
-
 	return (<Dialog open={props.open} onClose={props.closeModal} fullWidth maxWidth="md">
 		<DialogTitle variant="h5">New Grade</DialogTitle>
 		<DialogContent>
-			{render && (
+			{grade !== null && (
 					<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
 						<Grid container spacing={4} padding={2}>
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Subject</Typography>
-									<Select value={subject} margin="none" fullWidth onChange={handleSubjectSelectChange}>
-										{subjects.map((subject) => {
+									{subjects.isSuccess && <Select value={grade.subject.toString()} margin="none" fullWidth
+																			 onChange={(event) => handleSubjectSelectChange(event, grade)}>
+										{subjects.data.map((subject) => {
 											return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
 										})}
-									</Select>
+									</Select>}
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Type</Typography>
-									<Select value={type} margin="none" fullWidth onChange={handleTypeSelectChange}>
-										{types.map((type) => {
+									{types.isSuccess && <Select value={grade.type.toString()} margin="none" fullWidth
+																		 onChange={(event) => handleTypeSelectChange(event, grade)}>
+										{types.data.map((type) => {
 											return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
 										})}
-									</Select>
+									</Select>}
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Period</Typography>
-									<Select value={period} margin="none" fullWidth onChange={handlePeriodSelectChange}>
-										{periods.map((period) => {
+									{periods.isSuccess && <Select value={grade.period.toString()} margin="none" fullWidth
+																			onChange={(event) => handlePeriodSelectChange(event, grade)}>
+										{periods.data.map((period) => {
 											return <MenuItem value={period.id}>
 												<Stack>
 													{period.name}
@@ -209,33 +206,97 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 											</MenuItem>
 										})}
 									</Select>
+									}
 								</Stack>
 							</Grid>
-							<Grid item xs={12} sm={6} lg={12}>
+							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Grade</Typography>
-									<TextField value={grade} type="number" fullWidth margin="none" onChange={handleGradeInputChange}/>
-									<Slider value={grade} color="secondary" min={noteRange?.from} max={noteRange?.to}
-											  onChange={handleGradeSliderChange}/>
+									{noteRange.isSuccess && <>
+										<Stack spacing={2} direction="row">
+											<TextField value={grade.grade ?? ""} type="number" fullWidth margin="none"
+														  onChange={(event) => handleGradeInputChange(event, grade, noteRange.data)}/>
+											{grade.grade !== null && <IconButton color="default" onClick={() => {
+												setGrade({...grade, grade: null})
+											}}><ClearIcon/>
+											</IconButton>
+											}
+										</Stack>
+										<Slider value={grade.grade !== null ? grade.grade : -1} color="secondary" min={noteRange.data.from}
+												  max={noteRange.data.to}
+												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange.data)}/>
+									</>}
+								</Stack>
+							</Grid>
+							<Grid item xs={12} sm={6} lg={4}>
+								<Stack spacing={2}>
+									<Typography variant="h6" fontWeight="normal">Date</Typography>
+									<DatePicker value={dayjs(grade.date, 'DD-MM-YYYY')} onChange={d => {
+										handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+									}} renderInput={(params) => {
+										// @ts-ignore
+										params.inputProps.value = grade.date;
+										return <TextField {...params} />
+									}} renderDay={(day, value, DayComponentProps) => <Badge
+											key={day.toString()}
+											overlap="circular"
+											badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.confirmed ? '✨' : null}>
+										<PickersDay {...DayComponentProps} />
+									</Badge>
+									}/>
+								</Stack>
+							</Grid>
+							<Grid item xs={12} sm={6} lg={4}>
+								<Stack spacing={2}>
+									<Typography variant="h6" fontWeight="normal">Confirmed Date</Typography>
+									<Stack direction="row" spacing={0.5}>
+										<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : null} onChange={d => {
+											handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+										}} renderInput={(params) => {
+											// @ts-ignore
+											params.inputProps.value = grade.confirmed ? grade.confirmed : "";
+											return <TextField {...params} />
+										}} renderDay={(day, value, DayComponentProps) => {
+											if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
+												DayComponentProps.disabled = true
+											return <Badge
+													key={day.toString()}
+													overlap="circular"
+													badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.date ? '✨' : null}>
+												<PickersDay {...DayComponentProps} />
+											</Badge>
+										}
+										}/>
+										{grade.confirmed && <IconButton color="default" onClick={() => {
+											setGrade({...grade, confirmed: null})
+										}}><ClearIcon/>
+										</IconButton>}
+									</Stack>
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={8} lg={9}>
 								<Stack spacing={2} height={1}>
 									<Typography variant="h6" fontWeight="normal">Info</Typography>
-									<TextField multiline minRows={2} value={info} type="text" fullWidth margin="none"
-												  onChange={handleInfoInputChange}/>
+									<TextField multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
+												  onChange={(event) => handleInfoInputChange(event, grade)}/>
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={4} lg={3}>
-								<Stack spacing={1.5} height={1}> {/*spacing={1.5} to compensate margin of 1. Checkbox*/}
-									<Typography variant="h6" fontWeight="normal">Extra</Typography>
+								<Stack spacing={1.5} height={1}>
+									<Typography variant="h6" fontWeight="normal">Grade Weight</Typography>
 									<FormGroup>
-										<FormControlLabel control={
-											<Checkbox color="secondary" checked={notFinal} onChange={handleNotFinalCheckboxChange}/>
-										} label="Not Final"/>
-										<FormControlLabel control={
-											<Checkbox color="secondary" checked={double} onChange={handleDoubleCheckboxChange}/>
-										} label="Double"/>
+										<RadioGroup defaultValue="normal" value={grade.weight}
+														onChange={(event) => handleWeightChange(event, grade)}>
+											<FormControlLabel value="Default" control={
+												<Radio color="secondary"/>
+											} label="Default"/>
+											<FormControlLabel value="Double" control={
+												<Radio color="secondary"/>
+											} label="Double"/>
+											<FormControlLabel value="Half" control={
+												<Radio color="secondary"/>
+											} label="Half"/>
+										</RadioGroup>
 									</FormGroup>
 								</Stack>
 							</Grid>
@@ -244,9 +305,17 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, onUpdate:
 			}
 		</DialogContent>
 		<DialogActions sx={{gap: 0.7}}>
-			<Button onClick={handleClear} type="submit" variant="outlined" color="secondary">Clear</Button>
+			{gradeModalDefaults.isSuccess &&
+					<Button onClick={() => handleClear(gradeModalDefaults.data)} type="submit" variant="outlined"
+							  color="secondary">Clear</Button>
+			}
 			<Button onClick={props.closeModal} type="submit" variant="outlined" color="secondary">Close</Button>
-			<Button onClick={handleCreateGrade} type="submit" variant="outlined" color="success">Create</Button>
+			{grade !== null &&
+					<Button onClick={() => {
+						createGrade.mutate(grade);
+						props.closeModal()
+					}} type="submit" variant="outlined" color="success">Create</Button>
+			}
 		</DialogActions>
 	</Dialog>);
 }

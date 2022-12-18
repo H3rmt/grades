@@ -7,7 +7,6 @@ use sea_orm::{
 	DbErr,
 	DeleteResult,
 	EntityTrait,
-	InsertResult,
 	QueryFilter,
 };
 
@@ -34,8 +33,8 @@ pub async fn create_type(db: &DatabaseConnection, modal: GradeType) -> Result<i3
 		color: ActiveValue::Set(modal.color.clone()),
 	};
 	
-	let res: InsertResult<ActiveGradeType> = GradeTypes::insert(insert.clone())
-			.exec(db).await
+	let res: GradeType =insert.clone()
+			.insert(db).await
 			.into_report()
 			.attach_printable("Error creating type in DB")
 			.attach_printable(format!("insert:{:?} name:{} color:{}",
@@ -43,7 +42,7 @@ pub async fn create_type(db: &DatabaseConnection, modal: GradeType) -> Result<i3
 			.change_context(DBError)?;
 	
 	log::info!("created type:{:?}", res);
-	Ok(res.last_insert_id)
+	Ok(res.id)
 }
 
 pub async fn edit_type(db: &DatabaseConnection, modal: GradeType) -> Result<GradeType, DBError> {

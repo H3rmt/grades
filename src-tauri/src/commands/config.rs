@@ -8,6 +8,7 @@ use crate::{
 		types::{GradeModalDefaults, NoteRange},
 	},
 };
+use crate::utils::StrError;
 
 #[tauri::command]
 pub async fn get_note_rage_js(config: tauri::State<'_, Mutex<Config>>) -> Result<String, String> {
@@ -47,8 +48,8 @@ pub async fn get_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>>
 }
 
 #[tauri::command]
-pub async fn save_note_range_js(config: tauri::State<'_, Mutex<Config>>, json: String) -> Result<(), String> {
-	log::debug!("save_note_range_js json: {}", json);
+pub async fn edit_note_range_js(config: tauri::State<'_, Mutex<Config>>, json: String) -> Result<(), String> {
+	log::debug!("edit_note_range_js json: {}", json);
 	
 	let json: NoteRange = serde_json::from_str(&json)
 			.into_report()
@@ -71,8 +72,8 @@ pub async fn save_note_range_js(config: tauri::State<'_, Mutex<Config>>, json: S
 }
 
 #[tauri::command]
-pub async fn save_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>>, json: String) -> Result<(), String> {
-	log::debug!("save_grade_modal_defaults_js json: {}", json);
+pub async fn edit_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>>, json: String) -> Result<(), String> {
+	log::debug!("edit_grade_modal_defaults_js json: {}", json);
 	
 	let json: GradeModalDefaults = serde_json::from_str(&json)
 			.into_report()
@@ -82,8 +83,19 @@ pub async fn save_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>
 			.log_and_to_string()?;
 	
 	{
-		let mut c = config.lock().await;
-		c.set(|data| {
+		let mut mutex = config.lock().await;
+		
+		let note_range = &mutex.get().note_range;
+		if json.grade_default < note_range.from || json.grade_default > note_range.to {
+			return Err(StrError("Grade Default out of range".to_string()))
+					.into_report()
+					.attach_printable(format!("grade_default: {}", json.grade_default))
+					.attach_printable(format!("range: {}", note_range))
+					.change_context(CommandError)
+					.log_and_to_string()?;
+		}
+		
+		mutex.set(|data| {
 			data.grade_modal_defaults = json;
 		})
 		 .attach_printable("Error setting grade_modal_defaults in config")

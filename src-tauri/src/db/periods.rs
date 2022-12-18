@@ -7,7 +7,6 @@ use sea_orm::{
 	DbErr,
 	DeleteResult,
 	EntityTrait,
-	InsertResult,
 	QueryFilter,
 };
 
@@ -34,16 +33,16 @@ pub async fn create_period(db: &DatabaseConnection, model: Period) -> Result<i32
 		to: ActiveValue::Set(model.to.clone()),
 	};
 	
-	let res: InsertResult<ActivePeriod> = Periods::insert(insert.clone())
-			.exec(db).await
-			.into_report()
-			.attach_printable("Error creating period in DB")
-			.attach_printable(format!("insert:{:?} name:{} from:{} to:{}",
-			                          insert, model.name, model.from, model.to))
-			.change_context(DBError)?;
+	let res: Period = insert.clone()
+	                        .insert(db).await
+	                        .into_report()
+	                        .attach_printable("Error creating period in DB")
+	                        .attach_printable(format!("insert:{:?} name:{} from:{} to:{}",
+	                                                  insert, model.name, model.from, model.to))
+	                        .change_context(DBError)?;
 	
-	log::info!("created period, id:{}", res.last_insert_id);
-	Ok(res.last_insert_id)
+	log::info!("created period:{:?}", res);
+	Ok(res.id)
 }
 
 pub async fn edit_period(db: &DatabaseConnection, model: Period) -> Result<Period, DBError> {

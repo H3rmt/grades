@@ -34,8 +34,8 @@ pub async fn get_page_from_cache_js(cache: tauri::State<'_, Mutex<Cache>>) -> Re
 }
 
 #[tauri::command]
-pub async fn save_page_in_cache_js(cache: tauri::State<'_, Mutex<Cache>>, json: String) -> Result<(), String> {
-	log::debug!("save_page_in_cache_js json: {}", json);
+pub async fn edit_page_in_cache_js(cache: tauri::State<'_, Mutex<Cache>>, json: String) -> Result<(), String> {
+	log::debug!("edit_page_in_cache_js json: {}", json);
 	
 	let json: Page = serde_json::from_str(&json)
 			.into_report()

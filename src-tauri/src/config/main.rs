@@ -31,6 +31,9 @@ impl Config {
 			// dont exit
 		});
 		log::debug!("config-data: {:?}", config.data);
+		config.save().unwrap_or_else(|err| {
+			log::warn!("error saving config: {:?}", err);
+		});
 		config
 	}
 	

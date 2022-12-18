@@ -1,6 +1,6 @@
 import {OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar} from "notistack";
 import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Paper, Stack} from "@mui/material";
-import React, {useState} from "react";
+import {useState} from "react";
 import CloseIcon from '@mui/icons-material/Close';
 
 type variant = "error" | "success" | "warning" | "info"
@@ -11,7 +11,7 @@ function errorToast(
 		error: any,
 		opts?: OptionsObject
 ): () => void {
-	return toastMessage("error", message, toast, undefined, error, opts)
+	return toastMessage("error", message, toast, undefined, error.toString(), opts)
 }
 
 function toastMessage(

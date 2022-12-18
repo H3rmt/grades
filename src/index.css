@@ -8,3 +8,24 @@ html {
 	width: 100vw;
 	overflow: auto;
 }
+
+:link, :visited {
+	text-decoration: none
+}
+
+ul, ol {
+	list-style: none
+}
+
+a img, :link img, :visited img {
+	border: none
+}
+
+address {
+	font-style: normal
+}
+
+ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, body, html, p, blockquote, fieldset, input {
+	margin: 0;
+	padding: 0
+}

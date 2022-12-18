@@ -29,7 +29,7 @@ pub async fn get_subjects_js(connection: tauri::State<'_, DatabaseConnection>) -
 
 #[tauri::command]
 pub async fn create_subject_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
-	println!("create_subject_js json: {}", json);
+	log::debug!("create_subject_js json: {}", json);
 	
 	let model: Subject = serde_json::from_str(&json)
 			.into_report()
