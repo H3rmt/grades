@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.create-release.outputs.result }}
-      version: ${{ steps.get-version.outputs.prop }}
+      version: ${{ steps.get-version.outputs.value }}
 
     steps:
       - uses: actions/checkout@v3
@@ -29,14 +29,14 @@ jobs:
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `grades-app-v${{ steps.get-version.outputs.prop }}`,
-              name: `grades v${{ steps.get-version.outputs.prop }}`,
+              tag_name: `grades-app-v${{ steps.get-version.outputs.value }}`,
+              name: `grades v${{ steps.get-version.outputs.value }}`,
               body: 'Assets getting generated...',
               draft: true,
               prerelease: false
             })
 
-            core.notice(`created release: grades v${{ steps.get-version.outputs.prop }}`)
+            core.notice(`created release: grades v${{ steps.get-version.outputs.value }}`)
 
             return data.id
 
