@@ -18,6 +18,7 @@ type Props = {
 
 export default function Overview(props: Props) {
 	const [openModal, setOpenModal] = useState(false);
+	const [openModalConfirmed, setOpenModalConfirmed] = useState(false);
 	const [period, setPeriod] = useState("-1")
 
 	const toast = useToast()
@@ -90,8 +91,13 @@ export default function Overview(props: Props) {
 									})}
 						</Select>
 						<Button color="secondary" variant="contained" onClick={() => {
+							setOpenModalConfirmed(false)
 							setOpenModal(true)
-						}}>New Grade</Button>
+						}}>New WIP Grade</Button>
+						<Button color="secondary" variant="contained" onClick={() => {
+							setOpenModalConfirmed(true)
+							setOpenModal(true)
+						}}>New Confirmed Grade</Button>
 					</Stack>
 				}/>
 				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess &&
@@ -106,7 +112,7 @@ export default function Overview(props: Props) {
 						/>
 
 				}
-				<NewGradeModal open={openModal} closeModal={() => {
+				<NewGradeModal open={openModal} confirmed={openModalConfirmed} closeModal={() => {
 					setOpenModal(false)
 				}}/>
 			</>

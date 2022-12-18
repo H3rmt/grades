@@ -15,8 +15,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 				format: g => <Typography
 						color={`rgb(${map(g.grade as number, noteRange.from, noteRange.to, 230, 40)},${map(g.grade as number, noteRange.from, noteRange.to, 40, 230)},0)`}>{g.grade}</Typography>,
 				edit: (g, update) => <Stack direction="row" spacing={0.5}>
-
-					<TextField fullWidth value={g.grade || ""}
+					<TextField fullWidth value={g.grade ?? ""}
 								  onChange={(i) => g.grade = Math.max(Math.min(Number(i.target.value), noteRange?.to), noteRange?.from)}/>
 					{g.grade !== null && <IconButton color="default" onClick={() => {
 						g.grade = null
@@ -29,7 +28,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 			"subject", {
 				sort: true,
 				format: g => <Typography
-						sx={{color: subjects.find(sub => sub.id === g.subject)?.color || 'white'}}>{subjects.find(sub => sub.id === g.subject)?.name || (() => {
+						sx={{color: subjects.find(sub => sub.id === g.subject)?.color ?? 'white'}}>{subjects.find(sub => sub.id === g.subject)?.name ?? (() => {
 					console.error('subject:', g.subject);
 					return '--notfound--'
 				})()}</Typography>,
@@ -38,7 +37,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 			"type", {
 				sort: true,
 				format: g => <Typography
-						sx={{color: types.find(typ => typ.id === g.type)?.color || 'white'}}>{types.find(typ => typ.id === g.type)?.name || (() => {
+						sx={{color: types.find(typ => typ.id === g.type)?.color ?? 'white'}}>{types.find(typ => typ.id === g.type)?.name ?? (() => {
 					console.error('type:', g.type);
 					return '--notfound--'
 				})()}</Typography>,
@@ -67,7 +66,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 				format: g => <Typography>{g.confirmed}</Typography>,
 				edit: (g, update) => <Stack direction="row" spacing={0.5}>
 					<DatePicker value={dayjs(g.confirmed, 'DD-MM-YYYY')} onChange={(i) => {
-						g.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY') || null
+						g.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY')
 						update()
 					}} renderInput={(props) => {
 						// @ts-ignore

@@ -67,7 +67,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 		<Table size="medium">
 			<TableHead sx={{bgcolor: "primary.main"}}>
 				<TableRow>
-					{(props.delete || props.edit) && <TableCell key="actions" padding="checkbox"/>}
+					{(props.delete ?? props.edit) && <TableCell key="actions" padding="checkbox"/>}
 					{Array.from(props.cols.entries()).filter(([, col]) => !col.hide).map(([key, col]) => {
 						return <TableCell key={key as Key} sortDirection={orderBy === key ? order : false}
 												sx={{backgroundColor: "inherit"}}>
@@ -89,7 +89,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 			<TableBody>
 				{[...data.values()].sort(getComparator<Row>(order, orderBy)).map((col) => {
 					return <TableRow hover key={col.data.id}>
-						{(props.delete || props.edit) && <TableCell>
+						{(props.delete ?? props.edit) && <TableCell>
 							<Stack direction="row">
 								{col.edit ?
 										<IconButton color="default" onClick={() => {

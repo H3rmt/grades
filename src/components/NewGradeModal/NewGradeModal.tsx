@@ -1,5 +1,6 @@
-import {ChangeEvent} from 'react';
+import {ChangeEvent, useEffect} from 'react';
 import {
+	Badge,
 	Button,
 	Dialog,
 	DialogActions,
@@ -7,7 +8,7 @@ import {
 	DialogTitle,
 	FormControlLabel,
 	FormGroup,
-	Grid,
+	Grid, IconButton,
 	MenuItem,
 	Paper,
 	Radio,
@@ -25,10 +26,12 @@ import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes} 
 import {useCreateGrade} from "../../commands/create";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
 import {nullableUseState} from '../../ts/utils';
-import dayjs from "dayjs";
+import dayjs, {Dayjs} from "dayjs";
 import {useQueryClient} from "@tanstack/react-query";
+import ClearIcon from "@mui/icons-material/Clear";
+import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 
-function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
+function NewGradeModal(props: { open: boolean, closeModal: () => void, confirmed: boolean }) {
 	const [grade, setGrade] = nullableUseState<Grade>()
 
 	const toast = useToast()
@@ -77,9 +80,24 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 		}
 	})
 
+	useEffect(() => {
+		if (props.open && gradeModalDefaults.isSuccess) {
+			setDefault(gradeModalDefaults.data)
+		}
+	}, [props.open])
+
 	const handleGradeSliderChange = (value: number | number[], grade: Grade, noteRange: NoteRange) => {
 		setGrade({...grade, grade: Math.max(Math.min(Number(value), noteRange.to), noteRange.from)});
 	};
+
+	const handleGradeDateChange = (date: string, grade: Grade) => {
+		setGrade({...grade, date: date});
+	}
+
+	const handleGradeConfirmedDateChange = (date: string | null, grade: Grade) => {
+		console.warn("handleGradeConfirmedDateChange", date)
+		setGrade({...grade, confirmed: date});
+	}
 
 	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Grade, noteRange: NoteRange) => {
 		setGrade({...grade, grade: Math.max(Math.min(Number(event.target.value), noteRange.to), noteRange.from)});
@@ -106,17 +124,30 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 	}
 
 	const setDefault = (defaults: GradeModalDefaults) => {
-		setGrade({
-			id: -1,
-			confirmed: null,
-			date: dayjs().format("YYYY-MM-DD"),
-			grade: defaults.grade_default,
-			subject: defaults.subject_default || 0,
-			type: defaults.type_default || 0,
-			period: defaults.period_default || 0,
-			info: '',
-			weight: 'Default'
-		})
+		if (props.confirmed)
+			setGrade({
+				id: -1,
+				confirmed: dayjs().format("DD-MM-YYYY"),
+				date: dayjs().add(-7, "day").format("DD-MM-YYYY"),
+				grade: defaults.grade_default,
+				subject: defaults.subject_default ?? 0,
+				type: defaults.type_default ?? 0,
+				period: defaults.period_default ?? 0,
+				info: '',
+				weight: 'Default'
+			})
+		else
+			setGrade({
+				id: -1,
+				confirmed: null,
+				date: dayjs().format("DD-MM-YYYY"),
+				grade: null,
+				subject: defaults.subject_default ?? 0,
+				type: defaults.type_default ?? 0,
+				period: defaults.period_default ?? 0,
+				info: '',
+				weight: 'Default'
+			})
 	}
 
 	const handleClear = async (gradeModalDefaults: GradeModalDefaults) => {
@@ -178,15 +209,69 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 									}
 								</Stack>
 							</Grid>
-							<Grid item xs={12} sm={6} lg={12}>
+							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Grade</Typography>
 									{noteRange.isSuccess && <>
-										<TextField value={grade.grade} type="number" fullWidth margin="none"
-													  onChange={(event) => handleGradeInputChange(event, grade, noteRange.data)}/>
-										<Slider value={grade.grade || undefined} color="secondary" min={noteRange.data.from} max={noteRange.data.to}
+										<Stack spacing={2} direction="row">
+											<TextField value={grade.grade ?? ""} type="number" fullWidth margin="none"
+														  onChange={(event) => handleGradeInputChange(event, grade, noteRange.data)}/>
+											{grade.grade !== null && <IconButton color="default" onClick={() => {
+												setGrade({...grade, grade: null})
+											}}><ClearIcon/>
+											</IconButton>
+											}
+										</Stack>
+										<Slider value={grade.grade !== null ? grade.grade : -1} color="secondary" min={noteRange.data.from}
+												  max={noteRange.data.to}
 												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange.data)}/>
 									</>}
+								</Stack>
+							</Grid>
+							<Grid item xs={12} sm={6} lg={4}>
+								<Stack spacing={2}>
+									<Typography variant="h6" fontWeight="normal">Date</Typography>
+									<DatePicker value={dayjs(grade.date, 'DD-MM-YYYY')} onChange={d => {
+										handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+									}} renderInput={(params) => {
+										// @ts-ignore
+										params.inputProps.value = grade.date;
+										return <TextField {...params} />
+									}} renderDay={(day, value, DayComponentProps) => <Badge
+											key={day.toString()}
+											overlap="circular"
+											badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.confirmed ? '✨' : null}>
+										<PickersDay {...DayComponentProps} />
+									</Badge>
+									}/>
+								</Stack>
+							</Grid>
+							<Grid item xs={12} sm={6} lg={4}>
+								<Stack spacing={2}>
+									<Typography variant="h6" fontWeight="normal">Confirmed Date</Typography>
+									<Stack direction="row" spacing={0.5}>
+										<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : null} onChange={d => {
+											handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+										}} renderInput={(params) => {
+											// @ts-ignore
+											params.inputProps.value = grade.confirmed;
+											return <TextField {...params} />
+										}} renderDay={(day, value, DayComponentProps) => {
+											if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
+												DayComponentProps.disabled = true
+											return <Badge
+													key={day.toString()}
+													overlap="circular"
+													badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.date ? '✨' : null}>
+												<PickersDay {...DayComponentProps} />
+											</Badge>
+										}
+										}/>
+										{grade.confirmed && <IconButton color="default" onClick={() => {
+											setGrade({...grade, confirmed: null})
+										}}><ClearIcon/>
+										</IconButton>}
+									</Stack>
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={8} lg={9}>
@@ -200,7 +285,8 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void }) {
 								<Stack spacing={1.5} height={1}>
 									<Typography variant="h6" fontWeight="normal">Grade Weight</Typography>
 									<FormGroup>
-										<RadioGroup defaultValue="normal" value={grade.weight} onChange={(event) => handleWeightChange(event, grade)}>
+										<RadioGroup defaultValue="normal" value={grade.weight}
+														onChange={(event) => handleWeightChange(event, grade)}>
 											<FormControlLabel value="Default" control={
 												<Radio color="secondary"/>
 											} label="Default"/>
