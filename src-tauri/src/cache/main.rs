@@ -30,6 +30,9 @@ impl Cache {
 			// dont exit
 		});
 		log::debug!("cache-data: {:?}", cache.data);
+		cache.save().unwrap_or_else(|err| {
+			log::warn!("error saving cache: {:?}", err);
+		});
 		cache
 	}
 	

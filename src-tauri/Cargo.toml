@@ -23,9 +23,10 @@ tokio = { version = "^1.23", features = ["full"] }
 sea-orm = { version = "0.10.5", features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"] }
 ts-rs = "^6.2"
 toml = "^0.5"
-error-stack = "0.2.4"
+#error-stack = { version = "0.2.4", features = ["std", "pretty-print"], default-features = false }
+error-stack = { version = "0.2.4", features = ["std"], default-features = false }
 log = "^0.4"
-env_logger = "^0.10"
+flexi_logger = { version = "^0.24", features = ["async", "default", "compress"] }
 
 entity = { path = "entity" }
 migration = { path = "migrations" }
