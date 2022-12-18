@@ -3,7 +3,10 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
+extern crate log;
+
 use error_stack::{IntoReport, ResultExt};
+use flexi_logger::{Duplicate, FileSpec, Logger, WriteMode};
 use tokio::sync::Mutex;
 
 use commands::cache::{get_page_from_cache_js, edit_page_in_cache_js};
@@ -24,7 +27,7 @@ mod utils;
 
 #[tokio::main]
 async fn main() {
-	env_logger::init();
+	logger();
 	log::info!("version:{}; target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}",
 	         built_info::PKG_VERSION, built_info::TARGET, built_info::HOST, built_info::PROFILE, built_info::GIT_COMMIT_HASH.unwrap_or("GIT_COMMIT_HASH MISSING"), built_info::CFG_OS);
 	
@@ -56,7 +59,7 @@ async fn main() {
 	
 	tauri::Builder::default()
 			.setup(|app| {
-				#[cfg(debug_assertions)] // only include this code on debug builds
+				#[cfg(debug_assertions)]
 				{
 					use tauri::Manager;
 					let window = app.get_window("main").unwrap();
@@ -109,4 +112,28 @@ async fn main() {
 pub mod built_info {
 	// The file has been placed there by the build script.
 	include!(concat!(env!("OUT_DIR"), "/built.rs"));
+}
+
+fn logger() {
+	let logger = Logger::try_with_env().expect("Error creating logger")
+	                                   .format_for_stdout(flexi_logger::colored_default_format)
+	                                   .format_for_stderr(flexi_logger::colored_detailed_format);
+	
+	#[cfg(not(debug_assertions))] let logger = {
+		logger.duplicate_to_stderr(Duplicate::Warn)
+	};
+	
+	#[cfg(debug_assertions)] let logger = {
+		logger.duplicate_to_stdout(Duplicate::All)
+		      .format_for_stdout(flexi_logger::colored_detailed_format)
+	};
+	
+	logger.log_to_stdout()
+	      .log_to_file(
+		      FileSpec::try_from(dirs::create_cache_log().expect("Error creating log file"))
+				      .expect("Error creating log file")
+	      )
+	      .write_mode(WriteMode::BufferAndFlush)
+	      .format_for_files(flexi_logger::with_thread)
+	      .start().expect("Error starting logger");
 }
