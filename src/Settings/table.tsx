@@ -65,7 +65,8 @@ const getPeriodCols: () => cols<Period> = () => new Map<keyof Period, ColumnDef<
 						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == p.to ? '✨' : null}>
 					<PickersDay {...DayComponentProps} />
 				</Badge>
-				}/>
+				}/>,
+				preOrder: (p) => dayjs(p.from, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"to", {
@@ -82,7 +83,8 @@ const getPeriodCols: () => cols<Period> = () => new Map<keyof Period, ColumnDef<
 						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == p.from ? '✨' : null}>
 					<PickersDay {...DayComponentProps} />
 				</Badge>
-				}/>
+				}/>,
+				preOrder: (p) => dayjs(p.to, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"id", {

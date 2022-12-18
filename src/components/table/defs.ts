@@ -15,6 +15,8 @@ interface ColumnDef<Row> {
 	format?: (row: Row) => ReactNode | Row[keyof Row]
 	// function returning elements to be displayed instead of the data, with event listeners to update the row
 	edit?: (row: Row, update: () => void) => ReactNode
+	// processes the data before it is used for sorting (dates)
+	preOrder?: (row: Row) => any
 	hide?: boolean
 	name?: string
 	sort: boolean

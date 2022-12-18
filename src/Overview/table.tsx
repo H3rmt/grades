@@ -57,7 +57,8 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == g.confirmed ? '✨' : null}>
 					<PickersDay {...DayComponentProps} />
 				</Badge>
-				}/>
+				}/>,
+				preOrder: (g) => dayjs(g.date, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"confirmed", {
@@ -82,7 +83,8 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 						update()
 					}}><ClearIcon/>
 					</IconButton>}
-				</Stack>
+				</Stack>,
+				preOrder: (g) => dayjs(g.date, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"info", {

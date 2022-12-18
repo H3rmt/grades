@@ -87,7 +87,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 				</TableRow>
 			</TableHead>
 			<TableBody>
-				{[...data.values()].sort(getComparator<Row>(order, orderBy)).map((col) => {
+				{[...data.values()].sort(getComparator<Row>(order, orderBy, props.cols.get(orderBy)?.preOrder)).map((col) => {
 					return <TableRow hover key={col.data.id}>
 						{(props.delete ?? props.edit) && <TableCell>
 							<Stack direction="row">
