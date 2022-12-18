@@ -10,7 +10,7 @@ concurrency:
 jobs:
   tauri:
     name: check-rust
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       CARGO_TERM_COLOR: always
 
@@ -24,7 +24,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
-          prefix-key: rust-${{ matrix.platform }}
+          prefix-key: rust-ubuntu-20.04
       - name: Run tests
         run: cd src-tauri && cargo test --verbose
 
