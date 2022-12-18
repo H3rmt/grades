@@ -1,6 +1,8 @@
 import {cols, ColumnDef} from "../components/table/defs";
 import {Period, Subject, Type} from "../entity";
-import {Input, TextField, Typography} from "@mui/material";
+import {Badge, Input, TextField, Typography} from "@mui/material";
+import {DatePicker, PickersDay} from "@mui/x-date-pickers";
+import dayjs, {Dayjs} from "dayjs";
 
 const getTypeCols: () => cols<Type> = () => new Map<keyof Type, ColumnDef<Type>>(
 		[[
@@ -51,12 +53,38 @@ const getPeriodCols: () => cols<Period> = () => new Map<keyof Period, ColumnDef<
 		], [
 			"from", {
 				sort: true,
-				edit: p => <Input fullWidth type="date" value={p.from} onChange={(i) => p.from = i.target.value}/>
+				edit: p => <DatePicker value={dayjs(p.from, 'DD-MM-YYYY')} onChange={d => {
+					p.from = (d as unknown as Dayjs)?.format('DD-MM-YYYY')
+				}} renderInput={(props) => {
+					// @ts-ignore
+					props.inputProps.value = p.from;
+					return <TextField {...props} />
+				}} renderDay={(day, value, DayComponentProps) => <Badge
+						key={day.toString()}
+						overlap="circular"
+						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == p.to ? '✨' : null}>
+					<PickersDay {...DayComponentProps} />
+				</Badge>
+				}/>,
+				preSort: (p) => dayjs(p.from, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"to", {
 				sort: true,
-				edit: p => <Input fullWidth type="date" value={p.to} onChange={(i) => p.to = i.target.value}/>
+				edit: p => <DatePicker value={dayjs(p.to, 'DD-MM-YYYY')} onChange={d => {
+					p.to = (d as unknown as Dayjs)?.format('DD-MM-YYYY')
+				}} renderInput={(props) => {
+					// @ts-ignore
+					props.inputProps.value = p.to;
+					return <TextField {...props} />
+				}} renderDay={(day, value, DayComponentProps) => <Badge
+						key={day.toString()}
+						overlap="circular"
+						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == p.from ? '✨' : null}>
+					<PickersDay {...DayComponentProps} />
+				</Badge>
+				}/>,
+				preSort: (p) => dayjs(p.to, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"id", {

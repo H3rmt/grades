@@ -1,11 +1,12 @@
 import {Grade, Subject, Type} from "../entity";
 import {cols, ColumnDef} from "../components/table/defs";
-import {Badge, IconButton, Stack, TextField, Typography} from "@mui/material";
+import {Badge, IconButton, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import {map} from "../ts/utils";
 import {NoteRange} from "../entity/config";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 import dayjs, {Dayjs} from "dayjs";
 import ClearIcon from '@mui/icons-material/Clear';
+import React from "react";
 
 
 const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[]) => new Map<keyof Grade, ColumnDef<Grade>>(
@@ -45,7 +46,6 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 		], [
 			"date", {
 				sort: true,
-				format: g => <Typography>{g.date}</Typography>,
 				edit: g => <DatePicker value={dayjs(g.date, 'DD-MM-YYYY')} onChange={d => {
 					g.date = (d as unknown as Dayjs)?.format('DD-MM-YYYY')
 				}} renderInput={(props) => {
@@ -58,12 +58,12 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == g.confirmed ? '✨' : null}>
 					<PickersDay {...DayComponentProps} />
 				</Badge>
-				}/>
+				}/>,
+				preSort: (g) => dayjs(g.date, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"confirmed", {
 				sort: true,
-				format: g => <Typography>{g.confirmed}</Typography>,
 				edit: (g, update) => <Stack direction="row" spacing={0.5}>
 					<DatePicker value={dayjs(g.confirmed, 'DD-MM-YYYY')} onChange={(i) => {
 						g.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY')
@@ -84,17 +84,29 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 						update()
 					}}><ClearIcon/>
 					</IconButton>}
-				</Stack>
+				</Stack>,
+				preSort: (g) => dayjs(g.date, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"info", {
+				// TODO enable or disable this sort
 				sort: true,
-				edit: (g) => <TextField fullWidth value={g.info} onChange={(i) => g.info = i.target.value}/>
+				edit: (g) => <TextField fullWidth value={g.info} onChange={(i) => g.info = i.target.value}/>,
+				preSort: (g) => g.info.length > 0
 			}
 		], [
 			"weight", {
 				sort: true,
 				format: g => <Typography>{g.weight == "Half" ? "/2" : g.weight == "Double" ? "x2" : ""}</Typography>,
+				preSort: (g) => g.weight == "Half" ? 0.5 : g.weight == "Double" ? 2 : 1,
+				edit: (g, update) => <Select value={g.weight} onChange={(i) => {
+					g.weight = i.target.value as "Default" | "Double" | "Half";
+					update()
+				}}>
+					<MenuItem value="Default"> &nbsp; </MenuItem>
+					<MenuItem value="Double">x2</MenuItem>
+					<MenuItem value="Half">/2</MenuItem>
+				</Select>
 			}
 		], [
 			"id", {
