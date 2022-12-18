@@ -7,7 +7,6 @@ use sea_orm::{
 	DbErr,
 	DeleteResult,
 	EntityTrait,
-	InsertResult,
 	QueryFilter,
 };
 
@@ -33,16 +32,16 @@ pub async fn create_subject(db: &DatabaseConnection, model: Subject) -> Result<i
 		color: ActiveValue::Set(model.color.clone()),
 	};
 	
-	let res: InsertResult<ActiveSubject> = Subjects::insert(insert.clone())
-			.exec(db).await
-			.into_report()
-			.attach_printable("Error creating subject in DB")
-			.attach_printable(format!("insert:{:?} name:{} color:{}",
-			                          insert, model.name, model.color))
-			.change_context(DBError)?;
+	let res: Subject = insert.clone()
+	                         .insert(db).await
+	                         .into_report()
+	                         .attach_printable("Error creating subject in DB")
+	                         .attach_printable(format!("insert:{:?} name:{} color:{}",
+	                                                   insert, model.name, model.color))
+	                         .change_context(DBError)?;
 	
-	log::info!("created subject, id:{}", res.last_insert_id);
-	Ok(res.last_insert_id)
+	log::info!("created subject:{:?}", res);
+	Ok(res.id)
 }
 
 pub async fn edit_subject(db: &DatabaseConnection, modal: Subject) -> Result<Subject, DBError> {

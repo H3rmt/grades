@@ -1,5 +1,5 @@
 use error_stack::{IntoReport, Result, ResultExt};
-use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, DbErr, DeleteResult, EntityTrait, InsertResult};
+use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, DbErr, DeleteResult, EntityTrait};
 use tokio::sync::Mutex;
 
 use entity::prelude::{*};
@@ -62,16 +62,16 @@ pub async fn create_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade
 		date: ActiveValue::Set(grade.date.clone()),
 	};
 	
-	let res: InsertResult<ActiveGrade> = Grades::insert(insert.clone())
-			.exec(db).await
-			.into_report()
-			.attach_printable("Error creating grade in DB")
-			.attach_printable(format!("insert:{:?} subject:{} type:{} info:{} grade:{:?} period:{} weight:{}",
-			                          insert, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.weight))
-			.change_context(DBError)?;
+	let res: Grade = insert.clone()
+	                           .insert(db).await
+	                           .into_report()
+	                           .attach_printable("Error creating grade in DB")
+	                           .attach_printable(format!("insert:{:?} subject:{} type:{} info:{} grade:{:?} period:{} weight:{}",
+	                                                     insert, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.weight))
+	                           .change_context(DBError)?;
 	
-	log::info!("created grade, id:{}", res.last_insert_id);
-	Ok(res.last_insert_id)
+	log::info!("created grade:{:?}", res);
+	Ok(res.id)
 }
 
 pub async fn edit_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: Grade) -> Result<Grade, DBError> {
