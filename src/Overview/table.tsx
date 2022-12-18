@@ -58,7 +58,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 					<PickersDay {...DayComponentProps} />
 				</Badge>
 				}/>,
-				preOrder: (g) => dayjs(g.date, 'DD-MM-YYYY').unix()
+				preSort: (g) => dayjs(g.date, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"confirmed", {
@@ -84,17 +84,20 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 					}}><ClearIcon/>
 					</IconButton>}
 				</Stack>,
-				preOrder: (g) => dayjs(g.date, 'DD-MM-YYYY').unix()
+				preSort: (g) => dayjs(g.date, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"info", {
+				// TODO enable or disable this sort
 				sort: true,
-				edit: (g) => <TextField fullWidth value={g.info} onChange={(i) => g.info = i.target.value}/>
+				edit: (g) => <TextField fullWidth value={g.info} onChange={(i) => g.info = i.target.value}/>,
+				preSort: (g) => g.info.length > 0
 			}
 		], [
 			"weight", {
 				sort: true,
 				format: g => <Typography>{g.weight == "Half" ? "/2" : g.weight == "Double" ? "x2" : ""}</Typography>,
+				preSort: (g) => g.weight == "Half" ? 0.5 : g.weight == "Double" ? 2 : 1
 			}
 		], [
 			"id", {

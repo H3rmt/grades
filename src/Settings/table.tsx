@@ -66,7 +66,7 @@ const getPeriodCols: () => cols<Period> = () => new Map<keyof Period, ColumnDef<
 					<PickersDay {...DayComponentProps} />
 				</Badge>
 				}/>,
-				preOrder: (p) => dayjs(p.from, 'DD-MM-YYYY').unix()
+				preSort: (p) => dayjs(p.from, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"to", {
@@ -84,7 +84,7 @@ const getPeriodCols: () => cols<Period> = () => new Map<keyof Period, ColumnDef<
 					<PickersDay {...DayComponentProps} />
 				</Badge>
 				}/>,
-				preOrder: (p) => dayjs(p.to, 'DD-MM-YYYY').unix()
+				preSort: (p) => dayjs(p.to, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"id", {
