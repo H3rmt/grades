@@ -31,7 +31,7 @@ jobs:
               repo: context.repo.repo,
               tag_name: `grades-app-v${{ steps.get-version.outputs.value }}`,
               name: `grades v${{ steps.get-version.outputs.value }}`,
-              body: 'Assets getting generated...',
+              body: 'Draft: ${{ github.event.head_commit.message }}\n\nAssets getting generated...',
               draft: true,
               prerelease: false
             })
@@ -70,7 +70,7 @@ jobs:
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
         run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
-      - uses: h3rmt/tauri-action@v0.2.2
+      - uses: h3rmt/tauri-action@v0.2.3
         id: build
         env:
           TOKEN: ${{ secrets.PAT }}
@@ -101,7 +101,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: ${{ needs.create-release.outputs.release_id }},
-              body: `${{ github.event.head_commit.message }}\n**Full Changelog**: https://github.com/H3rmt/grades/compare/grades-app-${pdata.tag_name}...grades-app-v${{ needs.create-release.outputs.version }}\nTake a look at the assets to download and install this app.`,
+              body: `${{ github.event.head_commit.message }}\n\n**Full Changelog**: https://github.com/H3rmt/grades/compare/grades-app-${pdata.data.tag_name}...grades-app-v${{ needs.create-release.outputs.version }}\nTake a look at the assets to download and install this app.`,
               draft: false,
               prerelease: false
             })
@@ -114,7 +114,7 @@ jobs:
 
     steps:
       - name: update-update-json
-        uses: h3rmt/tauri-action@v0.2.2
+        uses: h3rmt/tauri-action@v0.2.3
         env:
           TOKEN: ${{ secrets.PAT }}
         with:
