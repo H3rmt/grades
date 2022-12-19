@@ -1,9 +1,10 @@
 import {defineConfig} from "vite";
 import react from "@vitejs/plugin-react-swc";
+import { splitVendorChunkPlugin } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react()],
+	plugins: [react(),splitVendorChunkPlugin()],
 
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
 	// prevent vite from obscuring rust errors
@@ -24,29 +25,16 @@ export default defineConfig({
 
 		rollupOptions: {
 			output: {
-				minifyInternalExports: true,
-				manualChunks: (id) => {
-					if (id.includes("node_modules")) {
-						if (id.includes("@mui/material")) {
-							return "mui/material";
-						} else if (id.includes("@mui/icons-material")) {
-							return "mui/icons-material";
-						} else if (id.includes("@mui/system")) {
-							return "mui/system";
-						} else if (id.includes("@mui/x-date-pickers")) {
-							return "mui/x-date-pickers";
-						} else if (id.includes("@mui")) {
-							return "mui/index";
-						} else if (id.includes("react")) {
-							return "react";
-						} else if (id.includes("notistack") || id.includes("dayjs")) {
-							return "utils";
-						} else if (id.includes("@fontsource")) {
-							return "fontsource";
-						}
-						return "vendor";
-					}
-				},
+				// manualChunks: (id) => {
+				// 	if (id.includes("node_modules")) {
+				// 		if (id.includes("@mui")) {
+				// 			return "mui";
+				// 		} else if (id.includes("react")) {
+				// 			return "react";
+				// 		}
+				// 		return "vendor";
+				// 	}
+				// },
 			}
 		}
 	},

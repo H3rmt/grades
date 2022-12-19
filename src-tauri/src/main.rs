@@ -28,6 +28,7 @@ mod utils;
 #[tokio::main]
 async fn main() {
 	logger();
+	log::info!("");
 	log::info!("version:{}; target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}",
 	         built_info::PKG_VERSION, built_info::TARGET, built_info::HOST, built_info::PROFILE, built_info::GIT_COMMIT_HASH.unwrap_or("GIT_COMMIT_HASH MISSING"), built_info::CFG_OS);
 	
@@ -114,6 +115,8 @@ pub mod built_info {
 	include!(concat!(env!("OUT_DIR"), "/built.rs"));
 }
 
+
+// add error-stack
 fn logger() {
 	let logger = Logger::try_with_env().expect("Error creating logger")
 	                                   .format_for_stdout(flexi_logger::colored_default_format)
