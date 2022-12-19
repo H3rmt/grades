@@ -92,7 +92,7 @@ jobs:
         with:
           retries: 3
           script: |
-            const { pdata } = await github.request('GET /repos/{owner}/{repo}/releases/latest', {
+            const pdata = await github.request('GET /repos/{owner}/{repo}/releases/latest', {
               owner: context.repo.owner,
               repo: context.repo.repo,
             })
