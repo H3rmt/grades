@@ -96,10 +96,11 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: ${{ needs.create-release.outputs.release_id }},
-              body: 'Take a look at the assets to download and install this app.',
+              body: 'Take a look at the assets to download and install this app.\n${{ github.event.head_commit.message }}',
               draft: false,
               prerelease: false
             })
+            // Full Changelog: grades-app-v0.0.5...grades-app-v0.1.0
 
             core.notice(`published release`);
 

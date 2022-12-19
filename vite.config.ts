@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [react()],
+	// https://reactjs.org/docs/code-splitting.html
 
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
 	// prevent vite from obscuring rust errors
@@ -13,39 +14,20 @@ export default defineConfig({
 		port: 1420,
 		strictPort: true,
 	},
-	// to make use of `TAURI_DEBUG` and other env variables
-	// https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
-	envPrefix: ["VITE_", "TAURI_"],
 	build: {
-		// don't minify for debug builds
-		minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
-		// produce sourcemaps for debug builds
-		sourcemap: !!process.env.TAURI_DEBUG,
-
 		rollupOptions: {
 			output: {
-				minifyInternalExports: true,
-				manualChunks: (id) => {
-					if (id.includes("node_modules")) {
-						if (id.includes("@mui/material")) {
-							return "mui/material";
-						} else if (id.includes("@mui/icons-material")) {
-							return "mui/icons-material";
-						} else if (id.includes("@mui/system")) {
-							return "mui/system";
-						} else if (id.includes("@mui/x-date-pickers")) {
-							return "mui/x-date-pickers";
-						} else if (id.includes("@mui")) {
-							return "mui/index";
-						} else if (id.includes("react")) {
-							return "react";
-						} else if (id.includes("notistack") || id.includes("dayjs")) {
-							return "utils";
-						} else if (id.includes("@fontsource")) {
-							return "fontsource";
-						}
-						return "vendor";
-					}
+				manualChunks: {
+					'react': [
+						'node_modules/react/index.js',
+						'node_modules/react-dom/index.js'
+					],
+					'query': [
+						'node_modules/@tanstack/react-query/build/lib/index.js',
+					],
+					'mui': [
+						'node_modules/@mui/material/index.js',
+					],
 				},
 			}
 		}
