@@ -92,16 +92,21 @@ jobs:
         with:
           retries: 3
           script: |
+            const { pdata } = await github.request('GET /repos/{owner}/{repo}/releases/latest', {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            
             const { data } = await github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: ${{ needs.create-release.outputs.release_id }},
-              body: '${{ github.event.head_commit.message }}\n**Full Changelog**: https://github.com/H3rmt/grades/compare/grades-app-v0.0.4...grades-app-v${{ needs.create-release.outputs.version }}\nTake a look at the assets to download and install this app.',
+              body: `${{ github.event.head_commit.message }}\n**Full Changelog**: https://github.com/H3rmt/grades/compare/grades-app-${pdata.tag_name}...grades-app-v${{ needs.create-release.outputs.version }}\nTake a look at the assets to download and install this app.`,
               draft: false,
               prerelease: false
             })
-
-            core.notice(`published release`);
+            
+            core.notice(`published release: grades v${{ needs.create-release.outputs.version }}`)
 
   update-update-json:
     runs-on: ubuntu-latest
