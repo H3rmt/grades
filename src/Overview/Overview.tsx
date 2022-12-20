@@ -1,10 +1,10 @@
 import {useState} from 'react';
-import {useGrades, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/get";
+import {useGradeModalDefaults, useGrades, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/get";
 import {CTable} from "../components/table/table";
 import {getCols} from "./table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
 import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material";
-import {reactSet} from "../ts/utils";
+import {nullableUseState, reactSet} from "../ts/utils";
 import CAppBar from "../components/AppBar/CAppBar";
 import NewGradeModal from "../components/NewGradeModal/NewGradeModal";
 import {useEditGrade} from "../commands/edit";
@@ -19,7 +19,7 @@ type Props = {
 export default function Overview(props: Props) {
 	const [openModal, setOpenModal] = useState(false);
 	const [openModalConfirmed, setOpenModalConfirmed] = useState(false);
-	const [period, setPeriod] = useState("-1")
+	const [period, setPeriod] = nullableUseState<string>()
 
 	const toast = useToast()
 	const queryClient = useQueryClient()
@@ -54,6 +54,16 @@ export default function Overview(props: Props) {
 		}
 	});
 
+	const gradeModalDefaults = useGradeModalDefaults({
+		onSuccess: (data) => {
+			if (period == null)
+				setPeriod((data.period_default || "-1").toString())
+		},
+		onError: (error) => {
+			errorToast("Error loading gradeModalDefaults", toast, error)
+		}
+	});
+
 	const deleteGrade = useDeleteGrade(queryClient, {
 		onSuccess: () => {
 			toastMessage("success", "Deleted Grade", toast)
@@ -79,7 +89,7 @@ export default function Overview(props: Props) {
 	return (<>
 				<CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
 					<Stack spacing={2} direction="row" alignItems="start">
-						<Select color="secondary" variant="outlined" sx={{padding: 0}} value={period} size="small"
+						<Select color="secondary" variant="outlined" sx={{padding: 0}} value={period ?? "-1"} size="small"
 																onChange={handlePeriodSelectChange}>
                             <MenuItem value="-1">
                                 All&nbsp;&nbsp;&nbsp;

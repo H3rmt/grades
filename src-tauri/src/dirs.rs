@@ -7,7 +7,11 @@ use error_stack::{IntoReport, Result, ResultExt};
 
 use crate::utils::StrError;
 
+#[cfg(not(debug_assertions))]
+const APPLICATION_NAME: &str = "grades";
+#[cfg(debug_assertions)]
 const APPLICATION_NAME: &str = "grades-dev";
+
 const DB_NAME: &str = "db.db";
 const CONF_NAME: &str = "conf.toml";
 const CACHE_NAME: &str = "cache.json";
