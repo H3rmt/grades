@@ -31,7 +31,7 @@ jobs:
               repo: context.repo.repo,
               tag_name: `grades-app-v${{ steps.get-version.outputs.value }}`,
               name: `grades v${{ steps.get-version.outputs.value }}`,
-              body: `Draft: ${{ github.event.head_commit.message }}\n\nAssets getting generated...`,
+              body: `**Draft**\n\n${{ github.event.head_commit.message }}\n\nAssets getting generated...`,
               draft: true,
               prerelease: false
             })
@@ -101,7 +101,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: ${{ needs.create-release.outputs.release_id }},
-              body: `${{ github.event.head_commit.message }}\n\n**Full Changelog**: https://github.com/H3rmt/grades/compare/grades-app-${pdata.data.tag_name}...grades-app-v${{ needs.create-release.outputs.version }}\nTake a look at the assets to download and install this app.`,
+              body: `${{ github.event.head_commit.message }}\n\n**Full Changelog**: https://github.com/H3rmt/grades/compare/${pdata.data.tag_name}...grades-app-v${{ needs.create-release.outputs.version }}\nTake a look at the assets to download and install this app.`,
               draft: false,
               prerelease: false
             })
