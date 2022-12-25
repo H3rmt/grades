@@ -1,7 +1,6 @@
 import {Button, Grid, IconButton, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
 import {ChangeEvent, useState} from 'react';
-import CAppBar from '../components/AppBar/CAppBar';
-import {nextFree, nullableUseState, randColor, reactSet} from "../ts/utils";
+import {nextFree, nullableUseState, randColor} from "../ts/utils";
 import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
@@ -17,9 +16,7 @@ import dayjs from "dayjs";
 import {useDeletePeriod, useDeleteSubject, useDeleteType} from "../commands/delete";
 import {useEditGradeModalDefaults, useEditNoteRange, useEditPeriod, useEditSubject, useEditType} from "../commands/edit";
 
-type Props = {
-	setOpenNav: reactSet<boolean>
-}
+type Props = {}
 
 
 function Settings(props: Props) {
@@ -273,162 +270,158 @@ function Settings(props: Props) {
 		let closeClear = toastMessage("warning", "Reset Defaults", toast, undo)
 	}
 
-	return (<>
-				<CAppBar name="Settings" setOpenNav={props.setOpenNav}/>
-				<Grid container spacing={2} padding={2}>
-					{typesS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
-						<SettingsBox title="Types" top={
-							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateType(types)}>Add</Button>
-						}><CTable data={types} cols={getTypeCols()} delete={(id) => deleteType.mutate(id)}
-									 edit={(type) => editType.mutate(type)}/>
-						</SettingsBox>
-					</Grid>
-					}
-					{subjectsS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
-						<SettingsBox title="Subjects" top={
-							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateSubject(subjects)}>Add</Button>
-						}><CTable data={subjects} cols={getSubjectCols()} delete={(id) => deleteSubject.mutate(id)}
-									 edit={(subject) => editSubject.mutate(subject)}/>
-						</SettingsBox>
-					</Grid>
-					}
-					{periodsS.isSuccess && <Grid item xs={12} sm={12} md={12} xl={6}>
-						<SettingsBox title="Periods" top={
-							<Button color="secondary" variant="contained" size="small" onClick={() => handleCreatePeriod(periods)}>Add</Button>
-						}><CTable data={periods} cols={getPeriodCols()} delete={(id) => deletePeriod.mutate(id)}
-									 edit={(period) => editPeriod.mutate(period)}/>
-						</SettingsBox>
-					</Grid>
-					}
-					{gradeModalDefaults !== null && gradeModalDefaultsS.isSuccess && noteRange !== null &&
-							<Grid item xs={12} sm={12} md={6} xl={6}>
-								<SettingsBox title="Defaults" top={
-									<Stack direction="row">
-										<IconButton color="error" onClick={() => handleDefaultsReset(gradeModalDefaults, gradeModalDefaultsS.data)}>
-											<UndoIcon/>
-										</IconButton>
-										<IconButton color="success" onClick={() => editGradeModalDefaults.mutate(gradeModalDefaults)}><SaveButton/>
-										</IconButton>
-									</Stack>
-								}><Grid container spacing={4} padding={2}>
-									<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
-										<Stack spacing={2} direction="row" alignItems="center">
-											<Typography variant="h6" fontWeight="normal">Type</Typography>
-											<Select value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
-													  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
-												{types.map((type) => {
-													return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
-												})}
-											</Select>
-										</Stack>
-									</Grid>
-									<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
-										<Stack spacing={2} direction="row" alignItems="center">
-											<Typography variant="h6" fontWeight="normal">Subject</Typography>
-											<Select value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
-													  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
-												{subjects.map((subject) => {
-													return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
-												})}
-											</Select>
-										</Stack>
-									</Grid>
-									<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
-										<Stack spacing={2} direction="row" alignItems="center">
-											<Typography variant="h6" fontWeight="normal">Period</Typography>
-											<Select value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none" fullWidth
-													  onChange={(e) => handlePeriodSelectChange(e, gradeModalDefaults)}>
-												{periods.map((period) => {
-													return <MenuItem value={period.id}>
-														<Stack>
-															{period.name}
-															<br/>
-															<Typography variant="overline">{period.from} - {period.to}</Typography>
-														</Stack>
-													</MenuItem>
-												})}
-											</Select>
-										</Stack>
-									</Grid>
-									<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
-										<Stack spacing={2} direction="row" alignItems="center">
-											<Typography variant="h6" fontWeight="normal">Grade</Typography>
-											<Slider value={gradeModalDefaults.grade_default} color="secondary" min={noteRange.from} max={noteRange.to}
-													  onChange={(e, v) => handleGradeSliderChange(e, v, gradeModalDefaults)}/>
-											<TextField value={gradeModalDefaults.grade_default} type="number" margin="none"
-														  onChange={(e) => handleGradeInputChange(e, gradeModalDefaults)}/>
-										</Stack>
-									</Grid>
-								</Grid>
-								</SettingsBox>
-							</Grid>
-					}
-					{noteRange !== null && noteRangeS.isSuccess &&
-							<Grid item xs={12} sm={12} md={6} xl={6}>
-								<SettingsBox title="Note Range" top={
-									<Stack direction="row">
-										<IconButton color="error" onClick={() => handleNoteRangeReset(noteRange, noteRangeS.data)}>
-											<UndoIcon/>
-										</IconButton>
-										<IconButton color="success" onClick={() => editNoteRange.mutate(noteRange)}>
-											<SaveButton/>
-										</IconButton>
-									</Stack>
-								}>
-									<Grid container spacing={4} padding={2}>
-										<Grid item xs={12} sm={6} lg={6}>
-											<Stack spacing={2}>
-												<Typography variant="h6" fontWeight="normal">From</Typography>
-												<TextField value={noteRange.from} type="number" fullWidth margin="none"
-															  onChange={(e) => handleNoteRangeFromInputChange(e, noteRange)}/>
-												<Slider value={noteRange.from} color="secondary" min={0} max={29}
-														  onChange={(e, v) => handleNoteRangeFromSliderChange(e, v, noteRange)}/>
+	return <Grid container spacing={2} padding={2}>
+		{typesS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
+			<SettingsBox title="Types" top={
+				<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateType(types)}>Add</Button>
+			}><CTable data={types} cols={getTypeCols()} delete={(id) => deleteType.mutate(id)}
+						 edit={(type) => editType.mutate(type)}/>
+			</SettingsBox>
+		</Grid>
+		}
+		{subjectsS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
+			<SettingsBox title="Subjects" top={
+				<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateSubject(subjects)}>Add</Button>
+			}><CTable data={subjects} cols={getSubjectCols()} delete={(id) => deleteSubject.mutate(id)}
+						 edit={(subject) => editSubject.mutate(subject)}/>
+			</SettingsBox>
+		</Grid>
+		}
+		{periodsS.isSuccess && <Grid item xs={12} sm={12} md={12} xl={6}>
+			<SettingsBox title="Periods" top={
+				<Button color="secondary" variant="contained" size="small" onClick={() => handleCreatePeriod(periods)}>Add</Button>
+			}><CTable data={periods} cols={getPeriodCols()} delete={(id) => deletePeriod.mutate(id)}
+						 edit={(period) => editPeriod.mutate(period)}/>
+			</SettingsBox>
+		</Grid>
+		}
+		{gradeModalDefaults !== null && gradeModalDefaultsS.isSuccess && noteRange !== null &&
+				<Grid item xs={12} sm={12} md={6} xl={6}>
+					<SettingsBox title="Defaults" top={
+						<Stack direction="row">
+							<IconButton color="error" onClick={() => handleDefaultsReset(gradeModalDefaults, gradeModalDefaultsS.data)}>
+								<UndoIcon/>
+							</IconButton>
+							<IconButton color="success" onClick={() => editGradeModalDefaults.mutate(gradeModalDefaults)}><SaveButton/>
+							</IconButton>
+						</Stack>
+					}><Grid container spacing={4} padding={2}>
+						<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
+							<Stack spacing={2} direction="row" alignItems="center">
+								<Typography variant="h6" fontWeight="normal">Type</Typography>
+								<Select value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
+										  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
+									{types.map((type) => {
+										return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
+									})}
+								</Select>
+							</Stack>
+						</Grid>
+						<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
+							<Stack spacing={2} direction="row" alignItems="center">
+								<Typography variant="h6" fontWeight="normal">Subject</Typography>
+								<Select value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
+										  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
+									{subjects.map((subject) => {
+										return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
+									})}
+								</Select>
+							</Stack>
+						</Grid>
+						<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
+							<Stack spacing={2} direction="row" alignItems="center">
+								<Typography variant="h6" fontWeight="normal">Period</Typography>
+								<Select value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none" fullWidth
+										  onChange={(e) => handlePeriodSelectChange(e, gradeModalDefaults)}>
+									{periods.map((period) => {
+										return <MenuItem value={period.id}>
+											<Stack>
+												{period.name}
+												<br/>
+												<Typography variant="overline">{period.from} - {period.to}</Typography>
 											</Stack>
-										</Grid>
-										<Grid item xs={12} sm={6} lg={6}>
-											<Stack spacing={2}>
-												<Typography variant="h6" fontWeight="normal">To</Typography>
-												<TextField value={noteRange.to} type="number" fullWidth margin="none"
-															  onChange={(e) => handleNoteRangeToInputChange(e, noteRange)}/>
-												<Slider value={noteRange.to} color="secondary" min={1} max={30}
-														  onChange={(e, v) => handleNoteRangeToSliderChange(e, v, noteRange)}/>
-											</Stack>
-										</Grid>
-									</Grid>
-								</SettingsBox>
-							</Grid>
-					}
-					{info.isSuccess &&
-							<Grid item xs={12} sm={6} md={6} xl={6}>
-								<SettingsBox title="Info">
-									<Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">
-										<Stack spacing={1} direction="column">
-											<Typography>
-												name: {info.data.name}
-											</Typography>
-											<Typography>
-												version: {info.data.version}
-											</Typography>
-											<Typography>
-												authors: {info.data.authors}
-											</Typography>
-											<Typography>
-												target: {info.data.target}
-											</Typography>
-											<Typography>
-												profile: {info.data.profile}
-											</Typography>
-											<Typography>
-												commit-hash: {info.data.commit_hash}
-											</Typography>
-										</Stack>
-									</Paper>
-								</SettingsBox>
-							</Grid>
-					}
+										</MenuItem>
+									})}
+								</Select>
+							</Stack>
+						</Grid>
+						<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
+							<Stack spacing={2} direction="row" alignItems="center">
+								<Typography variant="h6" fontWeight="normal">Grade</Typography>
+								<Slider value={gradeModalDefaults.grade_default} color="secondary" min={noteRange.from} max={noteRange.to}
+										  onChange={(e, v) => handleGradeSliderChange(e, v, gradeModalDefaults)}/>
+								<TextField value={gradeModalDefaults.grade_default} type="number" margin="none"
+											  onChange={(e) => handleGradeInputChange(e, gradeModalDefaults)}/>
+							</Stack>
+						</Grid>
+					</Grid>
+					</SettingsBox>
 				</Grid>
-			</>
-	)
+		}
+		{noteRange !== null && noteRangeS.isSuccess &&
+				<Grid item xs={12} sm={12} md={6} xl={6}>
+					<SettingsBox title="Note Range" top={
+						<Stack direction="row">
+							<IconButton color="error" onClick={() => handleNoteRangeReset(noteRange, noteRangeS.data)}>
+								<UndoIcon/>
+							</IconButton>
+							<IconButton color="success" onClick={() => editNoteRange.mutate(noteRange)}>
+								<SaveButton/>
+							</IconButton>
+						</Stack>
+					}>
+						<Grid container spacing={4} padding={2}>
+							<Grid item xs={12} sm={6} lg={6}>
+								<Stack spacing={2}>
+									<Typography variant="h6" fontWeight="normal">From</Typography>
+									<TextField value={noteRange.from} type="number" fullWidth margin="none"
+												  onChange={(e) => handleNoteRangeFromInputChange(e, noteRange)}/>
+									<Slider value={noteRange.from} color="secondary" min={0} max={29}
+											  onChange={(e, v) => handleNoteRangeFromSliderChange(e, v, noteRange)}/>
+								</Stack>
+							</Grid>
+							<Grid item xs={12} sm={6} lg={6}>
+								<Stack spacing={2}>
+									<Typography variant="h6" fontWeight="normal">To</Typography>
+									<TextField value={noteRange.to} type="number" fullWidth margin="none"
+												  onChange={(e) => handleNoteRangeToInputChange(e, noteRange)}/>
+									<Slider value={noteRange.to} color="secondary" min={1} max={30}
+											  onChange={(e, v) => handleNoteRangeToSliderChange(e, v, noteRange)}/>
+								</Stack>
+							</Grid>
+						</Grid>
+					</SettingsBox>
+				</Grid>
+		}
+		{info.isSuccess &&
+				<Grid item xs={12} sm={6} md={6} xl={6}>
+					<SettingsBox title="Info">
+						<Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">
+							<Stack spacing={1} direction="column">
+								<Typography>
+									name: {info.data.name}
+								</Typography>
+								<Typography>
+									version: {info.data.version}
+								</Typography>
+								<Typography>
+									authors: {info.data.authors}
+								</Typography>
+								<Typography>
+									target: {info.data.target}
+								</Typography>
+								<Typography>
+									profile: {info.data.profile}
+								</Typography>
+								<Typography>
+									commit-hash: {info.data.commit_hash}
+								</Typography>
+							</Stack>
+						</Paper>
+					</SettingsBox>
+				</Grid>
+		}
+	</Grid>
 }
 
 export default Settings;

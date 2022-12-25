@@ -77,8 +77,8 @@ type UseQueryOpts<
 		TQueryKey extends QueryKey = QueryKey,
 > = Omit<
 		UseQueryOptions<TQueryFnData, unknown, TData, TQueryKey>,
-		'initialData' | 'queryKey'
-> & { initialData?: () => undefined }
+		'queryKey' | 'initialData'
+> & { initialData?: TQueryFnData | (() => TQueryFnData) }
 
 type UseMutationOpts<
 		TData = unknown,
