@@ -8,7 +8,8 @@ import {
 	DialogTitle,
 	FormControlLabel,
 	FormGroup,
-	Grid, IconButton,
+	Grid,
+	IconButton,
 	MenuItem,
 	Paper,
 	Radio,
@@ -30,9 +31,14 @@ import dayjs, {Dayjs} from "dayjs";
 import {useQueryClient} from "@tanstack/react-query";
 import ClearIcon from "@mui/icons-material/Clear";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
+import {useAtom} from 'jotai'
+import {modalConfirmed, modalOpen} from "../atoms";
 
-function NewGradeModal(props: { open: boolean, closeModal: () => void, confirmed: boolean }) {
+export default function NewGradeModal() {
 	const [grade, setGrade] = nullableUseState<Grade>()
+
+	const [open, setOpen] = useAtom(modalOpen);
+	const [confirmed] = useAtom(modalConfirmed);
 
 	const toast = useToast()
 	const queryClient = useQueryClient()
@@ -81,10 +87,10 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, confirmed
 	})
 
 	useEffect(() => {
-		if (props.open && gradeModalDefaults.isSuccess) {
+		if (open && gradeModalDefaults.isSuccess) {
 			setDefault(gradeModalDefaults.data)
 		}
-	}, [props.open])
+	}, [open])
 
 	const handleGradeSliderChange = (value: number | number[], grade: Grade, noteRange: NoteRange) => {
 		setGrade({...grade, grade: Math.max(Math.min(Number(value), noteRange.to), noteRange.from)});
@@ -124,7 +130,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, confirmed
 	}
 
 	const setDefault = (defaults: GradeModalDefaults) => {
-		if (props.confirmed)
+		if (confirmed)
 			setGrade({
 				id: -1,
 				confirmed: dayjs().format("DD-MM-YYYY"),
@@ -163,7 +169,7 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, confirmed
 		let closeClear = toastMessage("warning", "Cleared create Note window", toast, undo)
 	}
 
-	return (<Dialog open={props.open} onClose={props.closeModal} fullWidth maxWidth="md">
+	return <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
 		<DialogTitle variant="h5">New Grade</DialogTitle>
 		<DialogContent>
 			{grade !== null && (
@@ -309,15 +315,14 @@ function NewGradeModal(props: { open: boolean, closeModal: () => void, confirmed
 					<Button onClick={() => handleClear(gradeModalDefaults.data)} type="submit" variant="outlined"
 							  color="secondary">Clear</Button>
 			}
-			<Button onClick={props.closeModal} type="submit" variant="outlined" color="secondary">Close</Button>
+			<Button onClick={() => setOpen(false)} type="submit" variant="outlined"
+					  color="secondary">Close</Button>
 			{grade !== null &&
 					<Button onClick={() => {
 						createGrade.mutate(grade);
-						props.closeModal()
+						setOpen(false)
 					}} type="submit" variant="outlined" color="success">Create</Button>
 			}
 		</DialogActions>
-	</Dialog>);
+	</Dialog>;
 }
-
-export default NewGradeModal
