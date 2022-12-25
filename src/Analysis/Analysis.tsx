@@ -1,14 +1,8 @@
-import {reactSet} from "../ts/utils";
-import CAppBar from "../components/AppBar/CAppBar";
-
-type Props = {
-	setOpenNav: reactSet<boolean>
-}
+type Props = {}
 
 
 function Analysis(props: Props) {
 	return (<>
-				<CAppBar name="Analysis" setOpenNav={props.setOpenNav}/>
 				<div>
 					Analysis<br/>
 					Analysis<br/>

@@ -1,8 +1,13 @@
-import {Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText} from "@mui/material";
+import {Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar} from "@mui/material";
 import {Page, Pages} from "../../App";
+import {reactSet} from "../../ts/utils";
 
-const Navbar = (props: { open: boolean, closeNav: () => void, setPage: (page: Page) => void, pages: Pages }) => {
-	return (<Drawer anchor="left" open={props.open} onClose={props.closeNav} variant="temporary">
+const Navbar = (props: { open: boolean, set: reactSet<boolean>, setPage: (page: Page) => void, pages: Pages, openPageName: string }) => {
+	const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+	return <SwipeableDrawer open={props.open} anchor="left" onOpen={() => props.set(true)} onClose={() => props.set(false)}
+									variant="temporary" disableBackdropTransition={false} disableDiscovery={iOS} swipeAreaWidth={40}>
+		<Toolbar/>
 		<List disablePadding sx={{height: 1}}>
 			{Object.entries(props.pages).filter(([key]) => key != "settings").map(([key, page]) => (
 					<ListItem key={key} disablePadding>
@@ -12,7 +17,8 @@ const Navbar = (props: { open: boolean, closeNav: () => void, setPage: (page: Pa
 							<ListItemIcon>
 								{page.icon}
 							</ListItemIcon>
-							<ListItemText primary={page.name} secondary={page.description}/>
+							<ListItemText primary={page.name} secondary={page.description}
+											  sx={{textDecoration: page.name == props.openPageName ? "underline" : ""}}/>
 						</ListItemButton>
 					</ListItem>
 			))}
@@ -25,10 +31,11 @@ const Navbar = (props: { open: boolean, closeNav: () => void, setPage: (page: Pa
 				<ListItemIcon>
 					{props.pages.settings.icon}
 				</ListItemIcon>
-				<ListItemText primary={props.pages.settings.name} secondary={props.pages.settings.description}/>
+				<ListItemText primary={props.pages.settings.name} secondary={props.pages.settings.description}
+								  sx={{textDecoration: "Settings" == props.openPageName ? "underline" : ""}}/>
 			</ListItemButton>
 		</ListItem>
-	</Drawer>);
+	</SwipeableDrawer>;
 };
 
 export default Navbar;

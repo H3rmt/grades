@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveButton from '@mui/icons-material/Save';
 import UndoIcon from '@mui/icons-material/Undo';
-import {cols, ColumnDef, IRow, Column} from "./defs";
+import {cols, Column, ColumnDef, IRow} from "./defs";
 
 type Props<Row extends IRow> = {
 	data: Array<Row>
@@ -70,7 +70,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 					{(props.delete ?? props.edit) && <TableCell key="actions" padding="checkbox"/>}
 					{Array.from(props.cols.entries()).filter(([, col]) => !col.hide).map(([key, col]) => {
 						return <TableCell key={key as Key} sortDirection={orderBy === key ? order : false}
-												sx={{backgroundColor: "inherit"}}>
+												sx={{resize: "horizontal", overflow: "hidden"}}>
 							{
 								col.sort ?
 										<TableSortLabel
@@ -129,9 +129,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 							let format = row.format ?? (() => col.data[key])
 							let edit = (row.edit ?? (() => format(col.data)))
 							return col.edit ?
-									<TableCell key={key as Key} onChange={() => {
-										forceUpdate()
-									}}>
+									<TableCell key={key as Key} onChange={forceUpdate}>
 										{edit(col.temp, forceUpdate) as ReactNode}
 									</TableCell>
 									:

@@ -1,15 +1,16 @@
-import {Box} from "@mui/material";
+import {AppBar, Box, IconButton, Toolbar, Typography} from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings"
-import {ReactElement, useEffect, useState} from "react";
+import React, {ReactElement, useEffect, useState} from "react";
 import Overview from "./Overview/Overview";
 import Analysis from "./Analysis/Analysis";
 import Navbar from "./components/Navbar/Navbar";
 import Settings from "./Settings/Settings";
-import {useToast} from "./ts/toast";
 import {Page as SPage} from "./entity"
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {edit, get} from "./ts/utils";
+import {OverviewAppBar} from "./Overview/AppBar";
+import MenuIcon from "@mui/icons-material/Menu";
 
 type Pages = {
 	overview: Page
@@ -19,36 +20,38 @@ type Pages = {
 
 type Page = {
 	page: ReactElement,
+	appBar: ReactElement,
 	name: string,
 	description: string,
 	icon: ReactElement
 }
 
+const pages: Pages = {
+	overview: {
+		page: <Overview/>,
+		appBar: <OverviewAppBar/>,
+		name: "Overview",
+		description: "Overview of all grades",
+		icon: <FormatListNumberedIcon/>,
+	},
+	analysis: {
+		page: <Analysis/>,
+		appBar: <></>,
+		name: "Analysis",
+		description: "Analysis of all grades",
+		icon: <QueryStatsIcon/>
+	},
+	settings: {
+		page: <Settings/>,
+		appBar: <></>,
+		name: "Settings",
+		description: "Change types, subjects, etc.",
+		icon: <SettingsIcon/>
+	}
+}
+
 const App = () => {
 	const [openNav, setOpenNav] = useState(false);
-
-	// const toast = useToast()
-
-	const pages: Pages = {
-		overview: {
-			page: <Overview setOpenNav={setOpenNav}/>,
-			name: "Overview",
-			description: "Overview of all grades",
-			icon: <FormatListNumberedIcon/>,
-		},
-		analysis: {
-			page: <Analysis setOpenNav={setOpenNav}/>,
-			name: "Analysis",
-			description: "Analysis of all grades",
-			icon: <QueryStatsIcon/>
-		},
-		settings: {
-			page: <Settings setOpenNav={setOpenNav}/>,
-			name: "Settings",
-			description: "Change types, subjects, etc.",
-			icon: <SettingsIcon/>
-		}
-	}
 
 	const [openPage, setPage] = useState(pages.overview)
 	useEffect(() => {
@@ -70,9 +73,9 @@ const App = () => {
 		get<SPage>("page_from_cache").then((data: SPage) => {
 			console.log("loaded site from cache", data)
 			// @ts-ignore
-			if (pages[data.name]) {
+			if (pages[data.name.toLowerCase()]) {
 				// @ts-ignore
-				setPage(pages[data.name])
+				setPage(pages[data.name.toLowerCase()])
 			}
 		}).catch((error) => {
 			console.warn("Error loading site cache", error)
@@ -84,10 +87,21 @@ const App = () => {
 	}, [])
 
 	return (<>
-		<Navbar open={openNav} closeNav={() => {
-			setOpenNav(false)
-		}} setPage={SetPage} pages={pages}/>
+		<AppBar component="nav" enableColorOnDark position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
+			<Toolbar>
+				<IconButton color="inherit" aria-label="open drawer" edge="start" size="medium" onClick={() => {
+					setOpenNav(!openNav)
+				}}><MenuIcon/>
+				</IconButton>
+				<Typography variant="h5" noWrap align="left" padding="6px" flexGrow="1">
+					{openPage.name}
+				</Typography>
+				{openPage.appBar}
+			</Toolbar>
+		</AppBar>
+		<Navbar open={openNav} set={setOpenNav} setPage={SetPage} pages={pages} openPageName={openPage.name}/>
 		<Box component="main">
+			<Toolbar />
 			{openPage.page}
 		</Box>
 	</>)

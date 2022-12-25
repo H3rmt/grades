@@ -1,25 +1,19 @@
-import {useState} from 'react';
-import {useGradeModalDefaults, useGrades, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/get";
+import {useGrades, useNoteRange, useSubjects, useTypes} from "../commands/get";
 import {CTable} from "../components/table/table";
 import {getCols} from "./table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
-import {Button, MenuItem, Select, SelectChangeEvent, Stack} from "@mui/material";
-import {nullableUseState, reactSet} from "../ts/utils";
-import CAppBar from "../components/AppBar/CAppBar";
-import NewGradeModal from "../components/NewGradeModal/NewGradeModal";
+import NewGradeModal from "./NewGradeModal/NewGradeModal";
 import {useEditGrade} from "../commands/edit";
 import {useQueryClient} from "@tanstack/react-query";
 import {useDeleteGrade} from "../commands/delete";
 import {Grade} from '../entity';
+import {useAtom} from 'jotai'
+import {modalOpen, period as Period} from "./atoms";
 
-type Props = {
-	setOpenNav: reactSet<boolean>
-}
+type Props = {}
 
 export default function Overview(props: Props) {
-	const [openModal, setOpenModal] = useState(false);
-	const [openModalConfirmed, setOpenModalConfirmed] = useState(false);
-	const [period, setPeriod] = nullableUseState<string>()
+	const [period] = useAtom(Period);
 
 	const toast = useToast()
 	const queryClient = useQueryClient()
@@ -27,12 +21,6 @@ export default function Overview(props: Props) {
 	const grades = useGrades({
 		onError: (error) => {
 			errorToast("Error loading Grades", toast, error)
-		}
-	});
-
-	const periods = usePeriods({
-		onError: (error) => {
-			errorToast("Error loading Periods", toast, error)
 		}
 	});
 
@@ -54,15 +42,15 @@ export default function Overview(props: Props) {
 		}
 	});
 
-	const gradeModalDefaults = useGradeModalDefaults({
-		onSuccess: (data) => {
-			if (period == null)
-				setPeriod((data.period_default || "-1").toString())
-		},
-		onError: (error) => {
-			errorToast("Error loading gradeModalDefaults", toast, error)
-		}
-	});
+	// const gradeModalDefaults = useGradeModalDefaults({
+	// 	onSuccess: (data) => {
+	// 		if (period == null)
+	// 			setPeriod((data.period_default || "-1").toString())
+	// 	},
+	// 	onError: (error) => {
+	// 		errorToast("Error loading gradeModalDefaults", toast, error)
+	// 	}
+	// });
 
 	const deleteGrade = useDeleteGrade(queryClient, {
 		onSuccess: () => {
@@ -82,34 +70,7 @@ export default function Overview(props: Props) {
 		}
 	})
 
-	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
-		setPeriod(event.target.value)
-	}
-
 	return (<>
-				<CAppBar name="Overview" setOpenNav={props.setOpenNav} other={
-					<Stack spacing={2} direction="row" alignItems="start">
-						<Select color="secondary" variant="outlined" sx={{padding: 0}} value={period ?? "-1"} size="small"
-																onChange={handlePeriodSelectChange}>
-                            <MenuItem value="-1">
-                                All&nbsp;&nbsp;&nbsp;
-                            </MenuItem>
-                            {periods.isSuccess && periods.data.map((period) => {
-										return <MenuItem value={period.id}>
-											{period.name}&nbsp;&nbsp;&nbsp;{period.from != "" && period.to != "" ? `${period.from} - ${period.to}` : ""}
-										</MenuItem>
-									})}
-						</Select>
-						<Button color="secondary" variant="contained" onClick={() => {
-							setOpenModalConfirmed(false)
-							setOpenModal(true)
-						}}>New WIP Grade</Button>
-						<Button color="secondary" variant="contained" onClick={() => {
-							setOpenModalConfirmed(true)
-							setOpenModal(true)
-						}}>New Confirmed Grade</Button>
-					</Stack>
-				}/>
 				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess &&
 						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period == "-1")}
 								  cols={getCols(noteRange.data, subjects.data, types.data)}
@@ -122,9 +83,7 @@ export default function Overview(props: Props) {
 						/>
 
 				}
-				<NewGradeModal open={openModal} confirmed={openModalConfirmed} closeModal={() => {
-					setOpenModal(false)
-				}}/>
+				<NewGradeModal/>
 			</>
 	)
 }
