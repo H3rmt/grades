@@ -6,12 +6,13 @@ use error_stack::{IntoReport, Result, ResultExt};
 use serde::{Deserialize, Serialize};
 
 use crate::config::error::ConfigError;
-use crate::config::types::{GradeModalDefaults, NoteRange};
+use crate::config::types::{AnalysisBox, GradeModalDefaults, NoteRange};
 
 #[derive(Deserialize, Serialize, Default, Debug)]
 pub struct Data {
 	pub note_range: NoteRange,
 	pub grade_modal_defaults: GradeModalDefaults,
+	pub analysis: Vec<AnalysisBox>,
 }
 
 #[derive(Default, Debug)]
@@ -64,6 +65,7 @@ impl Config {
 	
 	pub fn set<F: FnOnce(&mut Data)>(&mut self, f: F) -> Result<(), ConfigError> {
 		f(&mut self.data);
+		log::info!("config-data: {:?}", self.data);
 		self.save()
 		    .attach_printable("error during saving after changes to config")?;
 		Ok(())
