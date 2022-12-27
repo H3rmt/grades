@@ -21,7 +21,7 @@ import {
 	TextField,
 	Typography
 } from "@mui/material";
-import {errorToast, toastMessage, useToast} from "../../ts/toast";
+import {errorToast, toastMessage} from "../../ts/toast";
 import {Grade} from "../../entity";
 import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes} from "../../commands/get";
 import {useCreateGrade} from "../../commands/create";
@@ -33,6 +33,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 import {useAtom} from 'jotai'
 import {modalConfirmed, modalOpen} from "../atoms";
+import {useSnackbar} from "notistack";
 
 export default function NewGradeModal() {
 	const [grade, setGrade] = nullableUseState<Grade>()
@@ -40,7 +41,7 @@ export default function NewGradeModal() {
 	const [open, setOpen] = useAtom(modalOpen);
 	const [confirmed] = useAtom(modalConfirmed);
 
-	const toast = useToast()
+	const toast = useSnackbar()
 	const queryClient = useQueryClient()
 
 	const periods = usePeriods({

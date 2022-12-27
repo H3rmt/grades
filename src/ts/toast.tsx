@@ -22,30 +22,25 @@ function toastMessage(
 		info?: string,
 		opts?: OptionsObject
 ): () => void {
-	let key = toast.openToast(message,
+	let key = toast.enqueueSnackbar(message,
 			Object.assign({
 						variant: variant,
 						anchorOrigin: {
 							vertical: 'bottom',
 							horizontal: 'right'
 						},
-						action: action(variant, toast.closeToast, undo, info),
+						action: action(variant, toast.closeSnackbar, undo, info),
 						persist: variant == "error",
 						autoHideDuration: variant == "warning" ? 3500 : 1500
 					}, opts
 			)
 	)
-	return () => toast.closeToast(key)
+	return () => toast.closeSnackbar(key)
 }
 
 type toast = {
-	openToast: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey
-	closeToast: (key?: SnackbarKey) => void
-}
-
-const useToast: () => toast = () => {
-	let {enqueueSnackbar, closeSnackbar} = useSnackbar()
-	return {openToast: enqueueSnackbar, closeToast: closeSnackbar}
+	enqueueSnackbar: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey
+	closeSnackbar: (key?: SnackbarKey) => void
 }
 
 function action(
@@ -93,7 +88,6 @@ function action(
 
 export {
 	toastMessage,
-	useToast,
 	errorToast
 }
 

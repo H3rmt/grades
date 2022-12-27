@@ -3,7 +3,7 @@ import {ChangeEvent, useState} from 'react';
 import {nextFree, nullableUseState, randColor} from "../ts/utils";
 import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
-import {errorToast, toastMessage, useToast} from "../ts/toast";
+import {errorToast, toastMessage} from "../ts/toast";
 import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
@@ -15,12 +15,13 @@ import {useCreatePeriod, useCreateSubject, useCreateType} from "../commands/crea
 import dayjs from "dayjs";
 import {useDeletePeriod, useDeleteSubject, useDeleteType} from "../commands/delete";
 import {useEditGradeModalDefaults, useEditNoteRange, useEditPeriod, useEditSubject, useEditType} from "../commands/edit";
+import {useSnackbar} from "notistack";
 
 type Props = {}
 
 
 function Settings(props: Props) {
-	const toast = useToast()
+	const toast = useSnackbar()
 	const queryClient = useQueryClient()
 
 	const [periods, setPeriods] = useState<Period[]>([])

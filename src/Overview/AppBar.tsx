@@ -1,9 +1,10 @@
 import {Button, IconButton, MenuItem, Select, SelectChangeEvent, Stack, useMediaQuery} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {usePeriods} from "../commands/get";
-import {errorToast, useToast} from "../ts/toast";
+import {errorToast} from "../ts/toast";
 import {modalConfirmed, modalOpen, period as Period} from "./atoms";
 import {useAtom} from 'jotai'
+import {useSnackbar} from "notistack";
 
 type Props = {};
 
@@ -11,10 +12,10 @@ export function OverviewAppBar(props: Props) {
 	const oneButton = useMediaQuery('(max-width:700px)');
 	const plusButton = useMediaQuery('(max-width:400px)');
 	const [period, setPeriod] = useAtom(Period);
-	const [open, setOpen] = useAtom(modalOpen);
-	const [confirmed, setConfirmed] = useAtom(modalConfirmed);
+	const [, setOpen] = useAtom(modalOpen);
+	const [, setConfirmed] = useAtom(modalConfirmed);
 
-	const toast = useToast()
+	const toast = useSnackbar()
 
 	const periods = usePeriods({
 		onError: (error) => {
