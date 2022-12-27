@@ -8,7 +8,10 @@
 
 		"tauri dev": "tauri dev",
 		"tauri build": "tauri build",
-		"build ts entity": "cd src-tauri/entity && cargo test && cd .. && cargo test"
+		"build ts entity": "cd src-tauri/entity && cargo test && cd .. && cargo test",
+
+		"test": "vitest",
+		"coverage": "vitest run --coverage"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.10",
@@ -40,6 +43,12 @@
 	"devDependencies": {
 		"@types/node": "^18.11",
 		"@types/react": "^18.0",
-		"@types/react-dom": "^18.0"
+		"@types/react-dom": "^18.0",
+
+		"vitest": "^0.26.2",
+		"@vitest/coverage-c8": "^0.26.2",
+		"jsdom": "^20.0.3",
+		"@testing-library/react": "^13.4.0",
+		"tinyspy": "^1.0.2"
 	}
 }
