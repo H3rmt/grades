@@ -56,14 +56,14 @@ impl Display for GradeModalDefaults {
 #[derive(TS, Deserialize, Serialize, Debug)]
 #[ts(export, export_to = "../src/entity/config/analysisBox.ts")]
 pub struct AnalysisBox {
-	pub test: AnalysisBoxPoint,
+	pub test: Vec<AnalysisBoxPoint>,
 	pub test2: Option<AnalysisBoxPoint>,
 }
 
 impl Default for AnalysisBox {
 	fn default() -> Self {
 		Self {
-			test: AnalysisBoxPoint{x: 1, y: 11},
+			test: vec![AnalysisBoxPoint{x: 1, y: 11}],
 			test2: None,
 		}
 	}
@@ -71,7 +71,7 @@ impl Default for AnalysisBox {
 
 impl Display for AnalysisBox {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "test:{} test2:{:?}", self.test, self.test2)
+		write!(f, "test:{:?} test2:{:?}", self.test, self.test2)
 	}
 }
 

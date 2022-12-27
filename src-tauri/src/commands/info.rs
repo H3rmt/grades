@@ -19,7 +19,7 @@ pub async fn get_info_js(config: tauri::State<'_, Mutex<Config>>) -> Result<Stri
 		commit_hash: built_info::GIT_COMMIT_HASH.unwrap_or_default().to_string(),
 	};
 	
-	config.lock().await.set(|c| c.analysis = vec![AnalysisBox { test: AnalysisBoxPoint { x: 12, y: 1 }, test2: None }, AnalysisBox { test: AnalysisBoxPoint { x: 1, y: 24 }, test2: Some(AnalysisBoxPoint { x: 14, y: 6 }) }]).unwrap();
+	config.lock().await.set(|c| c.analysis = vec![AnalysisBox { test: vec![AnalysisBoxPoint { x: 12, y: 1 }], test2: None }, AnalysisBox { test: vec![AnalysisBoxPoint { x: 1, y: 24 }, AnalysisBoxPoint { x: 12, y: 1 }], test2: Some(AnalysisBoxPoint { x: 14, y: 6 }) }]).unwrap();
 	
 	let data = serde_json::to_string(&info)
 			.into_report()
