@@ -1,4 +1,4 @@
-import {Button, IconButton, MenuItem, Select, SelectChangeEvent, Stack, useMediaQuery} from "@mui/material";
+import {Button, IconButton, MenuItem, Select, SelectChangeEvent, Stack, Typography, useMediaQuery} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {usePeriods} from "../commands/get";
 import {errorToast} from "../ts/toast";
@@ -28,42 +28,44 @@ export function OverviewAppBar(props: Props) {
 	}
 
 	return <Stack spacing={2} direction="row" alignItems="start">
-		{periods.isSuccess &&
-				<Select color="secondary" variant="outlined" sx={{padding: 0, maxWidth: [120, 150, 300, 500, 600]}} value={period} size="small"
-						  onChange={handlePeriodSelectChange}>
-					<MenuItem value="-1">
-						All&nbsp;
-					</MenuItem>
-					{periods.isSuccess && periods.data.map((period) => {
-						return <MenuItem value={period.id}>
-							{period.name}&nbsp;&nbsp;&nbsp;{period.from != "" && period.to != "" ? `${period.from} - ${period.to}` : ""}
-						</MenuItem>
-					})}
-				</Select>}
+		{periods.isSuccess && <Select color="secondary" variant="outlined" sx={{padding: 0, maxWidth: [120, 150, 300, 500, 600]}}
+												value={period} size="small" onChange={handlePeriodSelectChange} title="Periods"
+												renderValue={(i: string) => periods.data.find(p => p.id === Number(i))?.name ?? "All"}>
+			<MenuItem key="-1" value="-1">
+				<Typography sx={{fontStyle: "italic"}}>All&nbsp;</Typography>
+			</MenuItem>
+			{periods.data.map((period) => {
+				return <MenuItem key={period.id} value={period.id}>
+					<Stack>
+						{period.name}
+						<br/>
+						<Typography variant="overline">{period.from} - {period.to}</Typography>
+					</Stack>
+				</MenuItem>
+			})}
+		</Select>}
 		{(() => {
 			if (plusButton)
 				return <IconButton color="secondary" onClick={() => {
 					setConfirmed(false)
 					setOpen(true)
-				}}><AddIcon/></IconButton>
+				}} title="New Grade"><AddIcon/></IconButton>
 			else if (oneButton)
 				return <Button variant="contained" color="secondary" onClick={() => {
 					setConfirmed(false)
 					setOpen(true)
-				}}>New&nbsp;Grade</Button>
+				}} title="New Grade">New&nbsp;Grade</Button>
 			else
 				return <>
 					<Button color="secondary" variant="contained" onClick={() => {
 						setConfirmed(false)
 						setOpen(true)
-					}}>New&nbsp;WIP&nbsp;Grade</Button>
+					}} title="New Grade">New&nbsp;WIP&nbsp;Grade</Button>
 					<Button color="secondary" variant="contained" onClick={() => {
 						setConfirmed(true)
 						setOpen(true)
-					}}>New&nbsp;Confirmed&nbsp;Grade</Button>
+					}} title="New Grade">New&nbsp;Confirmed&nbsp;Grade</Button>
 				</>
-		})()
-		}
-
+		})()}
 	</Stack>;
 }

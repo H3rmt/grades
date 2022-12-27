@@ -45,10 +45,11 @@
 		"@types/react": "^18.0",
 		"@types/react-dom": "^18.0",
 
-		"vitest": "^0.26.2",
-		"@vitest/coverage-c8": "^0.26.2",
-		"jsdom": "^20.0.3",
-		"@testing-library/react": "^13.4.0",
-		"tinyspy": "^1.0.2"
+		"vitest": "^0.26",
+		"@vitest/coverage-c8": "^0.26",
+		"jsdom": "^20.0",
+		"css-mediaquery": "^0.1",
+		"@testing-library/react": "^13.4",
+		"@testing-library/user-event": "^14.4"
 	}
 }
