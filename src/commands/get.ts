@@ -39,7 +39,7 @@ function useGrades(options: UseQueryOpts<Grade[]> = {}) {
 
 function useNoteRange(options: UseQueryOpts<NoteRange> = {}) {
 	return useQuery<NoteRange>(["noteRange"], async () => {
-				return await get<NoteRange>("note_rage")
+				return await get<NoteRange>("note_range")
 			},
 			options
 	);

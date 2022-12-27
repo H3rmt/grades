@@ -10,7 +10,7 @@ use flexi_logger::{Duplicate, FileSpec, Logger, WriteMode};
 use tokio::sync::Mutex;
 
 use commands::cache::{get_page_from_cache_js, edit_page_in_cache_js};
-use commands::config::{get_grade_modal_defaults_js, get_note_rage_js, edit_grade_modal_defaults_js, edit_note_range_js};
+use commands::config::{get_grade_modal_defaults_js, get_note_range_js, edit_grade_modal_defaults_js, edit_note_range_js};
 use commands::db::grades::{create_grade_js, delete_grade_js, edit_grade_js, get_grades_js};
 use commands::db::periods::{create_period_js, delete_period_js, edit_period_js, get_periods_js};
 use commands::db::subjects::{create_subject_js, delete_subject_js, edit_subject_js, get_subjects_js};
@@ -100,7 +100,7 @@ async fn main() {
 				get_types_js, create_type_js, edit_type_js, delete_type_js,
 				get_subjects_js, create_subject_js, edit_subject_js, delete_subject_js,
 				edit_page_in_cache_js,get_page_from_cache_js, get_info_js,
-				get_note_rage_js,get_grade_modal_defaults_js, edit_note_range_js, edit_grade_modal_defaults_js
+				get_note_range_js,get_grade_modal_defaults_js, edit_note_range_js, edit_grade_modal_defaults_js
         ])
 			.run(tauri::generate_context!())
 			.into_report()

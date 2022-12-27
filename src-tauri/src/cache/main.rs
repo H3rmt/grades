@@ -63,6 +63,7 @@ impl Cache {
 	
 	pub fn set<F: FnOnce(&mut Data)>(&mut self, f: F) -> error_stack::Result<(), CacheError> {
 		f(&mut self.data);
+		log::debug!("cache-data: {:?}", self.data);
 		self.save()
 		    .attach_printable("error during saving after changes to cache")?;
 		Ok(())

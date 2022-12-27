@@ -65,7 +65,7 @@ impl Config {
 	
 	pub fn set<F: FnOnce(&mut Data)>(&mut self, f: F) -> Result<(), ConfigError> {
 		f(&mut self.data);
-		log::info!("config-data: {:?}", self.data);
+		log::debug!("config-data: {:?}", self.data);
 		self.save()
 		    .attach_printable("error during saving after changes to config")?;
 		Ok(())

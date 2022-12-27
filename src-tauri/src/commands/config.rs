@@ -11,7 +11,7 @@ use crate::{
 use crate::utils::StrError;
 
 #[tauri::command]
-pub async fn get_note_rage_js(config: tauri::State<'_, Mutex<Config>>) -> Result<String, String> {
+pub async fn get_note_range_js(config: tauri::State<'_, Mutex<Config>>) -> Result<String, String> {
 	let data = {
 		let mutex = config.lock().await;
 		let note_range = &mutex.get().note_range;
@@ -24,7 +24,7 @@ pub async fn get_note_rage_js(config: tauri::State<'_, Mutex<Config>>) -> Result
 				.log_and_to_string()?
 	};
 	
-	log::debug!("get_note_rage_js json: {}", data);
+	log::debug!("get_note_range_js json: {}", data);
 	Ok(data)
 }
 

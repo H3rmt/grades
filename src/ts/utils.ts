@@ -2,7 +2,7 @@ import {Dispatch, SetStateAction, useState} from "react";
 import {UseQueryOptions} from "@tanstack/react-query/src/types";
 import {QueryKey} from "@tanstack/query-core/src/types";
 import {UseMutationOptions} from "@tanstack/react-query";
-import {invoke as inv} from "@tauri-apps/api/tauri";
+import {invoke} from "@tauri-apps/api";
 
 type reactSet<T> = Dispatch<SetStateAction<T>>
 
@@ -33,7 +33,7 @@ function randColor(): string {
 }
 
 function create<T>(cmd: string, args?: any): Promise<void> { // change to Promise<T> if id returned
-	return inv("create_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
+	return invoke("create_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
 		// return id
 		console.debug("create_" + cmd, "success", args)
 	}).catch((e) => {
@@ -43,7 +43,7 @@ function create<T>(cmd: string, args?: any): Promise<void> { // change to Promis
 }
 
 function del(cmd: string, id: any): Promise<void> {
-	return inv("delete_" + cmd + "_js", {json: JSON.stringify({id: id})}).then(() => {
+	return invoke("delete_" + cmd + "_js", {json: JSON.stringify({id: id})}).then(() => {
 		console.debug("delete_" + cmd, "success", id)
 	}).catch((e) => {
 		console.debug("delete_" + cmd, "fail", e, id)
@@ -52,7 +52,7 @@ function del(cmd: string, id: any): Promise<void> {
 }
 
 function edit<T>(cmd: string, args: any): Promise<void> { // change to Promise<T> if entity returned
-	return inv("edit_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
+	return invoke("edit_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
 		// return entity
 		console.debug("edit_" + cmd, "success", args)
 	}).catch((e) => {
@@ -62,8 +62,8 @@ function edit<T>(cmd: string, args: any): Promise<void> { // change to Promise<T
 }
 
 function get<T>(cmd: string): Promise<T> {
-	return inv<string>("get_" + cmd + "_js").then((data: string) => {
-		console.debug("get_" + cmd, "success")
+	return invoke<string>("get_" + cmd + "_js").then((data: string) => {
+		console.debug("get_" + cmd, "success", data)
 		return JSON.parse(data)
 	}).catch((e) => {
 		console.debug("get_" + cmd, "fail", e)
