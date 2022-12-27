@@ -103,9 +103,9 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 					g.weight = i.target.value as "Default" | "Double" | "Half";
 					update()
 				}}>
-					<MenuItem value="Default"> &nbsp; </MenuItem>
-					<MenuItem value="Double">x2</MenuItem>
-					<MenuItem value="Half">/2</MenuItem>
+					<MenuItem key="Default" value="Default">&nbsp;</MenuItem>
+					<MenuItem key="Double" value="Double">x2</MenuItem>
+					<MenuItem key="Half" value="Half">/2</MenuItem>
 				</Select>
 			}
 		], [

@@ -43,16 +43,6 @@ export default function Overview(props: Props) {
 		}
 	});
 
-	// const gradeModalDefaults = useGradeModalDefaults({
-	// 	onSuccess: (data) => {
-	// 		if (period == null)
-	// 			setPeriod((data.period_default || "-1").toString())
-	// 	},
-	// 	onError: (error) => {
-	// 		errorToast("Error loading gradeModalDefaults", toast, error)
-	// 	}
-	// });
-
 	const deleteGrade = useDeleteGrade(queryClient, {
 		onSuccess: () => {
 			toastMessage("success", "Deleted Grade", toast)

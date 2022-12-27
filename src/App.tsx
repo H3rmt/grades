@@ -9,7 +9,7 @@ import {Page as SPage} from "./entity"
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {edit, get} from "./ts/utils";
-import {OverviewAppBar} from "./Overview/AppBar";
+import {OverviewAppBar} from "./Overview/OverviewAppBar";
 import MenuIcon from "@mui/icons-material/Menu";
 
 type Pages = {

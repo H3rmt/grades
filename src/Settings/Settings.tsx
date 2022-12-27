@@ -313,7 +313,7 @@ function Settings(props: Props) {
 								<Select value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
 										  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
 									{types.map((type) => {
-										return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
+										return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
 									})}
 								</Select>
 							</Stack>
@@ -324,7 +324,7 @@ function Settings(props: Props) {
 								<Select value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
 										  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
 									{subjects.map((subject) => {
-										return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
+										return <MenuItem value={subject.id} key={subject.id} sx={{color: subject.color}}>{subject.name}</MenuItem>
 									})}
 								</Select>
 							</Stack>
@@ -335,7 +335,7 @@ function Settings(props: Props) {
 								<Select value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none" fullWidth
 										  onChange={(e) => handlePeriodSelectChange(e, gradeModalDefaults)}>
 									{periods.map((period) => {
-										return <MenuItem value={period.id}>
+										return <MenuItem value={period.id} key={period.id}>
 											<Stack>
 												{period.name}
 												<br/>

@@ -6,7 +6,7 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import {getComparator, Order, setSort} from "./sort";
-import {IconButton, Stack, Table} from "@mui/material";
+import {IconButton, Stack, Table, Typography} from "@mui/material";
 import {capitalizeFirstLetter} from "../../ts/utils";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -88,7 +88,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 			</TableHead>
 			<TableBody>
 				{[...data.values()].sort(getComparator<Row>(order, orderBy, props.cols.get(orderBy)?.preSort)).map((col) => {
-					return <TableRow hover key={col.data.id}>
+					return <TableRow hover key={col.data.id} data-id={col.data.id}>
 						{(props.delete ?? props.edit) && <TableCell>
 							<Stack direction="row">
 								{col.edit ?
@@ -124,16 +124,17 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 							</Stack>
 						</TableCell>
 						}
-						{Array.from(props.cols.entries()).filter(([, col]) => !col.hide).map((entry: [keyof Row, ColumnDef<Row>]) => {
+						{Array.from(props.cols.entries()).map((entry: [keyof Row, ColumnDef<Row>]) => {
 							const [key, row] = entry
-							let format = row.format ?? (() => col.data[key])
+							let format = row.format ?? ((d: Row) => <Typography>{d[key] as ReactNode}</Typography>)
 							let edit = (row.edit ?? (() => format(col.data)))
+
 							return col.edit ?
-									<TableCell key={key as Key} onChange={forceUpdate}>
+									<TableCell key={key as Key} onChange={forceUpdate} data-key={key} data-data={col.data[key]} sx={{display: row.hide ? 'none' : ''}}>
 										{edit(col.temp, forceUpdate) as ReactNode}
 									</TableCell>
 									:
-									<TableCell key={key as Key}>
+									<TableCell key={key as Key} data-key={key} data-data={col.data[key]} sx={{display: row.hide ? 'none' : ''}}>
 										{format(col.data) as ReactNode}
 									</TableCell>
 						})}

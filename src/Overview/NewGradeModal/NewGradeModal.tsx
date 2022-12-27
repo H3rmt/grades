@@ -182,7 +182,7 @@ export default function NewGradeModal() {
 									{subjects.isSuccess && <Select value={grade.subject.toString()} margin="none" fullWidth
 																			 onChange={(event) => handleSubjectSelectChange(event, grade)}>
 										{subjects.data.map((subject) => {
-											return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
+											return <MenuItem value={subject.id} key={subject.id} sx={{color: subject.color}}>{subject.name}</MenuItem>
 										})}
 									</Select>}
 								</Stack>
@@ -193,7 +193,7 @@ export default function NewGradeModal() {
 									{types.isSuccess && <Select value={grade.type.toString()} margin="none" fullWidth
 																		 onChange={(event) => handleTypeSelectChange(event, grade)}>
 										{types.data.map((type) => {
-											return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
+											return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
 										})}
 									</Select>}
 								</Stack>
@@ -204,7 +204,7 @@ export default function NewGradeModal() {
 									{periods.isSuccess && <Select value={grade.period.toString()} margin="none" fullWidth
 																			onChange={(event) => handlePeriodSelectChange(event, grade)}>
 										{periods.data.map((period) => {
-											return <MenuItem value={period.id}>
+											return <MenuItem value={period.id} key={period.id}>
 												<Stack>
 													{period.name}
 													<br/>
