@@ -47,6 +47,7 @@
 
 		"vitest": "^0.26",
 		"@vitest/coverage-c8": "^0.26",
+		"@vitest/ui": "^0.26",
 		"jsdom": "^20.0",
 		"css-mediaquery": "^0.1",
 		"@testing-library/react": "^13.4",
