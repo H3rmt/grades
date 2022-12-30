@@ -1,7 +1,7 @@
 import {Grade, Subject, Type} from "../entity";
 import {cols, ColumnDef} from "../components/table/defs";
 import {Badge, IconButton, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
-import {map} from "../ts/utils";
+import {convertWeight, map} from "../ts/utils";
 import {NoteRange} from "../entity/config";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 import dayjs, {Dayjs} from "dayjs";
@@ -97,7 +97,7 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 		], [
 			"weight", {
 				sort: true,
-				format: g => <Typography>{g.weight == "Half" ? "/2" : g.weight == "Double" ? "x2" : ""}</Typography>,
+				format: g => <Typography>{convertWeight(g.weight)}</Typography>,
 				preSort: (g) => g.weight == "Half" ? 0.5 : g.weight == "Double" ? 2 : 1,
 				edit: (g, update) => <Select value={g.weight} onChange={(i) => {
 					g.weight = i.target.value as "Default" | "Double" | "Half";

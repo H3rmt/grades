@@ -1,8 +1,4 @@
 import {Dispatch, SetStateAction, useState} from "react";
-import {UseQueryOptions} from "@tanstack/react-query/src/types";
-import {QueryKey} from "@tanstack/query-core/src/types";
-import {UseMutationOptions} from "@tanstack/react-query";
-import {invoke} from "@tauri-apps/api";
 
 type reactSet<T> = Dispatch<SetStateAction<T>>
 
@@ -32,67 +28,20 @@ function randColor(): string {
 	return "#" + Math.floor(Math.random() * 16777215).toString(16)
 }
 
-function create<T>(cmd: string, args?: any): Promise<void> { // change to Promise<T> if id returned
-	return invoke("create_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
-		// return id
-		console.debug("create_" + cmd, "success", args)
-	}).catch((e) => {
-		console.debug("create_" + cmd, "fail", e, args)
-		throw e
-	})
+function convertWeight(weight: 'Default' | 'Double' | 'Half') {
+	switch (weight) {
+		case 'Default':
+			return ""
+		case 'Double':
+			return "x2"
+		case 'Half':
+			return "/2"
+	}
 }
 
-function del(cmd: string, id: any): Promise<void> {
-	return invoke("delete_" + cmd + "_js", {json: JSON.stringify({id: id})}).then(() => {
-		console.debug("delete_" + cmd, "success", id)
-	}).catch((e) => {
-		console.debug("delete_" + cmd, "fail", e, id)
-		throw e
-	})
-}
-
-function edit<T>(cmd: string, args: any): Promise<void> { // change to Promise<T> if entity returned
-	return invoke("edit_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
-		// return entity
-		console.debug("edit_" + cmd, "success", args)
-	}).catch((e) => {
-		console.debug("edit_" + cmd, "fail", e, args)
-		throw e
-	})
-}
-
-function get<T>(cmd: string): Promise<T> {
-	return invoke<string>("get_" + cmd + "_js").then((data: string) => {
-		console.debug("get_" + cmd, "success", data)
-		return JSON.parse(data)
-	}).catch((e) => {
-		console.debug("get_" + cmd, "fail", e)
-		throw e
-	})
-}
-
-type UseQueryOpts<
-		TQueryFnData = unknown,
-		TData = TQueryFnData,
-		TQueryKey extends QueryKey = QueryKey,
-> = Omit<
-		UseQueryOptions<TQueryFnData, unknown, TData, TQueryKey>,
-		'queryKey' | 'initialData'
-> & { initialData?: TQueryFnData | (() => TQueryFnData) }
-
-type UseMutationOpts<
-		TData = unknown,
-		TVariables = void,
-		TContext = unknown
-> = Omit<
-		UseMutationOptions<TData, unknown, TVariables, TContext>,
-		'mutationFn' | 'mutationKey'
->
 
 export type {
 	reactSet,
-	UseQueryOpts,
-	UseMutationOpts
 }
 
 export {
@@ -100,9 +49,6 @@ export {
 	capitalizeFirstLetter,
 	map,
 	nullableUseState,
-	edit,
-	get,
-	create,
-	del,
-	randColor
+	randColor,
+	convertWeight
 }
