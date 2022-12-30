@@ -1,21 +1,23 @@
 import {describe, expect, test} from 'vitest'
 import Overview from "./Overview";
-import {mockIPC} from "../setupTests";
 import {Grade, Period, Subject, Type} from '../entity';
-import {convertWeigth, render, rgbStringToHex, screen} from "../ts/testingUtils";
+import {mockIPC, render, rgbStringToHex, screen} from "../ts/testingUtils";
+import {convertWeight} from "../ts/utils";
 
 describe('Overview', () => {
-	test('renders Table', async () => {
+	test('renders Table Columns', async () => {
 		mockIPC(mockData)
 		render(<Overview/>)
 
 		expect(await screen.findByRole('table')).to.exist
-		expect(await screen.findByText('Grade')).to.exist
-		expect(await screen.findByText('Subject')).to.exist
-		expect(await screen.findByText('Type')).to.exist
-		expect(await screen.findByText('Date')).to.exist
-		expect(await screen.findByText('Confirmed')).to.exist
-		expect(await screen.findByText('Info')).to.exist
+		expect(await screen.findByRole('columnheader', {exact: false, name: 'Grade'})).to.exist
+		expect(await screen.findByRole('columnheader', {exact: false, name: 'Subject'})).to.exist
+		expect(await screen.findByRole('columnheader', {exact: false, name: 'Type'})).to.exist
+		expect(await screen.findByRole('columnheader', {exact: false, name: 'Date'})).to.exist
+		expect(await screen.findByRole('columnheader', {exact: false, name: 'Confirmed'})).to.exist
+		expect(await screen.findByRole('columnheader', {exact: false, name: 'Info'})).to.exist
+		expect(await screen.findByRole('columnheader', {exact: false, name: 'Weight'})).to.exist
+		console.info('Table and all Table columns rendered')
 	})
 	test('Table renders Grades', async () => {
 		mockIPC(mockData)
@@ -51,9 +53,12 @@ describe('Overview', () => {
 			const infoScreen = await screen.findAllByText(grade.info)
 			expect(infoScreen, "Info not found on Screen").length.greaterThanOrEqual(1)
 
-			const weightScreen = await screen.findAllByText(convertWeigth(grade.weight))
+			const weightScreen = await screen.findAllByText(convertWeight(grade.weight))
 			expect(weightScreen, "Weight not found on Screen").length.greaterThanOrEqual(1)
+
+			console.info(`Grade ${grade.id} rendered`)
 		}
+		console.info('All Grades rendered on table')
 	})
 })
 
@@ -62,7 +67,6 @@ const mockData: {
 	types: Type[],
 	subjects: Subject[],
 	periods: Period[],
-	// noteRange: NoteRange
 } = {
 	grades: [{
 		id: 1,
@@ -100,6 +104,10 @@ const mockData: {
 	}, {
 		id: 2, name: 'Type2', color: "#ffffff"
 	}],
-	subjects: [{id: 1, name: 'Subject1', color: "#111111"}],
-	periods: [{id: 1, name: 'Period1', from: "2021-01-01", to: "2021-01-02"}],
+	subjects: [{
+		id: 1, name: 'Subject1', color: "#111111"
+	}],
+	periods: [{
+		id: 1, name: 'Period1', from: "2021-01-01", to: "2021-01-02"
+	}],
 }

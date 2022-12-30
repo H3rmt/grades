@@ -1,8 +1,7 @@
 import {describe, expect, test} from 'vitest'
 import Overview from "./Overview";
-import {mockIPC} from "../setupTests";
 import {Grade, Period, Subject, Type} from '../entity';
-import {getByRole, render, screen} from "../ts/testingUtils";
+import {getByRole, mockIPC, render, screen} from "../ts/testingUtils";
 import {OverviewAppBar} from "./OverviewAppBar";
 import userEvent from "@testing-library/user-event";
 
@@ -11,7 +10,7 @@ describe('Overview+OverviewAppBar', () => {
 		mockIPC(mockData)
 		render(<><OverviewAppBar/><Overview/></>)
 
-		const periodSelect = await screen.findByTitle('Periods')
+		const periodSelect = await screen.findByTitle('Period Select')
 		expect(periodSelect).to.exist
 
 		const periodSelectButton = getByRole(periodSelect, "button")
@@ -24,6 +23,7 @@ describe('Overview+OverviewAppBar', () => {
 
 			// check if select has value
 			expect(periodSelect?.textContent).to.contain(period.name) // sometimes &nbsp; is added
+			console.info(`Period ${period.id} selected`)
 
 			// check if grades are shown
 			for (const grade of mockData.grades.filter(g => g.period === period.id)) {
@@ -34,7 +34,9 @@ describe('Overview+OverviewAppBar', () => {
 				// check if grade is not shown in table
 				expect(screen.queryAllByText(grade.id.toString()), "Grade with different Period found").to.have.length(0)
 			}
+			console.info(`Grades for Period ${period.id} rendered`)
 		}
+		console.info('All Periods selected and corresponding Grades rendered')
 
 		await userEvent.click(periodSelectButton)
 		const e = await screen.getByRole('option', {exact: false, name: `All`})
@@ -48,6 +50,7 @@ describe('Overview+OverviewAppBar', () => {
 			// check if grade is shown in table
 			expect(screen.queryAllByText(grade.id.toString()), "Grade not found").to.have.length.greaterThanOrEqual(1)
 		}
+		console.info('All Period selected and all Grades rendered')
 	})
 })
 

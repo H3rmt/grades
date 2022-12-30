@@ -1,8 +1,7 @@
 import {describe, expect, test} from 'vitest'
 import {OverviewAppBar} from './OverviewAppBar';
-import {mockIPC} from "../setupTests";
 import {Period} from "../entity";
-import {createMatchMedia, getByRole, render, screen} from "../ts/testingUtils";
+import {createMatchMedia, getByRole, mockIPC, render, screen} from "../ts/testingUtils";
 import userEvent from "@testing-library/user-event";
 
 describe('OverviewAppBar', () => {
@@ -15,33 +14,36 @@ describe('OverviewAppBar', () => {
 
 			expect(await screen.findByText('New Confirmed Grade')).to.exist
 			expect(await screen.findByText('New WIP Grade')).to.exist
+			console.info('2 Buttons on 1000px rendered')
 		})
 		test('renders 600px Buttons', async () => {
 			window.matchMedia = createMatchMedia("600px");
 			render(<OverviewAppBar/>)
 
 			expect(await screen.findByText('New Grade')).to.exist
-
+			console.info('1 Button on 600px rendered')
 		})
 		test('renders 300px Buttons', async () => {
 			window.matchMedia = createMatchMedia("300px");
 			render(<OverviewAppBar/>)
 
 			expect(await screen.findByTestId('AddIcon')).to.exist
+			console.info('1 IconButtons on 300px rendered')
 		})
 	})
 	test('Renders Periods Selector', async () => {
 		mockIPC(mockData);
 		render(<OverviewAppBar/>)
 
-		expect(await screen.findAllByTitle('Periods')).to.exist
+		expect(await screen.findAllByTitle('Period Select')).to.exist
+		console.info('Periods Selector rendered')
 	})
 
 	test('selects Period', async () => {
 		mockIPC(mockData)
 		render(<OverviewAppBar/>)
 
-		let periodSelect = (await screen.findAllByTitle('Periods')).at(0)
+		let periodSelect = (await screen.findAllByTitle('Period Select')).at(0)
 		expect(periodSelect).to.exist
 		periodSelect = periodSelect as HTMLSelectElement
 
@@ -52,7 +54,10 @@ describe('OverviewAppBar', () => {
 			const e = await screen.findByText(`${period.name}`, {exact: false})
 			await userEvent.click(e)
 			expect(periodSelect?.textContent).to.contain(period.name) // sometimes &nbsp; is added
+
+			console.info(`Grade ${period.id} selected`)
 		}
+		console.info('All Periods selected')
 	})
 })
 
@@ -60,10 +65,11 @@ describe('OverviewAppBar', () => {
 const mockData: {
 	periods: Period[],
 } = {
-	periods: [{id: 1, name: 'Period1', from: "2021-01-01", to: "2021-01-02"}, {
-		id: 2,
-		name: 'Period2',
-		from: "2022-01-01",
-		to: "2022-01-02"
+	periods: [{
+		id: 1, name: 'Period1', from: "2021-01-01", to: "2021-01-02"
+	}, {
+		id: 2, name: 'Period2', from: "2022-01-01", to: "2022-01-02"
+	}, {
+		id: 3, name: 'TEST', from: "2023-01-01", to: "2023-01-02"
 	}],
 }
