@@ -16,7 +16,7 @@ interface ColumnDef<Row extends IRow> {
 	// function returning elements to be displayed instead of the data, with event listeners to update the row
 	edit?: (row: Row, update: () => void) => ReactNode
 	// processes the data before it is used for sorting (dates)
-	preSort?: (row: Row) => any
+	preSort?: (row: Row) => unknown
 	hide?: boolean
 	name?: string
 	sort: boolean

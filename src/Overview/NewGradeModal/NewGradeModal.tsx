@@ -180,7 +180,8 @@ export default function NewGradeModal() {
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Subject</Typography>
 									{subjects.isSuccess && <Select value={grade.subject.toString()} margin="none" fullWidth
-																			 onChange={(event) => handleSubjectSelectChange(event, grade)}>
+																			 onChange={(event) => handleSubjectSelectChange(event, grade)}
+																			 title="Subject Select">
 										{subjects.data.map((subject) => {
 											return <MenuItem value={subject.id} key={subject.id} sx={{color: subject.color}}>{subject.name}</MenuItem>
 										})}
@@ -191,7 +192,8 @@ export default function NewGradeModal() {
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Type</Typography>
 									{types.isSuccess && <Select value={grade.type.toString()} margin="none" fullWidth
-																		 onChange={(event) => handleTypeSelectChange(event, grade)}>
+																		 onChange={(event) => handleTypeSelectChange(event, grade)}
+																		 title="Type Select">
 										{types.data.map((type) => {
 											return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
 										})}
@@ -202,7 +204,8 @@ export default function NewGradeModal() {
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Period</Typography>
 									{periods.isSuccess && <Select value={grade.period.toString()} margin="none" fullWidth
-																			onChange={(event) => handlePeriodSelectChange(event, grade)}>
+																			onChange={(event) => handlePeriodSelectChange(event, grade)}
+																			title="Period Select">
 										{periods.data.map((period) => {
 											return <MenuItem value={period.id} key={period.id}>
 												<Stack>
@@ -222,7 +225,8 @@ export default function NewGradeModal() {
 									{noteRange.isSuccess && <>
 										<Stack spacing={2} direction="row">
 											<TextField value={grade.grade ?? ""} type="number" fullWidth margin="none"
-														  onChange={(event) => handleGradeInputChange(event, grade, noteRange.data)}/>
+														  onChange={(event) => handleGradeInputChange(event, grade, noteRange.data)}
+														  title="Grade Input"/>
 											{grade.grade !== null && <IconButton color="default" onClick={() => {
 												setGrade({...grade, grade: null})
 											}}><ClearIcon/>
@@ -231,19 +235,21 @@ export default function NewGradeModal() {
 										</Stack>
 										<Slider value={grade.grade !== null ? grade.grade : -1} color="secondary" min={noteRange.data.from}
 												  max={noteRange.data.to}
-												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange.data)}/>
+												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange.data)}
+												  title="Grade Slider"/>
 									</>}
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Date</Typography>
-									<DatePicker value={dayjs(grade.date, 'DD-MM-YYYY')} onChange={d => {
-										handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
-									}} renderInput={(params) => {
+									<DatePicker value={dayjs(grade.date, 'DD-MM-YYYY')}
+													onChange={d => {
+														handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+													}} renderInput={(params) => {
 										// @ts-ignore
 										params.inputProps.value = grade.date;
-										return <TextField {...params} />
+										return <TextField {...params} title="Date Picker"/>
 									}} renderDay={(day, value, DayComponentProps) => <Badge
 											key={day.toString()}
 											overlap="circular"
@@ -257,12 +263,13 @@ export default function NewGradeModal() {
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Confirmed Date</Typography>
 									<Stack direction="row" spacing={0.5}>
-										<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : null} onChange={d => {
-											handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
-										}} renderInput={(params) => {
+										<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : null}
+														onChange={d => {
+															handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+														}} renderInput={(params) => {
 											// @ts-ignore
 											params.inputProps.value = grade.confirmed ? grade.confirmed : "";
-											return <TextField {...params} />
+											return <TextField {...params} title="Confirmed Date Picker"/>
 										}} renderDay={(day, value, DayComponentProps) => {
 											if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
 												DayComponentProps.disabled = true
@@ -285,7 +292,9 @@ export default function NewGradeModal() {
 								<Stack spacing={2} height={1}>
 									<Typography variant="h6" fontWeight="normal">Info</Typography>
 									<TextField multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
-												  onChange={(event) => handleInfoInputChange(event, grade)}/>
+												  onChange={(event) => handleInfoInputChange(event, grade)}
+												  title="Info Input"
+									/>
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={4} lg={3}>
@@ -293,7 +302,8 @@ export default function NewGradeModal() {
 									<Typography variant="h6" fontWeight="normal">Grade Weight</Typography>
 									<FormGroup>
 										<RadioGroup defaultValue="normal" value={grade.weight}
-														onChange={(event) => handleWeightChange(event, grade)}>
+														onChange={(event) => handleWeightChange(event, grade)}
+														title="Grade Weight Select">
 											<FormControlLabel value="Default" control={
 												<Radio color="secondary"/>
 											} label="Default"/>
