@@ -14,7 +14,7 @@ function query<T>(cmd: string, options: UseQueryOpts<T> = {}) {
 	}, options)
 }
 
-function editMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void, T> = {}) {
+function editMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void, T> = {}, key: string = cmd) {
 	return useMutation([cmd], async (t: T) => {
 				return await invoke("edit_" + cmd + "_js", {json: JSON.stringify(t)}).then(() => {
 					// return entity
@@ -24,14 +24,14 @@ function editMutation<T>(queryClient: QueryClient, cmd: string, options: UseMuta
 					throw e as string | Error
 				}).then(async () => {
 					console.log("Edited " + cmd)
-					await queryClient.invalidateQueries({queryKey: [cmd]})
+					await queryClient.invalidateQueries({queryKey: [key]})
 				})
 			},
 			options
 	);
 }
 
-function createMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void, T> = {}) {
+function createMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void, T> = {}, key: string = cmd) {
 	return useMutation([cmd], async (t: T) => {
 				return await invoke("create_" + cmd + "_js", {json: JSON.stringify(t)}).then(() => {
 					// return id
@@ -41,14 +41,14 @@ function createMutation<T>(queryClient: QueryClient, cmd: string, options: UseMu
 					throw e as string | Error
 				}).then(async () => {
 					console.log("Created " + cmd)
-					await queryClient.invalidateQueries({queryKey: [cmd]})
+					await queryClient.invalidateQueries({queryKey: [key]})
 				})
 			},
 			options
 	);
 }
 
-function deleteMutation(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void, number> = {}) {
+function deleteMutation(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void, number> = {}, key: string = cmd) {
 	return useMutation([cmd], async (t: number) => {
 				return await invoke("delete_" + cmd + "_js", {json: JSON.stringify({id: t})}).then(() => {
 					console.debug("delete_" + cmd, "success", t)
@@ -57,7 +57,7 @@ function deleteMutation(queryClient: QueryClient, cmd: string, options: UseMutat
 					throw e as string | Error
 				}).then(async () => {
 					console.log("Deleted " + cmd)
-					await queryClient.invalidateQueries({queryKey: [cmd]})
+					await queryClient.invalidateQueries({queryKey: [key]})
 				})
 			},
 			options

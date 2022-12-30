@@ -3,6 +3,10 @@ import {GradeModalDefaults, NoteRange} from "../entity/config";
 import {query, UseQueryOpts} from "../ts/commands";
 
 
+function useGrades(options: UseQueryOpts<Grade[]> = {}) {
+	return query<Grade[]>("grades", options)
+}
+
 function useTypes(options: UseQueryOpts<Type[]> = {}) {
 	return query<Type[]>("types", options)
 }
@@ -15,16 +19,12 @@ function usePeriods(options: UseQueryOpts<Period[]> = {}) {
 	return query<Period[]>("periods", options)
 }
 
-function useGrades(options: UseQueryOpts<Grade[]> = {}) {
-	return query<Grade[]>("grades", options)
-}
-
 function useNoteRange(options: UseQueryOpts<NoteRange> = {}) {
-	return query<NoteRange>("noteRange", options)
+	return query<NoteRange>("note_range", options)
 }
 
 function useGradeModalDefaults(options: UseQueryOpts<GradeModalDefaults> = {}) {
-	return query<GradeModalDefaults>("gradeModalDefaults", options)
+	return query<GradeModalDefaults>("grade_modal_defaults", options)
 }
 
 function useInfo(options: UseQueryOpts<Info> = {}) {

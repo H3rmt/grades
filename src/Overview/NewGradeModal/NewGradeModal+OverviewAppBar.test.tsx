@@ -1,5 +1,7 @@
-import {describe} from "vitest";
+import {describe, test} from "vitest";
 
 describe('NewGradeModal+OverviewAppBar', () => {
-
+	test('should render', () => {
+		// TODO
+	})
 })
