@@ -1,6 +1,5 @@
 import {describe, expect, test} from 'vitest'
-import {mockIPC} from "../../setupTests";
-import {render, screen} from "../../ts/testingUtils";
+import {mockIPC, render, screen} from "../../ts/testingUtils";
 import {Grade, Period, Subject, Type} from "../../entity";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
 import NewGradeModal from "./NewGradeModal";
@@ -14,13 +13,31 @@ describe('NewGradeModal', () => {
 		render(<NewGradeModal/>)
 
 		expect(await screen.findByText('Subject')).to.exist
+		expect(await screen.findByTitle('Subject Select')).to.exist
+
 		expect(await screen.findByText('Type')).to.exist
+		expect(await screen.findByTitle('Type Select')).to.exist
+
 		expect(await screen.findByText('Period')).to.exist
+		expect(await screen.findByTitle('Period Select')).to.exist
+
 		expect(await screen.findByText('Grade')).to.exist
+		expect(await screen.findByTitle('Grade Input')).to.exist
+		expect(await screen.findByTitle('Grade Slider')).to.exist
+
 		expect(await screen.findByText('Date')).to.exist
+		expect(await screen.findByTitle('Date Picker')).to.exist
+
 		expect(await screen.findByText('Confirmed Date')).to.exist
+		expect(await screen.findByTitle('Confirmed Date Picker')).to.exist
+
 		expect(await screen.findByText('Info')).to.exist
+		expect(await screen.findByTitle('Info Input')).to.exist
+
 		expect(await screen.findByText('Grade Weight')).to.exist
+		expect(await screen.findByTitle('Grade Weight Select')).to.exist
+
+		console.info('All Inputs rendered')
 	})
 	test("NewGradeModal is closed and doesn't render", async () => {
 		mockIPC(mockData)
@@ -36,6 +53,8 @@ describe('NewGradeModal', () => {
 		expect(await screen.queryByText('Confirmed Date')).not.to.exist
 		expect(await screen.queryByText('Info')).not.to.exist
 		expect(await screen.queryByText('Grade Weight')).not.to.exist
+		expect(await screen.queryByRole('input', {name: 'Grade Weight'})).not.to.exist
+		console.info('No Inputs rendered')
 	})
 })
 
