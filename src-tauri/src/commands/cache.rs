@@ -24,7 +24,7 @@ pub async fn get_page_from_cache_js(cache: tauri::State<'_, Mutex<Cache>>) -> Re
 		serde_json::to_string(&page)
 				.into_report()
 				.attach_printable("Error serializing Page to json")
-				.attach_printable(format!("page: {}", page))
+				.attach_printable_lazy(|| format!("page: {}", page))
 				.change_context(CommandError)
 				.log_and_to_string()?
 	};
@@ -40,7 +40,7 @@ pub async fn edit_page_in_cache_js(cache: tauri::State<'_, Mutex<Cache>>, json: 
 	let json: Page = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error deserializing Page from json")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	

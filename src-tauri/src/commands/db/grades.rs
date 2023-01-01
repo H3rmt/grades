@@ -1,6 +1,7 @@
 use error_stack::{IntoReport, ResultExt};
 use sea_orm::DatabaseConnection;
 use tokio::sync::Mutex;
+
 use entity::prelude::Grade;
 
 use crate::{
@@ -19,7 +20,7 @@ pub async fn get_grades_js(connection: tauri::State<'_, DatabaseConnection>) -> 
 	let data = serde_json::to_string(&grades)
 			.into_report()
 			.attach_printable("Error serializing data to json")
-			.attach_printable(format!("grades: {:?}", grades))
+			.attach_printable_lazy(|| format!("grades: {:?}", grades))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -34,7 +35,7 @@ pub async fn create_grade_js(connection: tauri::State<'_, DatabaseConnection>, c
 	let model: Grade = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing grade from json")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -53,7 +54,7 @@ pub async fn edit_grade_js(connection: tauri::State<'_, DatabaseConnection>, con
 	let model: Grade = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing grade")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -72,7 +73,7 @@ pub async fn delete_grade_js(connection: tauri::State<'_, DatabaseConnection>, j
 	let delete: Delete = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing delete")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	

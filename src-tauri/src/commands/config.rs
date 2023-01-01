@@ -19,7 +19,7 @@ pub async fn get_note_rage_js(config: tauri::State<'_, Mutex<Config>>) -> Result
 		serde_json::to_string(&note_range)
 				.into_report()
 				.attach_printable("Error serializing note_range to json")
-				.attach_printable(format!("note_range: {}", note_range))
+				.attach_printable_lazy(|| format!("note_range: {}", note_range))
 				.change_context(CommandError)
 				.log_and_to_string()?
 	};
@@ -38,7 +38,7 @@ pub async fn get_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>>
 		serde_json::to_string(&grade_modal_defaults)
 				.into_report()
 				.attach_printable("Error serializing grade_modal_defaults to json")
-				.attach_printable(format!("grade_modal_defaults: {:?}", grade_modal_defaults))
+				.attach_printable_lazy(|| format!("grade_modal_defaults: {:?}", grade_modal_defaults))
 				.change_context(CommandError)
 				.log_and_to_string()?
 	};
@@ -54,7 +54,7 @@ pub async fn edit_note_range_js(config: tauri::State<'_, Mutex<Config>>, json: S
 	let json: NoteRange = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error deserializing note_range from json")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -78,7 +78,7 @@ pub async fn edit_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>
 	let json: GradeModalDefaults = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error deserializing grade_modal_defaults from json")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -89,8 +89,8 @@ pub async fn edit_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>
 		if json.grade_default < note_range.from || json.grade_default > note_range.to {
 			return Err(StrError("Grade Default out of range".to_string()))
 					.into_report()
-					.attach_printable(format!("grade_default: {}", json.grade_default))
-					.attach_printable(format!("range: {}", note_range))
+					.attach_printable_lazy(|| format!("grade_default: {}", json.grade_default))
+					.attach_printable_lazy(|| format!("range: {}", note_range))
 					.change_context(CommandError)
 					.log_and_to_string()?;
 		}
