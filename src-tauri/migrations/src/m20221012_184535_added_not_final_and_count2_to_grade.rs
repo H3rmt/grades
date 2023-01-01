@@ -25,8 +25,8 @@ impl MigrationTrait for Migration {
 				)
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
-		println!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
+		log::info!("SQL:{}", statement.to_string(SqliteQueryBuilder));
+		log::info!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
 		
 		manager.alter_table(statement).await?;
 		manager.alter_table(statement2).await
@@ -34,7 +34,7 @@ impl MigrationTrait for Migration {
 	
 	async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
 		let sql = "ALTER TABLE `grades` DROP COLUMN `not_final`;ALTER TABLE `grades` DROP COLUMN `double`";
-		println!("SQL:{}", sql);
+		log::info!("SQL:{}", sql);
 		
 		let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
 		manager.get_connection().execute(stmt).await.map(|_| ())

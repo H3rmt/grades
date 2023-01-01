@@ -21,8 +21,8 @@ impl MigrationTrait for Migration {
 				)
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
-		println!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
+		log::info!("SQL:{}", statement.to_string(SqliteQueryBuilder));
+		log::info!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
 		
 		manager.alter_table(statement).await?;
 		manager.alter_table(statement2).await
@@ -43,8 +43,8 @@ impl MigrationTrait for Migration {
 				)
 				.to_owned();
 		
-		println!("SQL:{}", statement);
-		println!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
+		log::info!("SQL:{}", statement);
+		log::info!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
 		
 		manager.get_connection().execute(statement).await.map(|_| ())?;
 		manager.alter_table(statement2).await

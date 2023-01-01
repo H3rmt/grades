@@ -31,7 +31,7 @@ impl MigrationTrait for Migration {
 				)
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
+		log::info!("SQL:{}", statement.to_string(SqliteQueryBuilder));
 		
 		manager.create_table(statement).await
 	}
@@ -42,7 +42,7 @@ impl MigrationTrait for Migration {
 				.table(Period::Table)
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
+		log::info!("SQL:{}", statement.to_string(SqliteQueryBuilder));
 		
 		manager.drop_table(statement).await
 	}
