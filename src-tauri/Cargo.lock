@@ -1938,8 +1938,9 @@ dependencies = [
 
 [[package]]
 name = "migration"
-version = "0.13.0"
+version = "0.13.1"
 dependencies = [
+ "log",
  "sea-orm-migration",
  "tokio",
 ]
