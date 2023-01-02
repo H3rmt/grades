@@ -6,3 +6,4 @@ mod grade_types;
 mod grades;
 mod periods;
 mod subjects;
+mod weights;

@@ -13,6 +13,7 @@ mod m20221108_011056_added_unique_indexes_period;
 mod m20221204_223500_add_dates_to_grade;
 mod m20221205_125634_removed_double_added_weight_to_grades;
 mod m20221213_121035_made_grade_optional_removed_not_final;
+mod m20230102_000204_move_weights_into_seperate_table;
 
 
 pub struct Migrator;
@@ -34,6 +35,7 @@ impl MigratorTrait for Migrator {
 			Box::new(m20221204_223500_add_dates_to_grade::Migration),
 			Box::new(m20221205_125634_removed_double_added_weight_to_grades::Migration),
 			Box::new(m20221213_121035_made_grade_optional_removed_not_final::Migration),
+			Box::new(m20230102_000204_move_weights_into_seperate_table::Migration),
 		]
 	}
 }
