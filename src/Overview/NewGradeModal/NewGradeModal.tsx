@@ -23,7 +23,7 @@ import {
 } from "@mui/material";
 import {errorToast, toastMessage, useToast} from "../../ts/toast";
 import {Grade} from "../../entity";
-import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes} from "../../commands/get";
+import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../../commands/get";
 import {useCreateGrade} from "../../commands/create";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
 import {nullableUseState} from '../../ts/utils';
@@ -58,6 +58,12 @@ export default function NewGradeModal() {
 	const subjects = useSubjects({
 		onError: (error) => {
 			errorToast("Error loading Subjects", toast, error)
+		}
+	});
+
+	const weights = useWeights({
+		onError: (error) => {
+			errorToast("Error loading Weights", toast, error)
 		}
 	});
 
@@ -126,7 +132,7 @@ export default function NewGradeModal() {
 	}
 
 	const handleWeightChange = (event: ChangeEvent<HTMLInputElement>, grade: Grade) => {
-		setGrade({...grade, weight: (event.target.value as 'Default' | 'Double' | 'Half')})
+		setGrade({...grade, weight: event.target.value})
 	}
 
 	const setDefault = (defaults: GradeModalDefaults) => {
@@ -140,7 +146,7 @@ export default function NewGradeModal() {
 				type: defaults.type_default ?? 0,
 				period: defaults.period_default ?? 0,
 				info: '',
-				weight: 'Default'
+				weight: 'Normal'
 			})
 		else
 			setGrade({
@@ -152,7 +158,7 @@ export default function NewGradeModal() {
 				type: defaults.type_default ?? 0,
 				period: defaults.period_default ?? 0,
 				info: '',
-				weight: 'Default'
+				weight: 'Normal'
 			})
 	}
 
@@ -291,17 +297,11 @@ export default function NewGradeModal() {
 								<Stack spacing={1.5} height={1}>
 									<Typography variant="h6" fontWeight="normal">Grade Weight</Typography>
 									<FormGroup>
-										<RadioGroup defaultValue="normal" value={grade.weight}
+										<RadioGroup defaultValue="Normal" value={grade.weight}
 														onChange={(event) => handleWeightChange(event, grade)}>
-											<FormControlLabel value="Default" control={
+											{weights.isSuccess && weights.data.map((weight) => <FormControlLabel control={
 												<Radio color="secondary"/>
-											} label="Default"/>
-											<FormControlLabel value="Double" control={
-												<Radio color="secondary"/>
-											} label="Double"/>
-											<FormControlLabel value="Half" control={
-												<Radio color="secondary"/>
-											} label="Half"/>
+											} label={weight.name} value={weight.name}/>)}
 										</RadioGroup>
 									</FormGroup>
 								</Stack>
