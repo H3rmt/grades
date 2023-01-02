@@ -71,6 +71,12 @@ function get<T>(cmd: string): Promise<T> {
 	})
 }
 
+// function convertWeight(weight: Weight) {
+// 	switch (weight) {
+//
+// 	}
+// }
+
 type UseQueryOpts<
 		TQueryFnData = unknown,
 		TData = TQueryFnData,
@@ -104,5 +110,6 @@ export {
 	get,
 	create,
 	del,
-	randColor
+	randColor,
+	// convertWeight
 }
