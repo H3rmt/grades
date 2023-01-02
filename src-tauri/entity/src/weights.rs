@@ -39,7 +39,9 @@ impl PrimaryKeyTrait for PrimaryKey {
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
-pub enum Relation {}
+pub enum Relation {
+    Grades,
+}
 
 impl ColumnTrait for Column {
     type EntityName = Entity;
@@ -53,7 +55,15 @@ impl ColumnTrait for Column {
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
-        panic!("No RelationDef")
+        match self {
+            Self::Grades => Entity::has_many(super::grades::Entity).into(),
+        }
+    }
+}
+
+impl Related<super::grades::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Grades.def()
     }
 }
 
