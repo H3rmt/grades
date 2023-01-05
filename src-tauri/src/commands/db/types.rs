@@ -19,7 +19,7 @@ pub async fn get_types_js(connection: tauri::State<'_, DatabaseConnection>) -> R
 	let data = serde_json::to_string(&types)
 			.into_report()
 			.attach_printable("Error serializing data to json")
-			.attach_printable(format!("types: {:?}", types))
+			.attach_printable_lazy(|| format!("types: {:?}", types))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -34,7 +34,7 @@ pub async fn create_type_js(connection: tauri::State<'_, DatabaseConnection>, js
 	let model: GradeType = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing type from json")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -53,7 +53,7 @@ pub async fn edit_type_js(connection: tauri::State<'_, DatabaseConnection>, json
 	let model: GradeType = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing type")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -72,7 +72,7 @@ pub async fn delete_type_js(connection: tauri::State<'_, DatabaseConnection>, js
 	let delete: Delete = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing delete")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	

@@ -1,4 +1,4 @@
-import {Grade, Info, Period, Subject, Type} from "../entity";
+import {Grade, Info, Period, Subject, Type, Weight} from "../entity";
 import {useQuery} from "@tanstack/react-query";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
 import {get, UseQueryOpts} from "../ts/utils";
@@ -36,6 +36,14 @@ function useGrades(options: UseQueryOpts<Grade[]> = {}) {
 	);
 }
 
+function useWeights(options: UseQueryOpts<Weight[]> = {}) {
+	return useQuery<Weight[]>(["weights"], async () => {
+				return await get<Weight[]>("weights")
+			},
+			options
+	);
+}
+
 
 function useNoteRange(options: UseQueryOpts<NoteRange> = {}) {
 	return useQuery<NoteRange>(["noteRange"], async () => {
@@ -67,6 +75,7 @@ export {
 	useSubjects,
 	usePeriods,
 	useGrades,
+	useWeights,
 	useNoteRange,
 	useGradeModalDefaults,
 	useInfo

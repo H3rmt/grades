@@ -1,8 +1,8 @@
 use error_stack::{IntoReport, ResultExt};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-use crate::built_info;
 
+use crate::built_info;
 use crate::commands::utils::{CommandError, LogAndString};
 
 #[tauri::command]
@@ -19,7 +19,7 @@ pub async fn get_info_js() -> Result<String, String> {
 	let data = serde_json::to_string(&info)
 			.into_report()
 			.attach_printable("Error serializing info to json")
-			.attach_printable(format!("info: {:?}", info))
+			.attach_printable_lazy(|| format!("info: {:?}", info))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	

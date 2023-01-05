@@ -26,8 +26,8 @@ impl MigrationTrait for Migration {
 				.drop_column(Grade::NotFinal)
 				.to_owned();
 		
-		println!("SQL:{}", statement);
-		println!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
+		log::info!("SQL:{}", statement);
+		log::info!("SQL:{}", statement2.to_string(SqliteQueryBuilder));
 		
 		manager.get_connection().execute(statement).await.map(|_| ())?;
 		manager.alter_table(statement2).await
@@ -48,8 +48,8 @@ impl MigrationTrait for Migration {
 			"ALTER TABLE `grades` DROP COLUMN `grade`;ALTER TABLE `grades` ADD `grade` integer NOT NULL default 0".to_string(),
 		);
 		
-		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
-		println!("SQL:{}", statement2);
+		log::info!("SQL:{}", statement.to_string(SqliteQueryBuilder));
+		log::info!("SQL:{}", statement2);
 		
 		manager.alter_table(statement).await?;
 		manager.get_connection().execute(statement2).await.map(|_| ())

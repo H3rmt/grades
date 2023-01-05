@@ -38,18 +38,18 @@ impl Cache {
 	
 	fn load(&mut self) -> error_stack::Result<(), CacheError> {
 		let mut file = OpenOptions::new().read(true).open(self.path.as_path())
-		                                 .into_report()
-		                                 .attach_printable("error opening cache file in read mode")
-		                                 .attach_printable(format!("path: {:?}", self.path.as_path()))
-		                                 .change_context(CacheError)?;
+													.into_report()
+													.attach_printable("error opening cache file in read mode")
+													.attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
+													.change_context(CacheError)?;
 		
 		let mut buffer = String::new();
 		
 		file.read_to_string(&mut buffer)
-		    .into_report()
-		    .attach_printable("error reading cache data from file")
-		    .attach_printable_lazy(|| format!("buffer: {}", buffer))
-		    .change_context(CacheError)?;
+			 .into_report()
+			 .attach_printable("error reading cache data from file")
+			 .attach_printable_lazy(|| format!("buffer: {}", buffer))
+			 .change_context(CacheError)?;
 		
 		let data: Data = serde_json::from_str(buffer.as_str())
 				.into_report()
@@ -64,7 +64,7 @@ impl Cache {
 	pub fn set<F: FnOnce(&mut Data)>(&mut self, f: F) -> error_stack::Result<(), CacheError> {
 		f(&mut self.data);
 		self.save()
-		    .attach_printable("error during saving after changes to cache")?;
+			 .attach_printable("error during saving after changes to cache")?;
 		Ok(())
 	}
 	
@@ -74,10 +74,10 @@ impl Cache {
 	
 	pub fn save(&mut self) -> error_stack::Result<(), CacheError> {
 		let mut file = OpenOptions::new().write(true).append(false).open(self.path.as_path())
-		                                 .into_report()
-		                                 .attach_printable("error opening cache file in write mode")
-		                                 .attach_printable(format!("path: {:?}", self.path.as_path()))
-		                                 .change_context(CacheError)?;
+													.into_report()
+													.attach_printable("error opening cache file in write mode")
+													.attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
+													.change_context(CacheError)?;
 		
 		let data = serde_json::to_string(&self.data)
 				.into_report()
@@ -86,17 +86,17 @@ impl Cache {
 				.change_context(CacheError)?;
 		
 		file.set_len(0)
-		    .into_report()
-		    .attach_printable("error clearing cache data file")
-		    .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
-		    .change_context(CacheError)?;
+			 .into_report()
+			 .attach_printable("error clearing cache data file")
+			 .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
+			 .change_context(CacheError)?;
 		
 		file.write_all(data.as_bytes())
-		    .into_report()
-		    .attach_printable("error writing cache data to file")
-		    .attach_printable_lazy(|| format!("data: {}", data))
-		    .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
-		    .change_context(CacheError)?;
+			 .into_report()
+			 .attach_printable("error writing cache data to file")
+			 .attach_printable_lazy(|| format!("data: {}", data))
+			 .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
+			 .change_context(CacheError)?;
 		Ok(())
 	}
 }

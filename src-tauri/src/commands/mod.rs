@@ -5,6 +5,7 @@ pub mod db {
 	pub mod periods;
 	pub mod types;
 	pub mod subjects;
+	pub mod weights;
 }
 
 pub mod config;
