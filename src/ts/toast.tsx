@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 type variant = "error" | "success" | "warning" | "info"
 
-function errorToast(
+export function errorToast(
 		message: string,
 		toast: toast,
 		error: string | Error,
@@ -14,7 +14,7 @@ function errorToast(
 	return toastMessage("error", message, toast, undefined, error.toString(), opts)
 }
 
-function toastMessage(
+export function toastMessage(
 		variant: variant,
 		message: string,
 		toast: toast,
@@ -38,7 +38,7 @@ function toastMessage(
 	return () => toast.closeSnackbar(key)
 }
 
-type toast = {
+export type toast = {
 	enqueueSnackbar: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey
 	closeSnackbar: (key?: SnackbarKey) => void
 }
@@ -84,13 +84,4 @@ function action(
 			</Dialog>}
 		</Stack>
 	}
-}
-
-export {
-	toastMessage,
-	errorToast
-}
-
-export type {
-	toast
 }

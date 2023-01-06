@@ -1,17 +1,17 @@
 import {ReactNode} from "react";
 
 
-type Column<Row extends IRow> = {
+export type Column<Row extends IRow> = {
 	data: Row
 	edit: boolean
 	temp: Row
 }
 
-interface IRow {
+export interface IRow {
 	id: number
 }
 
-interface ColumnDef<Row extends IRow> {
+export interface ColumnDef<Row extends IRow> {
 	format?: (row: Row) => ReactNode | Row[keyof Row]
 	// function returning elements to be displayed instead of the data, with event listeners to update the row
 	edit?: (row: Row, update: () => void) => ReactNode
@@ -22,13 +22,4 @@ interface ColumnDef<Row extends IRow> {
 	sort: boolean
 }
 
-type cols<Row extends IRow> = Map<keyof Row, ColumnDef<Row>>
-
-
-export type {
-	cols,
-	ColumnDef,
-	Column,
-	IRow,
-	ReactNode
-}
+export type cols<Row extends IRow> = Map<keyof Row, ColumnDef<Row>>

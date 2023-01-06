@@ -52,7 +52,7 @@ const lightTheme = createTheme({
 	},
 });
 
-const AllTheProviders = ({children}: { children: ReactNode }) => {
+export function AllTheProviders({children}: { children: ReactNode }) {
 	const queryClient = new QueryClient({
 		defaultOptions: {queries: {retry: 2, networkMode: 'always', refetchOnWindowFocus: false}}
 	});
@@ -69,9 +69,11 @@ const AllTheProviders = ({children}: { children: ReactNode }) => {
 	</ThemeProvider>
 }
 
-const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>,) => render(ui, {wrapper: AllTheProviders, ...options})
+export function customRender(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
+	return render(ui, {wrapper: AllTheProviders, ...options})
+}
 
-function createMatchMedia(width: string): (query: string) => MediaQueryList {
+export function createMatchMedia(width: string): (query: string) => MediaQueryList {
 	return (query: string) => ({
 		matches: mediaQuery.match(query, {width}),
 		addListener: () => {
@@ -81,15 +83,17 @@ function createMatchMedia(width: string): (query: string) => MediaQueryList {
 	} as unknown as MediaQueryList);
 }
 
-const rgbStringToHex = (rgb: string) => {
+export function rgbStringToHex(rgb: string) {
 	const [r, g, b] = rgb.replace('rgb(', '').replace(')', '').split(",").map((x) => parseInt(x.trim()))
 	return rgbToHex(r, g, b)
 }
 
-const rgbToHex = (r: number, g: number, b: number) => '#' + [r, g, b].map(x => {
-	const hex = x.toString(16)
-	return hex.length === 1 ? '0' + hex : hex
-}).join('')
+export function rgbToHex(r: number, g: number, b: number) {
+	return '#' + [r, g, b].map(x => {
+		const hex = x.toString(16)
+		return hex.length === 1 ? '0' + hex : hex
+	}).join('')
+}
 
 export function mockIPC(args: { periods?: Period[], types?: Type[], subjects?: Subject[], grades?: Grade[], noteRange?: NoteRange, gradeModalDefaults?: GradeModalDefaults, info?: Info, pageFromCache?: Page }) {
 	window.__TAURI_IPC__ = (g) => {
@@ -125,11 +129,8 @@ export function mockIPC(args: { periods?: Period[], types?: Type[], subjects?: S
 	}
 }
 
-export {
-	AllTheProviders,
-	rgbToHex,
-	rgbStringToHex,
-	createMatchMedia
+export function trimAll(str: string | null) {
+	return str?.replace(/[\u200B-\u200D\uFEFF]/g, '').trim() ?? ''
 }
 
 export * from '@testing-library/react'

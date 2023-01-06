@@ -9,7 +9,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import React from "react";
 
 
-const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[]) => new Map<keyof Grade, ColumnDef<Grade>>(
+export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[]) => new Map<keyof Grade, ColumnDef<Grade>>(
 		[[
 			"grade", {
 				sort: true,
@@ -120,7 +120,3 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => col
 			}
 		]]
 )
-
-export {
-	getCols
-};

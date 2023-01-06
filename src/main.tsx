@@ -36,7 +36,7 @@ const darkTheme = createTheme({
 	},
 });
 
-const queryClient = new QueryClient({defaultOptions: { queries: {retry: 1, networkMode: 'always', refetchOnWindowFocus: false}}});
+const queryClient = new QueryClient({defaultOptions: {queries: {retry: 1, networkMode: 'always', refetchOnWindowFocus: false}}});
 
 createRoot(document.getElementById("root") as HTMLElement).render(
 		<StrictMode>

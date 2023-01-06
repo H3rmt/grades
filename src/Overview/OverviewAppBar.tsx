@@ -8,7 +8,7 @@ import {useSnackbar} from "notistack";
 
 type Props = {};
 
-export function OverviewAppBar(props: Props) {
+export default function OverviewAppBar(props: Props) {
 	const oneButton = useMediaQuery('(max-width:700px)');
 	const plusButton = useMediaQuery('(max-width:400px)');
 	const [period, setPeriod] = useAtom(Period);

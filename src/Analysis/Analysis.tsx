@@ -1,7 +1,7 @@
 type Props = {}
 
 
-function Analysis(props: Props) {
+export default function Analysis(props: Props) {
 	return (<>
 				<div>
 					Analysis<br/>
@@ -11,5 +11,3 @@ function Analysis(props: Props) {
 			</>
 	)
 }
-
-export default Analysis;

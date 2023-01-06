@@ -1,6 +1,5 @@
 import {useGrades, useNoteRange, useSubjects, useTypes} from "../commands/get";
 import {CTable} from "../components/table/table";
-import {getCols} from "./table";
 import {errorToast, toastMessage} from "../ts/toast";
 import NewGradeModal from "./NewGradeModal/NewGradeModal";
 import {useEditGrade} from "../commands/edit";
@@ -10,6 +9,7 @@ import {Grade} from '../entity';
 import {useAtom} from 'jotai'
 import {period as Period} from "./atoms";
 import {useSnackbar} from "notistack";
+import {getCols} from "./table";
 
 type Props = {}
 

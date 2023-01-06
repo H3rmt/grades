@@ -28,7 +28,7 @@ describe('OverviewAppBar', () => {
 			render(<OverviewAppBar/>)
 
 			expect(await screen.findByTestId('AddIcon')).to.exist
-			console.info('1 IconButtons on 300px rendered')
+			console.info('1 IconButton on 300px rendered')
 		})
 	})
 	test('Renders Periods Selector', async () => {

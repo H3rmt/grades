@@ -1,6 +1,4 @@
-import {Grade, Info, Page, Period, Subject, Type} from "./entity"
-import {GradeModalDefaults, NoteRange} from "./entity/config"
-
+// @ts-ignore
 window.__TAURI_METADATA__ = {
 	__windows: [],
 	__currentWindow: {label: "test"},
@@ -8,8 +6,10 @@ window.__TAURI_METADATA__ = {
 
 global.console = {
 	...console,
-	debug: () => {},
-	log: () => {},
+	debug: () => {
+	},
+	log: () => {
+	},
 	// info: () => {},
 	// warn: () => {},
 	// error: () => {},

@@ -7,18 +7,18 @@ import Navbar from "./components/Navbar/Navbar";
 import Settings from "./Settings/Settings";
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import {OverviewAppBar} from "./Overview/OverviewAppBar";
 import MenuIcon from "@mui/icons-material/Menu";
 import {useEditPageInCache, usePageInCache} from "./commands/cache";
 import {useQueryClient} from "@tanstack/react-query";
+import OverviewAppBar from "./Overview/OverviewAppBar";
 
-type Pages = {
+export type Pages = {
 	overview: Page
 	analysis: Page
 	settings: Page
 }
 
-type Page = {
+export type Page = {
 	page: ReactElement,
 	appBar: ReactElement,
 	name: string,
@@ -50,9 +50,8 @@ const pages: Pages = {
 	}
 }
 
-const App = () => {
+export default function App() {
 	const [openNav, setOpenNav] = useState(false);
-
 	const [openPage, setPage] = useState(pages.overview)
 
 	useEffect(() => {
@@ -100,11 +99,4 @@ const App = () => {
 			{openPage.page}
 		</Box>
 	</>)
-}
-
-export default App
-
-export type {
-	Page,
-	Pages
 }
