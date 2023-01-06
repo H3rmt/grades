@@ -85,7 +85,7 @@ function Analysis(props: Props) {
 							name: 'pv',
 							color: 'orange'
 						}]} extra={
-							<ReferenceLine y={6000} label="Avg" stroke="red" yAxisId="1"/>
+							<ReferenceLine y={6000} label="Avg"/>
 						}></Chart>
 					</AnalysisBox>
 				</Grid>

@@ -93,13 +93,10 @@ export function Chart(props: Props) {
 	const {zoomLeft, zoomRight, zoomingAreaStart, zoomingAreaEnd, zoomTop, zoomBottom} = state;
 
 	return <Paper sx={{userSelect: 'none', overflow: "auto", padding: 1, position: 'relative'}} variant="outlined">
-		{
-
-		}
-		<Fab size="small" color="primary" sx={{position: 'absolute', top: 35, left: 20}}
-			  onClick={() => setState(initialState)}>
+		{zoomLeft !== 'dataMin' && zoomRight !== 'dataMax' && <Fab size="small" color="primary" sx={{position: 'absolute', top: 35, left: 20}}
+																					  onClick={() => setState(initialState)}>
 			<ZoomOutMapIcon/>
-		</Fab>
+		</Fab>}
 
 		<LineChart
 				width={900}
@@ -113,7 +110,7 @@ export function Chart(props: Props) {
 			<CartesianGrid stroke={theme.palette.primary.main} strokeDasharray="5 5"/>
 
 			<XAxis stroke={theme.palette.primary.main} allowDataOverflow domain={[zoomLeft, zoomRight]} dataKey="name" type="number"/>
-			<YAxis stroke={theme.palette.primary.main} allowDataOverflow domain={[zoomBottom, zoomTop]} yAxisId="1" type="number"/>
+			<YAxis stroke={theme.palette.primary.main} allowDataOverflow domain={[zoomBottom, zoomTop]} type="number"/>
 
 			{props.extra}
 
@@ -126,11 +123,11 @@ export function Chart(props: Props) {
 			<Legend/>
 
 			{props.lines.map((line, i) =>
-					<Line key={i} yAxisId="1" type="monotone" dataKey={line.name} stroke={line.color} strokeWidth={2}/>
+					<Line key={i} type="monotone" dataKey={line.name} stroke={line.color} strokeWidth={2}/>
 			)}
 
 			{zoomingAreaStart && zoomingAreaEnd &&
-					<ReferenceArea yAxisId="1" x1={zoomingAreaStart} x2={zoomingAreaEnd} strokeOpacity={0.3}/>
+					<ReferenceArea x1={zoomingAreaStart} x2={zoomingAreaEnd} strokeOpacity={0.3}/>
 			}
 		</LineChart>
 	</Paper>
