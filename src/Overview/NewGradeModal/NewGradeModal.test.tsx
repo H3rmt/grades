@@ -1,9 +1,11 @@
 import {describe, expect, test} from 'vitest'
-import {mockIPC, render, screen} from "../../ts/testingUtils";
+import {mockIPC, render, screen, trimAll} from "../../ts/testingUtils";
 import {Grade, Period, Subject, Type} from "../../entity";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
 import NewGradeModal from "./NewGradeModal";
-import {modalOpen} from "../atoms";
+import {modalConfirmed, modalOpen} from "../atoms";
+import {findByRole, queryByDisplayValue} from "@testing-library/react";
+import dayjs from "dayjs";
 
 describe('NewGradeModal', () => {
 	test('NewGradeModal opens and renders', async () => {
@@ -56,16 +58,188 @@ describe('NewGradeModal', () => {
 		expect(await screen.queryByRole('input', {name: 'Grade Weight'})).not.to.exist
 		console.info('No Inputs rendered')
 	})
+	describe('Not confirmed NewGradeModal renders with default values', async () => {
+		modalOpen.read = () => true
+		modalConfirmed.read = () => false
+		test('with default values set', async () => {
+			mockIPC(mockData)
+
+			render(<NewGradeModal/>)
+
+			let subjectSelect = await screen.findByTitle('Subject Select')
+			expect(subjectSelect).to.exist
+			expect(trimAll(subjectSelect.textContent)).to.equal(mockData.subjects.find(s => s.id === mockData.gradeModalDefaults.subject_default)?.name)
+
+			let typeSelect = await screen.findByTitle('Type Select')
+			expect(typeSelect).to.exist
+			expect(trimAll(typeSelect.textContent)).to.equal(mockData.types.find(t => t.id === mockData.gradeModalDefaults.type_default)?.name)
+
+			let periodSelect = await screen.findByTitle('Period Select')
+			expect(periodSelect).to.exist
+			let period = mockData.periods.find(p => p.id === mockData.gradeModalDefaults.period_default)
+			expect(period).to.exist
+			// @ts-ignore period is not null (see line above)
+			expect(trimAll(periodSelect.textContent)).to.equal(`${period.name}${period.from} - ${period.to}`)
+
+			let gradeInput = await screen.findByTitle('Grade Input')
+			expect(gradeInput).to.exist
+			let gradeInputInput = queryByDisplayValue(gradeInput, mockData.gradeModalDefaults.grade_default, {})
+			expect(gradeInputInput).not.to.exist
+
+			let gradeSlider = await screen.findByTitle('Grade Slider')
+			expect(gradeSlider).to.exist
+			let gradeSliderValue = await findByRole(gradeSlider, 'slider')
+			expect(gradeSliderValue).to.exist
+			expect(Number(gradeSliderValue.getAttribute('value'))).to.equal(mockData.noteRange.from)
+			expect(Number(gradeSliderValue.getAttribute('min'))).to.equal(mockData.noteRange.from)
+			expect(Number(gradeSliderValue.getAttribute('max'))).to.equal(mockData.noteRange.to)
+
+			let dateInput = await screen.findByTitle('Date Picker')
+			expect(dateInput).to.exist
+			let dateInputInput = queryByDisplayValue(dateInput, dayjs().format("DD-MM-YYYY"), {})
+			expect(dateInputInput).to.exist
+
+			let confirmedDateInput = await screen.findByTitle('Confirmed Date Picker')
+			expect(confirmedDateInput).to.exist
+			let confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
+			expect(confirmedDateInputInput).not.to.exist
+		})
+		test('with default not values set', async () => {
+			mockIPC(mockData2)
+			modalOpen.read = () => true
+			modalConfirmed.read = () => false
+
+			render(<NewGradeModal/>)
+
+			let subjectSelect = await screen.findByTitle('Subject Select')
+			expect(subjectSelect).to.exist
+			expect(trimAll(subjectSelect.textContent)).to.be.empty
+
+			let typeSelect = await screen.findByTitle('Type Select')
+			expect(typeSelect).to.exist
+			expect(trimAll(typeSelect.textContent)).to.be.empty
+
+			let periodSelect = await screen.findByTitle('Period Select')
+			expect(periodSelect).to.exist
+			expect(trimAll(periodSelect.textContent)).to.be.empty
+
+			let gradeInput = await screen.findByTitle('Grade Input')
+			expect(gradeInput).to.exist
+			let gradeInputInput = queryByDisplayValue(gradeInput, mockData.gradeModalDefaults.grade_default, {})
+			expect(gradeInputInput).not.to.exist
+
+			let gradeSlider = await screen.findByTitle('Grade Slider')
+			expect(gradeSlider).to.exist
+			let gradeSliderValue = await findByRole(gradeSlider, 'slider')
+			expect(gradeSliderValue).to.exist
+			expect(Number(gradeSliderValue.getAttribute('value'))).to.equal(mockData2.noteRange.from)
+			expect(Number(gradeSliderValue.getAttribute('min'))).to.equal(mockData2.noteRange.from)
+			expect(Number(gradeSliderValue.getAttribute('max'))).to.equal(mockData2.noteRange.to)
+
+			let dateInput = await screen.findByTitle('Date Picker')
+			expect(dateInput).to.exist
+			let dateInputInput = queryByDisplayValue(dateInput, dayjs().format("DD-MM-YYYY"), {})
+			expect(dateInputInput).to.exist
+
+			let confirmedDateInput = await screen.findByTitle('Confirmed Date Picker')
+			expect(confirmedDateInput).to.exist
+			let confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
+			expect(confirmedDateInputInput).not.to.exist
+		})
+	})
+	describe('Confirmed NewGradeModal renders with default values', async () => {
+		modalOpen.read = () => true
+		modalConfirmed.read = () => true
+		test('with default values set', async () => {
+			mockIPC(mockData)
+
+			render(<NewGradeModal/>)
+
+			let subjectSelect = await screen.findByTitle('Subject Select')
+			expect(subjectSelect).to.exist
+			expect(trimAll(subjectSelect.textContent)).to.equal(mockData.subjects.find(s => s.id === mockData.gradeModalDefaults.subject_default)?.name)
+
+			let typeSelect = await screen.findByTitle('Type Select')
+			expect(typeSelect).to.exist
+			expect(trimAll(typeSelect.textContent)).to.equal(mockData.types.find(t => t.id === mockData.gradeModalDefaults.type_default)?.name)
+
+			let periodSelect = await screen.findByTitle('Period Select')
+			expect(periodSelect).to.exist
+			let period = mockData.periods.find(p => p.id === mockData.gradeModalDefaults.period_default)
+			expect(period).to.exist
+			// @ts-ignore period is not null (see line above)
+			expect(trimAll(periodSelect.textContent)).to.equal(`${period.name}${period.from} - ${period.to}`)
+
+			let gradeInput = await screen.findByTitle('Grade Input')
+			expect(gradeInput).to.exist
+			let gradeInputInput = queryByDisplayValue(gradeInput, mockData.gradeModalDefaults.grade_default, {})
+			expect(gradeInputInput).to.exist
+
+			let gradeSlider = await screen.findByTitle('Grade Slider')
+			expect(gradeSlider).to.exist
+			let gradeSliderValue = await findByRole(gradeSlider, 'slider')
+			expect(gradeSliderValue).to.exist
+			expect(Number(gradeSliderValue.getAttribute('value'))).to.equal(mockData.gradeModalDefaults.grade_default)
+			expect(Number(gradeSliderValue.getAttribute('min'))).to.equal(mockData.noteRange.from)
+			expect(Number(gradeSliderValue.getAttribute('max'))).to.equal(mockData.noteRange.to)
+
+			let dateInput = await screen.findByTitle('Date Picker')
+			expect(dateInput).to.exist
+			let dateInputInput = queryByDisplayValue(dateInput, dayjs().add(-7, "day").format("DD-MM-YYYY"), {})
+			expect(dateInputInput).to.exist
+
+			let confirmedDateInput = await screen.findByTitle('Confirmed Date Picker')
+			expect(confirmedDateInput).to.exist
+			let confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
+			expect(confirmedDateInputInput).to.exist
+		})
+		test('with default not values set', async () => {
+			mockIPC(mockData2)
+			modalOpen.read = () => true
+			modalConfirmed.read = () => false
+
+			render(<NewGradeModal/>)
+
+			let subjectSelect = await screen.findByTitle('Subject Select')
+			expect(subjectSelect).to.exist
+			expect(trimAll(subjectSelect.textContent)).to.be.empty
+
+			let typeSelect = await screen.findByTitle('Type Select')
+			expect(typeSelect).to.exist
+			expect(trimAll(typeSelect.textContent)).to.be.empty
+
+			let periodSelect = await screen.findByTitle('Period Select')
+			expect(periodSelect).to.exist
+			expect(trimAll(periodSelect.textContent)).to.be.empty
+
+			let gradeInput = await screen.findByTitle('Grade Input')
+			expect(gradeInput).to.exist
+			let gradeInputInput = queryByDisplayValue(gradeInput, mockData2.gradeModalDefaults.grade_default, {})
+			expect(gradeInputInput).to.exist
+
+			let gradeSlider = await screen.findByTitle('Grade Slider')
+			expect(gradeSlider).to.exist
+			let gradeSliderValue = await findByRole(gradeSlider, 'slider')
+			expect(gradeSliderValue).to.exist
+			expect(Number(gradeSliderValue.getAttribute('value'))).to.equal(mockData2.gradeModalDefaults.grade_default)
+			expect(Number(gradeSliderValue.getAttribute('min'))).to.equal(mockData2.noteRange.from)
+			expect(Number(gradeSliderValue.getAttribute('max'))).to.equal(mockData2.noteRange.to)
+
+			let dateInput = await screen.findByTitle('Date Picker')
+			expect(dateInput).to.exist
+			let dateInputInput = queryByDisplayValue(dateInput, dayjs().format("DD-MM-YYYY"), {})
+			expect(dateInputInput).to.exist
+
+			let confirmedDateInput = await screen.findByTitle('Confirmed Date Picker')
+			expect(confirmedDateInput).to.exist
+			let confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
+			expect(confirmedDateInputInput).not.to.exist
+		})
+	})
 })
 
 
-const mockData: {
-	types: Type[],
-	subjects: Subject[],
-	periods: Period[],
-	noteRange: NoteRange,
-	gradeModalDefaults: GradeModalDefaults
-} = {
+const mockData = {
 	types: [{
 		id: 1, name: 'Type1', color: "#2f2f2f"
 	}, {
@@ -81,6 +255,35 @@ const mockData: {
 	}, {
 		id: 2, name: 'Period2', from: "2021-01-03", to: "2021-01-04"
 	}],
-	noteRange: {from: 1, to: 15},
-	gradeModalDefaults: {grade_default: 12, type_default: 1, subject_default: 2, period_default: 1}
+	noteRange: {
+		from: 5, to: 15
+	},
+	gradeModalDefaults: {
+		grade_default: 12,
+		type_default: 1,
+		subject_default: 2,
+		period_default: 1
+	} satisfies GradeModalDefaults
+} satisfies {
+	types: Type[],
+	subjects: Subject[],
+	periods: Period[],
+	noteRange: NoteRange,
+	gradeModalDefaults: GradeModalDefaults
+}
+
+const mockData2 = {
+	...mockData,
+	gradeModalDefaults: {
+		grade_default: 10,
+		type_default: null,
+		subject_default: null,
+		period_default: null
+	}
+} satisfies {
+	types: Type[],
+	subjects: Subject[],
+	periods: Period[],
+	noteRange: NoteRange,
+	gradeModalDefaults: GradeModalDefaults
 }
