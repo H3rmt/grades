@@ -26,8 +26,8 @@ export function nextFree(arr: string[], name: string) {
 	return newName
 }
 
-export function randColor(): string {
-	return "#" + Math.floor(Math.random() * 16777215).toString(16)
+export function randColor() {
+	return "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
 }
 
 export function edit<T>(cmd: string, args: any): Promise<void> { // change to Promise<T> if entity returned
