@@ -9,11 +9,19 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     outputs:
-      release_id: ${{ steps.create-release.outputs.result }}
+      release-id: ${{ steps.create-release.outputs.result }}
       version: ${{ steps.get-version.outputs.value }}
 
     steps:
       - uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          cache-dependency-path: ./workflows/yarn.lock
+          node-version: 16
+          cache: 'yarn'
+      - run: yarn --cwd ./workflows install --frozen-lockfile
+      - run: yarn --cwd ./workflows dist
       - name: Get Version
         id: get-version
         uses: SebRollen/toml-action@v1.0.2
@@ -26,19 +34,8 @@ jobs:
         with:
           retries: 3
           script: |
-            const { data } = await github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: `grades-app-v${{ steps.get-version.outputs.value }}`,
-              name: `grades v${{ steps.get-version.outputs.value }}`,
-              body: `**Draft**\n\n${{ github.event.head_commit.message }}\n\nAssets getting generated...`,
-              draft: true,
-              prerelease: false
-            })
-
-            core.notice(`created release: grades v${{ steps.get-version.outputs.value }}`)
-
-            return data.id
+            const script = require('./workflows/src/publish-create-release.js')
+            return await script.default({github, context, core, '${{steps.get-version.outputs.value}}', '${{github.event.head_commit.message}}'})
 
   tauri:
     name: build tauri
@@ -77,36 +74,35 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          releaseId: ${{ needs.create-release.outputs.release_id }}
+          releaseId: ${{ needs.create-release.outputs.release-id }}
           version: ${{ needs.create-release.outputs.version }}
-          name: grades
+          name: ${{ context.repo.repo }}
 
   publish-release:
     runs-on: ubuntu-latest
+    outputs:
+      tag-name: ${{ steps.publish-release.outputs.result }}
+
     needs: [ tauri, create-release ]
 
     steps:
+      - uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          cache-dependency-path: ./workflows/yarn.lock
+          node-version: 16
+          cache: 'yarn'
+      - run: yarn --cwd ./workflows install --frozen-lockfile
+      - run: yarn --cwd ./workflows dist
       - name: publish release
         id: publish-release
         uses: actions/github-script@v6
         with:
           retries: 3
           script: |
-            const pdata = await github.request('GET /repos/{owner}/{repo}/releases/latest', {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            })
-            
-            const { data } = await github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: ${{ needs.create-release.outputs.release_id }},
-              body: `### Changes:\n${{ github.event.head_commit.message }}\n\n**Changelog**: https://github.com/H3rmt/grades/compare/${pdata.data.tag_name}...grades-app-v${{ needs.create-release.outputs.version }}`,
-              draft: false,
-              prerelease: false
-            })
-            
-            core.notice(`published release: grades v${{ needs.create-release.outputs.version }}`)
+            const script = require('./workflows/src/publish-publish-release.js')
+            return await script.default({github, context, core, '${{ needs.create-release.outputs.release-id }}', '${{ github.event.head_commit.message }}', '{{ needs.create-release.outputs.version }}'})
 
   update-update-json:
     runs-on: ubuntu-latest
@@ -118,11 +114,11 @@ jobs:
         env:
           TOKEN: ${{ secrets.PAT }}
         with:
-          releaseId: ${{ needs.create-release.outputs.release_id }}
+          releaseId: ${{ needs.create-release.outputs.release-id }}
           version: ${{ needs.create-release.outputs.version }}
           gistId: 9f0a67b7ad425e9fb74b32f6afcab111
           releaseNotes: ${{ github.event.head_commit.message }}
-          releaseTagName: grades-app-v${{ needs.create-release.outputs.version }}
+          releaseTagName: v${{ needs.publish-release.outputs.tag-name }}
 
           winsig: ${{ needs.tauri.outputs.winsig }}
           macsig: ${{ needs.tauri.outputs.macsig }}
