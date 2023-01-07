@@ -89,7 +89,6 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 			}
 		], [
 			"info", {
-				// TODO enable or disable this sort
 				sort: true,
 				edit: (g) => <TextField fullWidth value={g.info} onChange={(i) => g.info = i.target.value}/>,
 				preSort: (g) => g.info.length > 0
@@ -98,8 +97,15 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 			"weight", {
 				sort: true,
 				format: g => <Typography>{g.weight}</Typography>,
-				// TODO UPDATE SORT
-				preSort: (g) => g.weight == "Half" ? 0.5 : g.weight == "Double" ? 2 : 1,
+				preSort: (g) => {
+					const weight = weights.find(weight => weight.name === g.weight)?.value ?? (() => {
+						console.error('weight:', g.weight);
+						return -1
+					})()
+					const res = eval(weight.replace('{}', '2'))
+					return res
+				},
+				// g.weight == "Half" ? 0.5 : g.weight == "Double" ? 2 : g.weight == "Ignore" ? 0 : 1,
 				edit: (g, update) => <Select value={g.weight} onChange={(i) => {
 					g.weight = i.target.value;
 					update()
