@@ -45,7 +45,7 @@ jobs:
         run: yarn build
 
   actions:
-    name: check-js
+    name: check-js-actions
     runs-on: ubuntu-latest
 
     steps:
