@@ -35,7 +35,7 @@ jobs:
           retries: 3
           script: |
             const script = require('./workflows/src/publish-create-release.js')
-            return await script.default({github, context, core, '${{ steps.get-version.outputs.value }}', `${{ github.event.head_commit.message }}`})
+            return await script.default({github, context, core, version: '${{ steps.get-version.outputs.value }}', commit_head_message: `${{ github.event.head_commit.message }}`})
 
   tauri:
     name: build tauri
@@ -102,7 +102,7 @@ jobs:
           retries: 3
           script: |
             const script = require('./workflows/src/publish-publish-release.js')
-            return await script.default({github, context, core, ${{ needs.create-release.outputs.release-id }}, `${{ github.event.head_commit.message }}`, '{{ needs.create-release.outputs.version }}'})
+            return await script.default({github, context, core, release_id: ${{ needs.create-release.outputs.release-id }}, commit_head_message: `${{ github.event.head_commit.message }}`, version: '{{ needs.create-release.outputs.version }}'})
 
   update-update-json:
     runs-on: ubuntu-latest
