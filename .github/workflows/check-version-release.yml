@@ -28,7 +28,6 @@ jobs:
         with:
           file: 'src-tauri/Cargo.toml'
           field: "package.version"
-      - run: pwd
       - name: get latest release version
         id: check-latest-release-version
         uses: actions/github-script@v6
