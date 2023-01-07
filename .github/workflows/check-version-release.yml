@@ -40,7 +40,7 @@ jobs:
 
       - name: check new version is greater that older
         run: |
-          Old="${{ steps.check-latest-release-version.outputs.value }}"
+          Old="${{ steps.check-latest-release-version.outputs.result }}"
           New="${{ steps.get-version.outputs.value }}"
           echo "latest release version: $Old"
           echo "new version: $New"
