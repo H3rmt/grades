@@ -76,7 +76,7 @@ jobs:
         with:
           releaseId: ${{ needs.create-release.outputs.release-id }}
           version: ${{ needs.create-release.outputs.version }}
-          name: ${{ context.repo.repo }}
+          name: ${{ github.event.repository.name }}
 
   publish-release:
     runs-on: ubuntu-latest
