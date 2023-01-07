@@ -97,15 +97,10 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 			"weight", {
 				sort: true,
 				format: g => <Typography>{g.weight}</Typography>,
-				preSort: (g) => {
-					const weight = weights.find(weight => weight.name === g.weight)?.value ?? (() => {
-						console.error('weight:', g.weight);
-						return -1
-					})()
-					const res = eval(weight.replace('{}', '2'))
-					return res
-				},
-				// g.weight == "Half" ? 0.5 : g.weight == "Double" ? 2 : g.weight == "Ignore" ? 0 : 1,
+				preSort: (g) => weights.find(weight => weight.name === g.weight)?.value ?? (() => {
+					console.error('weight:', g.weight);
+					return -1
+				})(),
 				edit: (g, update) => <Select value={g.weight} onChange={(i) => {
 					g.weight = i.target.value;
 					update()
