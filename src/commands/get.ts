@@ -1,4 +1,4 @@
-import {Grade, Info, Period, Subject, Type} from "../entity";
+import {Grade, Info, Period, Subject, Type, Weight} from "../entity";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
 import {query, UseQueryOpts} from "../ts/commands";
 
