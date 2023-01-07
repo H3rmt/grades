@@ -27,7 +27,7 @@ fn create_data_folder() -> Result<PathBuf, DirError> {
 	std::fs::create_dir_all(&app_dir)
 			.into_report()
 			.attach_printable("error creating folders for create_data_folder")
-			.attach_printable(format!("app_dir: {:?}", app_dir))
+			.attach_printable_lazy(|| format!("app_dir: {:?}", app_dir))
 			.change_context(DirError)?;
 	Ok(app_dir)
 }
@@ -38,7 +38,7 @@ pub fn create_data_db() -> Result<PathBuf, DirError> {
 		std::fs::write(db_path.as_path(), b"")
 				.into_report()
 				.attach_printable("error creating data db")
-				.attach_printable(format!("path: {:?}", db_path))
+				.attach_printable_lazy(|| format!("path: {:?}", db_path))
 				.change_context(DirError)?;
 		log::warn!("created data db: {:?}", db_path);
 	}
@@ -55,7 +55,7 @@ fn create_conf_folder() -> Result<PathBuf, DirError> {
 	std::fs::create_dir_all(&app_dir)
 			.into_report()
 			.attach_printable("error creating folders for create_data_folder")
-			.attach_printable(format!("app_dir: {:?}", app_dir))
+			.attach_printable_lazy(|| format!("app_dir: {:?}", app_dir))
 			.change_context(DirError)?;
 	Ok(app_dir)
 }
@@ -66,7 +66,7 @@ pub fn create_conf_toml() -> Result<PathBuf, DirError> {
 		std::fs::write(conf_path.as_path(), b"")
 				.into_report()
 				.attach_printable("error creating conf file")
-				.attach_printable(format!("path: {:?}", conf_path))
+				.attach_printable_lazy(|| format!("path: {:?}", conf_path))
 				.change_context(DirError)?;
         log::warn!("created conf toml: {:?}", conf_path);
 	}
@@ -83,7 +83,7 @@ fn create_cache_folder() -> Result<PathBuf, DirError> {
 	std::fs::create_dir_all(&app_dir)
 			.into_report()
 			.attach_printable("error creating folders for create_cache_folder")
-			.attach_printable(format!("app_dir: {:?}", app_dir))
+			.attach_printable_lazy(|| format!("app_dir: {:?}", app_dir))
 			.change_context(DirError)?;
 	Ok(app_dir)
 }
@@ -94,7 +94,7 @@ pub fn create_cache_json() -> Result<PathBuf, DirError> {
 		std::fs::write(cache_path.as_path(), b"{}")
 				.into_report()
 				.attach_printable("error creating cache file")
-				.attach_printable(format!("path: {:?}", cache_path))
+				.attach_printable_lazy(|| format!("path: {:?}", cache_path))
 				.change_context(DirError)?;
         log::warn!("created cache json: {:?}", cache_path);
 	}
@@ -107,7 +107,7 @@ pub fn create_cache_log() -> Result<PathBuf, DirError> {
 		std::fs::write(cache_path.as_path(), b"")
 				.into_report()
 				.attach_printable("error creating log file")
-				.attach_printable(format!("path: {:?}", cache_path))
+				.attach_printable_lazy(|| format!("path: {:?}", cache_path))
 				.change_context(DirError)?;
 		log::warn!("created log file: {:?}", cache_path);
 	}

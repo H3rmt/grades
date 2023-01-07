@@ -1,4 +1,4 @@
-import {useGrades, useNoteRange, useSubjects, useTypes} from "../commands/get";
+import {useGrades, useNoteRange, useSubjects, useTypes, useWeights} from "../commands/get";
 import {CTable} from "../components/table/table";
 import {getCols} from "./table";
 import {errorToast, toastMessage, useToast} from "../ts/toast";
@@ -8,7 +8,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {useDeleteGrade} from "../commands/delete";
 import {Grade} from '../entity';
 import {useAtom} from 'jotai'
-import {modalOpen, period as Period} from "./atoms";
+import {period as Period} from "./atoms";
 
 type Props = {}
 
@@ -36,21 +36,17 @@ export default function Overview(props: Props) {
 		}
 	});
 
+	const weights = useWeights({
+		onError: (error) => {
+			errorToast("Error loading Weights", toast, error)
+		}
+	});
+
 	const noteRange = useNoteRange({
 		onError: (error) => {
 			errorToast("Error loading noteRange", toast, error)
 		}
 	});
-
-	// const gradeModalDefaults = useGradeModalDefaults({
-	// 	onSuccess: (data) => {
-	// 		if (period == null)
-	// 			setPeriod((data.period_default || "-1").toString())
-	// 	},
-	// 	onError: (error) => {
-	// 		errorToast("Error loading gradeModalDefaults", toast, error)
-	// 	}
-	// });
 
 	const deleteGrade = useDeleteGrade(queryClient, {
 		onSuccess: () => {
@@ -71,9 +67,9 @@ export default function Overview(props: Props) {
 	})
 
 	return (<>
-				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess &&
+				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess &&
 						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period == "-1")}
-								  cols={getCols(noteRange.data, subjects.data, types.data)}
+								  cols={getCols(noteRange.data, subjects.data, types.data, weights.data)}
 								  delete={(id) => {
 									  deleteGrade.mutate(id)
 								  }}

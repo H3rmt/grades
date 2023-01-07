@@ -19,7 +19,7 @@ pub async fn get_subjects_js(connection: tauri::State<'_, DatabaseConnection>) -
 	let data = serde_json::to_string(&subjects)
 			.into_report()
 			.attach_printable("Error serializing data to json")
-			.attach_printable(format!("subjects: {:?}", subjects))
+			.attach_printable_lazy(|| format!("subjects: {:?}", subjects))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -34,7 +34,7 @@ pub async fn create_subject_js(connection: tauri::State<'_, DatabaseConnection>,
 	let model: Subject = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing subject from json")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -53,7 +53,7 @@ pub async fn edit_subject_js(connection: tauri::State<'_, DatabaseConnection>, j
 	let model: Subject = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing subject from json")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -72,7 +72,7 @@ pub async fn delete_subject_js(connection: tauri::State<'_, DatabaseConnection>,
 	let delete: Delete = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing delete from json")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	

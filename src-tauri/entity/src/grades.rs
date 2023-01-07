@@ -24,8 +24,7 @@ pub struct Model {
 	pub period: i32,
 	pub confirmed: Option<String>,
 	pub date: String,
-	#[ts(type = "'Default' | 'Double' | 'Half'")]
-	pub weight: Weight,
+	pub weight: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
@@ -55,6 +54,7 @@ impl PrimaryKeyTrait for PrimaryKey {
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
+	Weights,
 	Periods,
 	GradeTypes,
 	Subjects,
@@ -68,10 +68,10 @@ impl ColumnTrait for Column {
 			Self::Subject => ColumnType::Integer.def(),
 			Self::Type => ColumnType::Integer.def(),
 			Self::Info => ColumnType::String(None).def(),
-			Self::Grade => ColumnType::Integer.def(),
+			Self::Grade => ColumnType::Integer.def().null(),
 			Self::Period => ColumnType::Integer.def(),
-			Self::Confirmed => ColumnType::String(None).def().null(),
 			Self::Date => ColumnType::String(None).def(),
+			Self::Confirmed => ColumnType::String(None).def().null(),
 			Self::Weight => ColumnType::String(None).def(),
 		}
 	}
@@ -80,6 +80,10 @@ impl ColumnTrait for Column {
 impl RelationTrait for Relation {
 	fn def(&self) -> RelationDef {
 		match self {
+			Self::Weights => Entity::belongs_to(super::weights::Entity)
+					.from(Column::Weight)
+					.to(super::weights::Column::Name)
+					.into(),
 			Self::Periods => Entity::belongs_to(super::periods::Entity)
 					.from(Column::Period)
 					.to(super::periods::Column::Id)
@@ -93,6 +97,12 @@ impl RelationTrait for Relation {
 					.to(super::subjects::Column::Id)
 					.into(),
 		}
+	}
+}
+
+impl Related<super::weights::Entity> for Entity {
+	fn to() -> RelationDef {
+		Relation::Weights.def()
 	}
 }
 
@@ -115,15 +125,3 @@ impl Related<super::subjects::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
-
-
-#[derive(Clone, Debug, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
-#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "weight")]
-pub enum Weight {
-	#[sea_orm(string_value = "Default")]
-	Default,
-	#[sea_orm(string_value = "Double")]
-	Double,
-	#[sea_orm(string_value = "Half")]
-	Half,
-}
