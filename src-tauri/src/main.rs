@@ -34,7 +34,7 @@ async fn main() {
 	logger()
 			.attach_printable("Error initializing logger")
 			.map_err(|e| {
-				log::error!("{:?}", e);
+				eprintln!("{:?}", e);
 			}).expect("Error initializing logger");
 	
 	log::info!("version:{}; target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}",

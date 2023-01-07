@@ -67,7 +67,7 @@ jobs:
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
         run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
-      - uses: h3rmt/tauri-action@v0.2.3
+      - uses: h3rmt/tauri-action@v0
         id: build
         env:
           TOKEN: ${{ secrets.PAT }}
@@ -102,7 +102,7 @@ jobs:
           retries: 3
           script: |
             const script = require('./workflows/src/publish-publish-release.js')
-            return await script.default({github, context, core, release_id: ${{ needs.create-release.outputs.release-id }}, commit_head_message: `${{ github.event.head_commit.message }}`, version: '{{ needs.create-release.outputs.version }}'})
+            return await script.default({github, context, core, release_id: ${{ needs.create-release.outputs.release-id }}, commit_head_message: `${{ github.event.head_commit.message }}`, version: `{{ needs.create-release.outputs.version }}`})
 
   update-update-json:
     runs-on: ubuntu-latest
@@ -110,7 +110,7 @@ jobs:
 
     steps:
       - name: update-update-json
-        uses: h3rmt/tauri-action@v0.2.3
+        uses: h3rmt/tauri-action@v0
         env:
           TOKEN: ${{ secrets.PAT }}
         with:
