@@ -1,18 +1,20 @@
 import {describe, expect, test} from 'vitest'
-import {mockIPC, render, screen, trimAll} from "../../ts/testingUtils";
+import {mockIPC, render, screen, sleep, trimAll} from "../../ts/testingUtils";
 import {Grade, Period, Subject, Type} from "../../entity";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
 import NewGradeModal from "./NewGradeModal";
 import {modalConfirmed, modalOpen} from "../atoms";
-import {findByRole, queryByDisplayValue} from "@testing-library/react";
+import {act, findByRole, queryByDisplayValue,} from "@testing-library/react";
 import dayjs from "dayjs";
 
 describe('NewGradeModal', () => {
 	test('NewGradeModal opens and renders', async () => {
 		mockIPC(mockData)
-		modalOpen.read = () => true
 
-		render(<NewGradeModal/>)
+		render(<NewGradeModal/>, {atoms: [[modalOpen, true]]})
+		await act(async () => {
+			await sleep(500)
+		})
 
 		expect(await screen.findByText('Subject')).to.exist
 		expect(await screen.findByTitle('Subject Select')).to.exist
@@ -43,9 +45,11 @@ describe('NewGradeModal', () => {
 	})
 	test("NewGradeModal is closed and doesn't render", async () => {
 		mockIPC(mockData)
-		modalOpen.read = () => false
 
-		render(<NewGradeModal/>)
+		render(<NewGradeModal/>, {atoms: [[modalOpen, false]]})
+		await act(async () => {
+			await sleep(500)
+		})
 
 		expect(await screen.queryByText('Subject')).not.to.exist
 		expect(await screen.queryByText('Type')).not.to.exist
@@ -59,12 +63,13 @@ describe('NewGradeModal', () => {
 		console.info('No Inputs rendered')
 	})
 	describe('Not confirmed NewGradeModal renders with default values', async () => {
-		modalOpen.read = () => true
-		modalConfirmed.read = () => false
 		test('with default values set', async () => {
 			mockIPC(mockData)
 
-			render(<NewGradeModal/>)
+			render(<NewGradeModal/>, {atoms: [[modalOpen, true], [modalConfirmed, false]]})
+			await act(async () => {
+				await sleep(500)
+			})
 
 			let subjectSelect = await screen.findByTitle('Subject Select')
 			expect(subjectSelect).to.exist
@@ -85,6 +90,8 @@ describe('NewGradeModal', () => {
 			expect(gradeInput).to.exist
 			let gradeInputInput = queryByDisplayValue(gradeInput, mockData.gradeModalDefaults.grade_default, {})
 			expect(gradeInputInput).not.to.exist
+			let gradeInputInput2 = queryByDisplayValue(gradeInput, '', {})
+			expect(gradeInputInput2).to.exist
 
 			let gradeSlider = await screen.findByTitle('Grade Slider')
 			expect(gradeSlider).to.exist
@@ -103,13 +110,21 @@ describe('NewGradeModal', () => {
 			expect(confirmedDateInput).to.exist
 			let confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
 			expect(confirmedDateInputInput).not.to.exist
+
+			let infoInput = await screen.findByTitle('Info Input')
+			expect(infoInput).to.exist
+			let infoInputInput = queryByDisplayValue(infoInput, '', {})
+			expect(infoInputInput).to.exist
+
+			console.info('All defaults rendered correctly for mockData and not confirmed Modal')
 		})
 		test('with default not values set', async () => {
 			mockIPC(mockData2)
-			modalOpen.read = () => true
-			modalConfirmed.read = () => false
 
-			render(<NewGradeModal/>)
+			render(<NewGradeModal/>, {atoms: [[modalOpen, true], [modalConfirmed, false]]})
+			await act(async () => {
+				await sleep(500)
+			})
 
 			let subjectSelect = await screen.findByTitle('Subject Select')
 			expect(subjectSelect).to.exist
@@ -127,6 +142,8 @@ describe('NewGradeModal', () => {
 			expect(gradeInput).to.exist
 			let gradeInputInput = queryByDisplayValue(gradeInput, mockData.gradeModalDefaults.grade_default, {})
 			expect(gradeInputInput).not.to.exist
+			let gradeInputInput2 = queryByDisplayValue(gradeInput, '', {})
+			expect(gradeInputInput2).to.exist
 
 			let gradeSlider = await screen.findByTitle('Grade Slider')
 			expect(gradeSlider).to.exist
@@ -145,15 +162,25 @@ describe('NewGradeModal', () => {
 			expect(confirmedDateInput).to.exist
 			let confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
 			expect(confirmedDateInputInput).not.to.exist
+			let confirmedDateInputInput2 = queryByDisplayValue(confirmedDateInput, '', {})
+			expect(confirmedDateInputInput2).to.exist
+
+			let infoInput = await screen.findByTitle('Info Input')
+			expect(infoInput).to.exist
+			let infoInputInput = queryByDisplayValue(infoInput, '', {})
+			expect(infoInputInput).to.exist
+
+			console.info('All defaults rendered correctly for mockData2 and not confirmed Modal')
 		})
 	})
 	describe('Confirmed NewGradeModal renders with default values', async () => {
-		modalOpen.read = () => true
-		modalConfirmed.read = () => true
 		test('with default values set', async () => {
 			mockIPC(mockData)
 
-			render(<NewGradeModal/>)
+			render(<NewGradeModal/>, {atoms: [[modalOpen, true], [modalConfirmed, true]]})
+			await act(async () => {
+				await sleep(500)
+			})
 
 			let subjectSelect = await screen.findByTitle('Subject Select')
 			expect(subjectSelect).to.exist
@@ -192,13 +219,21 @@ describe('NewGradeModal', () => {
 			expect(confirmedDateInput).to.exist
 			let confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
 			expect(confirmedDateInputInput).to.exist
+
+			let infoInput = await screen.findByTitle('Info Input')
+			expect(infoInput).to.exist
+			let infoInputInput = queryByDisplayValue(infoInput, '', {})
+			expect(infoInputInput).to.exist
+
+			console.info('All defaults rendered correctly for mockData and confirmed Modal')
 		})
 		test('with default not values set', async () => {
 			mockIPC(mockData2)
-			modalOpen.read = () => true
-			modalConfirmed.read = () => false
 
-			render(<NewGradeModal/>)
+			render(<NewGradeModal/>, {atoms: [[modalOpen, true], [modalConfirmed, true]]})
+			await act(async () => {
+				await sleep(500)
+			})
 
 			let subjectSelect = await screen.findByTitle('Subject Select')
 			expect(subjectSelect).to.exist
@@ -227,13 +262,20 @@ describe('NewGradeModal', () => {
 
 			let dateInput = await screen.findByTitle('Date Picker')
 			expect(dateInput).to.exist
-			let dateInputInput = queryByDisplayValue(dateInput, dayjs().format("DD-MM-YYYY"), {})
+			let dateInputInput = queryByDisplayValue(dateInput, dayjs().add(-7, "day").format("DD-MM-YYYY"), {})
 			expect(dateInputInput).to.exist
 
 			let confirmedDateInput = await screen.findByTitle('Confirmed Date Picker')
 			expect(confirmedDateInput).to.exist
 			let confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
-			expect(confirmedDateInputInput).not.to.exist
+			expect(confirmedDateInputInput).to.exist
+
+			let infoInput = await screen.findByTitle('Info Input')
+			expect(infoInput).to.exist
+			let infoInputInput = queryByDisplayValue(infoInput, '', {})
+			expect(infoInputInput).to.exist
+
+			console.info('All defaults rendered correctly for mockData2 and confirmed Modal')
 		})
 	})
 })

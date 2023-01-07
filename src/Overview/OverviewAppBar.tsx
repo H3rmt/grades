@@ -2,7 +2,7 @@ import {Button, IconButton, MenuItem, Select, SelectChangeEvent, Stack, Typograp
 import AddIcon from "@mui/icons-material/Add";
 import {useGradeModalDefaults, usePeriods} from "../commands/get";
 import {errorToast} from "../ts/toast";
-import {modalConfirmed, modalOpen, period as Period} from "./atoms";
+import {modalConfirmed, modalOpen, selectedPeriod} from "./atoms";
 import {useAtom} from 'jotai'
 import {useSnackbar} from "notistack";
 
@@ -11,7 +11,7 @@ type Props = {};
 export default function OverviewAppBar(props: Props) {
 	const oneButton = useMediaQuery('(max-width:700px)');
 	const plusButton = useMediaQuery('(max-width:400px)');
-	const [period, setPeriod] = useAtom(Period);
+	const [period, setPeriod] = useAtom(selectedPeriod);
 	const [, setOpen] = useAtom(modalOpen);
 	const [, setConfirmed] = useAtom(modalConfirmed);
 
@@ -38,8 +38,8 @@ export default function OverviewAppBar(props: Props) {
 
 	return <Stack spacing={2} direction="row" alignItems="start">
 		<Select color="secondary" autoWidth variant="outlined" sx={{padding: 0, maxWidth: [120, 150, 300, 500, 600]}}
-												value={period ?? "-1"} size="small" onChange={handlePeriodSelectChange} title="Period Select"
-												renderValue={(i: string) => periods?.data?.find(p => p.id === Number(i))?.name ?? "All"}>
+				  value={period ?? "-1"} size="small" onChange={handlePeriodSelectChange} title="Period Select"
+				  renderValue={(i: string) => periods?.data?.find(p => p.id === Number(i))?.name ?? "All"}>
 			<MenuItem key="-1" value="-1">
 				<Typography sx={{fontStyle: "italic"}}>All&nbsp;</Typography>
 			</MenuItem>

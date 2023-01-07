@@ -1,7 +1,10 @@
 import {describe, expect, test} from 'vitest'
 import Overview from "./Overview";
 import {Grade, Period, Subject, Type} from '../entity';
-import {mockIPC, render, rgbStringToHex, screen} from "../ts/testingUtils";
+import {mockIPC, render, rgbStringToHex, screen, sleep} from "../ts/testingUtils";
+import {act} from "@testing-library/react";
+import {selectedPeriod} from "./atoms";
+
 describe('Overview', () => {
 	test('renders Table Columns', async () => {
 		mockIPC(mockData)
@@ -19,12 +22,16 @@ describe('Overview', () => {
 	})
 	test('Table renders Grades', async () => {
 		mockIPC(mockData)
-		render(<Overview/>)
+
+		render(<Overview/>, {atoms: [[selectedPeriod, null]]})
+		await act(async () => {
+			await sleep(500)
+		})
 
 		for (const grade of mockData.grades) {
-			expect(await screen.findAllByText(grade.id), "GradeID not found on Screen").length.greaterThanOrEqual(1)
+			expect(await screen.queryAllByText(grade.id), "GradeID not found on Screen").length.greaterThanOrEqual(1)
 
-			expect(await screen.findAllByText(grade.grade?.toString() ?? ''), "Grade not found on Screen").length.greaterThanOrEqual(1)
+			expect(await screen.queryAllByText(grade.grade?.toString() ?? ''), "Grade not found on Screen").length.greaterThanOrEqual(1)
 
 			const subject = mockData.subjects.find(s => s.id === grade.subject)
 			expect(subject, "Subject not found").to.exist

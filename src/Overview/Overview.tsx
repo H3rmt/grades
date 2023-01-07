@@ -7,14 +7,14 @@ import {useQueryClient} from "@tanstack/react-query";
 import {useDeleteGrade} from "../commands/delete";
 import {Grade} from '../entity';
 import {useAtom} from 'jotai'
-import {period as Period} from "./atoms";
+import {selectedPeriod} from "./atoms";
 import {useSnackbar} from "notistack";
 import {getCols} from "./table";
 
 type Props = {}
 
 export default function Overview(props: Props) {
-	const [period] = useAtom(Period);
+	const [period] = useAtom(selectedPeriod);
 
 	const toast = useSnackbar()
 	const queryClient = useQueryClient()
@@ -69,7 +69,7 @@ export default function Overview(props: Props) {
 
 	return (<>
 				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess &&
-						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period == "-1")}
+						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period === "-1" || period === null )}
 								  cols={getCols(noteRange.data, subjects.data, types.data, weights.data)}
 								  delete={(id) => {
 									  deleteGrade.mutate(id)

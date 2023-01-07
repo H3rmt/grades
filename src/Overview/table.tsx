@@ -1,7 +1,7 @@
 import {Grade, Subject, Type, Weight} from "../entity";
 import {cols, ColumnDef} from "../components/table/defs";
 import {Badge, IconButton, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
-import {convertWeight, map} from "../ts/utils";
+import {map} from "../ts/utils";
 import {NoteRange} from "../entity/config";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 import dayjs, {Dayjs} from "dayjs";

@@ -9,6 +9,7 @@ import * as mediaQuery from 'css-mediaquery';
 import {SnackbarProvider} from "notistack";
 import {Grade, Info, Page, Period, Subject, Type} from "../entity";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
+import {Atom, Provider} from "jotai";
 
 const darkTheme = createTheme({
 	palette: {
@@ -52,25 +53,31 @@ const lightTheme = createTheme({
 	},
 });
 
-export function AllTheProviders({children}: { children: ReactNode }) {
-	const queryClient = new QueryClient({
-		defaultOptions: {queries: {retry: 2, networkMode: 'always', refetchOnWindowFocus: false}}
-	});
+type A<T> = [Atom<T>, T]
 
-	return <ThemeProvider theme={darkTheme}>
-		<LocalizationProvider dateAdapter={AdapterDayjs}>
-			<QueryClientProvider client={queryClient}>
-				_<CssBaseline enableColorScheme/>
-				<SnackbarProvider maxSnack={5}>
-					{children}
-				</SnackbarProvider>
-			</QueryClientProvider>
-		</LocalizationProvider>
-	</ThemeProvider>
+export function AllTheProviders({atoms}: { atoms?: A<any>[] }): ({children}: { children: ReactNode }) => JSX.Element {
+	return ({children}: { children: ReactNode }) => {
+		const queryClient = new QueryClient({
+			defaultOptions: {queries: {retry: 2, networkMode: 'always', refetchOnWindowFocus: false}}
+		});
+
+		return <Provider initialValues={atoms}>
+			<ThemeProvider theme={darkTheme}>
+				<LocalizationProvider dateAdapter={AdapterDayjs}>
+					<QueryClientProvider client={queryClient}>
+						_<CssBaseline enableColorScheme/>
+						<SnackbarProvider maxSnack={5}>
+							{children}
+						</SnackbarProvider>
+					</QueryClientProvider>
+				</LocalizationProvider>
+			</ThemeProvider>
+		</Provider>
+	}
 }
 
-export function customRender(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
-	return render(ui, {wrapper: AllTheProviders, ...options})
+export function customRender(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'> & { atoms?: A<any>[] }) {
+	return render(ui, {wrapper: AllTheProviders({atoms: options?.atoms ?? []}), ...options})
 }
 
 export function createMatchMedia(width: string): (query: string) => MediaQueryList {
@@ -122,6 +129,13 @@ export function mockIPC(args: { periods?: Period[], types?: Type[], subjects?: S
 			case "get_page_from_cache_js":
 				// @ts-ignore
 				return window[`_${g.callback}`](JSON.stringify(args.pageFromCache ?? {}))
+			case "get_weights_js":
+				// @ts-ignore
+				return window[`_${g.callback}`](JSON.stringify([
+					{"name": "Normal", "value": "{}*1"},
+					{"name": "Double", "value": "{}*2"},
+					{"name": "Half", "value": "{}/2"},
+					{"name": "Ignore", "value": "{}*0"}]))
 			default:
 				// @ts-ignore
 				window[`_${g.error}`]("Unknown command: " + g.cmd)
@@ -131,6 +145,10 @@ export function mockIPC(args: { periods?: Period[], types?: Type[], subjects?: S
 
 export function trimAll(str: string | null) {
 	return str?.replace(/[\u200B-\u200D\uFEFF]/g, '').trim() ?? ''
+}
+
+export function sleep(ms: number) {
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export * from '@testing-library/react'
