@@ -58,4 +58,4 @@ jobs:
           cache: yarn
       - name: install app dependencies
         run: yarn install --frozen-lockfile
-      - run: yarn --cwd .\workflows\ dist
+      - run: yarn --cwd ./workflows dist

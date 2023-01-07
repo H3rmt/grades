@@ -21,13 +21,14 @@ jobs:
           node-version: 16
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
-      - run: yarn --cwd .\workflows\ dist
+      - run: yarn --cwd ./workflows dist
       - name: get Version
         id: get-version
         uses: SebRollen/toml-action@v1.0.2
         with:
           file: 'src-tauri/Cargo.toml'
           field: "package.version"
+      - run: pwd
       - name: get latest release version
         id: check-latest-release-version
         uses: actions/github-script@v6
