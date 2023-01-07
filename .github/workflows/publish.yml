@@ -31,7 +31,7 @@ jobs:
               repo: context.repo.repo,
               tag_name: `grades-app-v${{ steps.get-version.outputs.value }}`,
               name: `grades v${{ steps.get-version.outputs.value }}`,
-              body: `**Draft**\n\n${{ github.event.head_commit.message }}\n\nAssets getting generated...`,
+              body: `**_--Draft--_**\n\n### Changes:\n${{ github.event.head_commit.message }}\n\nAssets getting generated...`,
               draft: true,
               prerelease: false
             })
