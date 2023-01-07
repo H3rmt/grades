@@ -43,3 +43,19 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: build
         run: yarn build
+
+  actions:
+    name: check-js
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          cache-dependency-path: ./workflows/yarn.lock
+          node-version: 16
+          cache: yarn
+      - name: install app dependencies
+        run: yarn install --frozen-lockfile
+      - run: yarn --cwd .\workflows\ dist
