@@ -37,9 +37,9 @@ export default function OverviewAppBar(props: Props) {
 	}
 
 	return <Stack spacing={2} direction="row" alignItems="start">
-		<Select color="secondary" variant="outlined" sx={{padding: 0, maxWidth: [120, 150, 300, 500, 600]}}
+		<Select color="secondary" autoWidth variant="outlined" sx={{padding: 0, maxWidth: [120, 150, 300, 500, 600]}}
 												value={period ?? "-1"} size="small" onChange={handlePeriodSelectChange} title="Period Select"
-												renderValue={(i: string) => periods.data.find(p => p.id === Number(i))?.name ?? "All"}>
+												renderValue={(i: string) => periods?.data?.find(p => p.id === Number(i))?.name ?? "All"}>
 			<MenuItem key="-1" value="-1">
 				<Typography sx={{fontStyle: "italic"}}>All&nbsp;</Typography>
 			</MenuItem>

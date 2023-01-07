@@ -2,8 +2,6 @@ import {describe, expect, test} from 'vitest'
 import Overview from "./Overview";
 import {Grade, Period, Subject, Type} from '../entity';
 import {mockIPC, render, rgbStringToHex, screen} from "../ts/testingUtils";
-import {convertWeight} from "../ts/utils";
-
 describe('Overview', () => {
 	test('renders Table Columns', async () => {
 		mockIPC(mockData)
@@ -53,7 +51,7 @@ describe('Overview', () => {
 			const infoScreen = await screen.findAllByText(grade.info)
 			expect(infoScreen, "Info not found on Screen").length.greaterThanOrEqual(1)
 
-			const weightScreen = await screen.findAllByText(convertWeight(grade.weight))
+			const weightScreen = await screen.findAllByText(grade.weight)
 			expect(weightScreen, "Weight not found on Screen").length.greaterThanOrEqual(1)
 
 			console.info(`Grade ${grade.id} rendered`)

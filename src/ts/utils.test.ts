@@ -1,5 +1,5 @@
 import {expect, test} from 'vitest'
-import {capitalizeFirstLetter, convertWeight, map, nextFree, randColor} from "./utils";
+import {capitalizeFirstLetter, map, nextFree, randColor} from "./utils";
 
 test('capitalizeFirstLetter', () => {
 	expect(capitalizeFirstLetter("test")).to.equal("Test")
@@ -18,10 +18,4 @@ test('nextFree', () => {
 
 test('randColor', () => {
 	expect(randColor()).to.match(/^#[0-9a-f]{6}$/)
-})
-
-test('convertWeight', () => {
-	expect(convertWeight("Default")).to.equal("")
-	expect(convertWeight("Double")).to.equal("x2")
-	expect(convertWeight("Half")).to.equal("/2")
 })

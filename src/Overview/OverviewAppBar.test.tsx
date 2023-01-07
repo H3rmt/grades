@@ -1,8 +1,8 @@
 import {describe, expect, test} from 'vitest'
-import {OverviewAppBar} from './OverviewAppBar';
 import {Period} from "../entity";
 import {createMatchMedia, getByRole, mockIPC, render, screen} from "../ts/testingUtils";
 import userEvent from "@testing-library/user-event";
+import OverviewAppBar from './OverviewAppBar';
 
 describe('OverviewAppBar', () => {
 	describe('Button', () => {

@@ -8,8 +8,7 @@ global.console = {
 	...console,
 	debug: () => {
 	},
-	log: () => {
-	},
+	// log: () => {},
 	// info: () => {},
 	// warn: () => {},
 	// error: () => {},

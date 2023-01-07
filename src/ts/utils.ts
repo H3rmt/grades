@@ -1,4 +1,6 @@
 import {Dispatch, SetStateAction, useState} from "react";
+import {QueryKey, UseMutationOptions, UseQueryOptions} from "@tanstack/react-query";
+import {invoke} from "@tauri-apps/api";
 
 export type reactSet<T> = Dispatch<SetStateAction<T>>
 
@@ -28,19 +30,8 @@ export function randColor(): string {
 	return "#" + Math.floor(Math.random() * 16777215).toString(16)
 }
 
-export function convertWeight(weight: 'Default' | 'Double' | 'Half') {
-	switch (weight) {
-		case 'Default':
-			return ""
-		case 'Double':
-			return "x2"
-		case 'Half':
-			return "/2"
-	}
-}
-
-function edit<T>(cmd: string, args: any): Promise<void> { // change to Promise<T> if entity returned
-	return inv("edit_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
+export function edit<T>(cmd: string, args: any): Promise<void> { // change to Promise<T> if entity returned
+	return invoke("edit_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
 		// return entity
 		console.debug("edit_" + cmd, "success", args)
 	}).catch((e) => {
@@ -49,8 +40,8 @@ function edit<T>(cmd: string, args: any): Promise<void> { // change to Promise<T
 	})
 }
 
-function get<T>(cmd: string): Promise<T> {
-	return inv<string>("get_" + cmd + "_js").then((data: string) => {
+export function get<T>(cmd: string): Promise<T> {
+	return invoke<string>("get_" + cmd + "_js").then((data: string) => {
 		console.debug("get_" + cmd, "success")
 		return JSON.parse(data)
 	}).catch((e) => {
@@ -59,7 +50,7 @@ function get<T>(cmd: string): Promise<T> {
 	})
 }
 
-type UseQueryOpts<
+export type UseQueryOpts<
 		TQueryFnData = unknown,
 		TData = TQueryFnData,
 		TQueryKey extends QueryKey = QueryKey,
@@ -68,7 +59,7 @@ type UseQueryOpts<
 		'queryKey' | 'initialData'
 > & { initialData?: TQueryFnData | (() => TQueryFnData) }
 
-type UseMutationOpts<
+export type UseMutationOpts<
 		TData = unknown,
 		TVariables = void,
 		TContext = unknown
@@ -76,21 +67,3 @@ type UseMutationOpts<
 		UseMutationOptions<TData, unknown, TVariables, TContext>,
 		'mutationFn' | 'mutationKey'
 >
-
-export type {
-	reactSet,
-	UseQueryOpts,
-	UseMutationOpts
-}
-
-export {
-	nextFree,
-	capitalizeFirstLetter,
-	map,
-	nullableUseState,
-	edit,
-	get,
-	create,
-	del,
-	randColor,
-}

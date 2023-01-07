@@ -108,7 +108,6 @@ export default function NewGradeModal() {
 	}
 
 	const handleGradeConfirmedDateChange = (date: string | null, grade: Grade) => {
-		console.warn("handleGradeConfirmedDateChange", date)
 		setGrade({...grade, confirmed: date});
 	}
 
@@ -185,7 +184,7 @@ export default function NewGradeModal() {
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Subject</Typography>
-									{subjects.isSuccess && <Select value={grade.subject.toString()} margin="none" fullWidth
+									{subjects.isSuccess && <Select value={(grade.subject || '').toString()} margin="none" fullWidth
 																			 onChange={(event) => handleSubjectSelectChange(event, grade)}
 																			 title="Subject Select">
 										{subjects.data.map((subject) => {
@@ -197,7 +196,7 @@ export default function NewGradeModal() {
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Type</Typography>
-									{types.isSuccess && <Select value={grade.type.toString()} margin="none" fullWidth
+									{types.isSuccess && <Select value={(grade.type || '').toString()} margin="none" fullWidth
 																		 onChange={(event) => handleTypeSelectChange(event, grade)}
 																		 title="Type Select">
 										{types.data.map((type) => {
@@ -209,7 +208,7 @@ export default function NewGradeModal() {
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Period</Typography>
-									{periods.isSuccess && <Select value={grade.period.toString()} margin="none" fullWidth
+									{periods.isSuccess && <Select value={(grade.period || '').toString()} margin="none" fullWidth
 																			onChange={(event) => handlePeriodSelectChange(event, grade)}
 																			title="Period Select">
 										{periods.data.map((period) => {
@@ -239,7 +238,8 @@ export default function NewGradeModal() {
 											</IconButton>
 											}
 										</Stack>
-										<Slider value={grade.grade !== null ? grade.grade : -1} color="secondary" min={noteRange.data.from}
+										<Slider value={grade.grade ?? noteRange.data.from} color="secondary"
+												  min={noteRange.data.from}
 												  max={noteRange.data.to}
 												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange.data)}
 												  title="Grade Slider"/>
@@ -311,7 +311,7 @@ export default function NewGradeModal() {
 														onChange={(event) => handleWeightChange(event, grade)}>
 											{weights.isSuccess && weights.data.map((weight) => <FormControlLabel control={
 												<Radio color="secondary"/>
-											} label={weight.name} value={weight.name}/>)}
+											} label={weight.name} value={weight.name} key={weight.name}/>)}
 										</RadioGroup>
 									</FormGroup>
 								</Stack>
