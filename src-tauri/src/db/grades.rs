@@ -26,15 +26,15 @@ pub async fn create_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade
 	check_fk(db, Subjects::find_by_id(grade.subject), "subject".to_string())
 			.await
 			.attach_printable("Check if subject exists failed")
-			.attach_printable(format!("subject id: {}", grade.subject))?;
+			.attach_printable_lazy(|| format!("subject id: {}", grade.subject))?;
 	check_fk(db, GradeTypes::find_by_id(grade.r#type), "type".to_string())
 			.await
 			.attach_printable("Check if type exists failed")
-			.attach_printable(format!("type id: {}", grade.r#type))?;
+			.attach_printable_lazy(|| format!("type id: {}", grade.r#type))?;
 	check_fk(db, Periods::find_by_id(grade.period), "period".to_string())
 			.await
 			.attach_printable("Check if period exists failed")
-			.attach_printable(format!("period id: {}", grade.period))?;
+			.attach_printable_lazy(|| format!("period id: {}", grade.period))?;
 	{
 		let mutex = config.lock().await;
 		let note_range = &mutex.get().note_range;
@@ -43,8 +43,8 @@ pub async fn create_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade
 			if i < note_range.from || i > note_range.to {
 				return Err(StrError("Grade out of range".to_string()))
 						.into_report()
-						.attach_printable(format!("grade: {:?}", grade.grade))
-						.attach_printable(format!("range: {}", note_range))
+						.attach_printable_lazy(|| format!("grade: {:?}", grade.grade))
+						.attach_printable_lazy(|| format!("range: {}", note_range))
 						.change_context(DBError);
 			}
 		}
@@ -63,12 +63,12 @@ pub async fn create_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade
 	};
 	
 	let res: Grade = insert.clone()
-	                           .insert(db).await
-	                           .into_report()
-	                           .attach_printable("Error creating grade in DB")
-	                           .attach_printable(format!("insert:{:?} subject:{} type:{} info:{} grade:{:?} period:{} weight:{}",
-	                                                     insert, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.weight))
-	                           .change_context(DBError)?;
+								  .insert(db).await
+								  .into_report()
+								  .attach_printable("Error creating grade in DB")
+								  .attach_printable_lazy(|| format!("insert:{:?} subject:{} type:{} info:{} grade:{:?} period:{} weight:{}",
+																				insert, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.weight))
+								  .change_context(DBError)?;
 	
 	log::info!("created grade:{:?}", res);
 	Ok(res.id)
@@ -79,29 +79,29 @@ pub async fn edit_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: 
 			.one(db).await
 			.into_report()
 			.attach_printable("Error finding grade in DB")
-			.attach_printable(format!("id:{}", grade.id))
+			.attach_printable_lazy(|| format!("id:{}", grade.id))
 			.change_context(DBError)?;
 	
 	let mut edit: ActiveGrade = edit
 			.ok_or_else(|| DbErr::RecordNotFound("Grade not found".to_string()))
 			.into_report()
 			.attach_printable("Error finding grade in DB")
-			.attach_printable(format!("id:{}", grade.id))
+			.attach_printable_lazy(|| format!("id:{}", grade.id))
 			.change_context(DBError)?
 			.into();
 	
 	check_fk(db, Subjects::find_by_id(grade.subject), "subject".to_string())
 			.await
 			.attach_printable("Check if subject exists failed")
-			.attach_printable(format!("subject id: {}", grade.subject))?;
+			.attach_printable_lazy(|| format!("subject id: {}", grade.subject))?;
 	check_fk(db, GradeTypes::find_by_id(grade.r#type), "type".to_string())
 			.await
 			.attach_printable("Check if type exists failed")
-			.attach_printable(format!("type id: {}", grade.r#type))?;
+			.attach_printable_lazy(|| format!("type id: {}", grade.r#type))?;
 	check_fk(db, Periods::find_by_id(grade.period), "period".to_string())
 			.await
 			.attach_printable("Check if period exists failed")
-			.attach_printable(format!("period id: {}", grade.period))?;
+			.attach_printable_lazy(|| format!("period id: {}", grade.period))?;
 	{
 		let mutex = config.lock().await;
 		let note_range = &mutex.get().note_range;
@@ -110,8 +110,8 @@ pub async fn edit_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: 
 			if i < note_range.from || i > note_range.to {
 				return Err(StrError("Grade out of range".to_string()))
 						.into_report()
-						.attach_printable(format!("grade: {:?}", grade.grade))
-						.attach_printable(format!("range: {}", note_range))
+						.attach_printable_lazy(|| format!("grade: {:?}", grade.grade))
+						.attach_printable_lazy(|| format!("range: {}", note_range))
 						.change_context(DBError);
 			}
 		}
@@ -127,12 +127,12 @@ pub async fn edit_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: 
 	edit.date = ActiveValue::Set(grade.date.clone());
 	
 	let res: Grade = edit.clone()
-	                     .update(db).await
-	                     .into_report()
-	                     .attach_printable("Error editing grade in DB")
-	                     .attach_printable(format!("edit:{:?} subject:{} type:{} info{} grade:{:?} period:{} weight:{} confirmed:{:?} date:{}",
-	                                               edit, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.weight, grade.confirmed, grade.date))
-	                     .change_context(DBError)?;
+								.update(db).await
+								.into_report()
+								.attach_printable("Error editing grade in DB")
+								.attach_printable_lazy(|| format!("edit:{:?} subject:{} type:{} info{} grade:{:?} period:{} weight:{} confirmed:{:?} date:{}",
+																			 edit, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.weight, grade.confirmed, grade.date))
+								.change_context(DBError)?;
 	
 	log::info!("edited grade:{:?}", res);
 	Ok(res)
@@ -143,14 +143,14 @@ pub async fn delete_grade(db: &DatabaseConnection, id: i32) -> Result<(), DBErro
 			.exec(db).await
 			.into_report()
 			.attach_printable("Error deleting grade in DB")
-			.attach_printable(format!("id:{}", id))
+			.attach_printable_lazy(|| format!("id:{}", id))
 			.change_context(DBError)?;
 	
 	if res.rows_affected < 1 {
 		Err(DbErr::RecordNotFound("Grade not found".to_string()))
 				.into_report()
 				.attach_printable("Error deleting grade in DB")
-				.attach_printable(format!("id:{}", id))
+				.attach_printable_lazy(|| format!("id:{}", id))
 				.change_context(DBError)?;
 	}
 	

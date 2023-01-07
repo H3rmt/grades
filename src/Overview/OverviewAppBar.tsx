@@ -1,6 +1,6 @@
 import {Button, IconButton, MenuItem, Select, SelectChangeEvent, Stack, Typography, useMediaQuery} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import {usePeriods} from "../commands/get";
+import {useGradeModalDefaults, usePeriods} from "../commands/get";
 import {errorToast} from "../ts/toast";
 import {modalConfirmed, modalOpen, period as Period} from "./atoms";
 import {useAtom} from 'jotai'
@@ -23,18 +23,27 @@ export default function OverviewAppBar(props: Props) {
 		}
 	});
 
+	useGradeModalDefaults({
+		onSuccess: (data) => {
+			if (period == null)
+				setPeriod((data.period_default || "-1").toString())
+		},
+		onError: (error) => {
+			errorToast("Error loading gradeModalDefaults", toast, error)
+		}
+	});
 	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
 		setPeriod(event.target.value);
 	}
 
 	return <Stack spacing={2} direction="row" alignItems="start">
-		{periods.isSuccess && <Select color="secondary" variant="outlined" sx={{padding: 0, maxWidth: [120, 150, 300, 500, 600]}}
-												value={period} size="small" onChange={handlePeriodSelectChange} title="Period Select"
+		<Select color="secondary" variant="outlined" sx={{padding: 0, maxWidth: [120, 150, 300, 500, 600]}}
+												value={period ?? "-1"} size="small" onChange={handlePeriodSelectChange} title="Period Select"
 												renderValue={(i: string) => periods.data.find(p => p.id === Number(i))?.name ?? "All"}>
 			<MenuItem key="-1" value="-1">
 				<Typography sx={{fontStyle: "italic"}}>All&nbsp;</Typography>
 			</MenuItem>
-			{periods.data.map((period) => {
+			{periods.isSuccess && periods.data.map((period) => {
 				return <MenuItem key={period.id} value={period.id}>
 					<Stack>
 						{period.name}
@@ -43,7 +52,7 @@ export default function OverviewAppBar(props: Props) {
 					</Stack>
 				</MenuItem>
 			})}
-		</Select>}
+		</Select>
 		{(() => {
 			if (plusButton)
 				return <IconButton color="secondary" onClick={() => {

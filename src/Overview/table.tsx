@@ -1,4 +1,4 @@
-import {Grade, Subject, Type} from "../entity";
+import {Grade, Subject, Type, Weight} from "../entity";
 import {cols, ColumnDef} from "../components/table/defs";
 import {Badge, IconButton, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import {convertWeight, map} from "../ts/utils";
@@ -9,7 +9,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import React from "react";
 
 
-export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[]) => cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[]) => new Map<keyof Grade, ColumnDef<Grade>>(
+export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[]) => cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[]) => new Map<keyof Grade, ColumnDef<Grade>>(
 		[[
 			"grade", {
 				sort: true,
@@ -97,15 +97,14 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[])
 		], [
 			"weight", {
 				sort: true,
-				format: g => <Typography>{convertWeight(g.weight)}</Typography>,
+				format: g => <Typography>{g.weight}</Typography>,
+				// TODO UPDATE SORT
 				preSort: (g) => g.weight == "Half" ? 0.5 : g.weight == "Double" ? 2 : 1,
 				edit: (g, update) => <Select value={g.weight} onChange={(i) => {
-					g.weight = i.target.value as "Default" | "Double" | "Half";
+					g.weight = i.target.value;
 					update()
 				}}>
-					<MenuItem key="Default" value="Default">&nbsp;</MenuItem>
-					<MenuItem key="Double" value="Double">x2</MenuItem>
-					<MenuItem key="Half" value="Half">/2</MenuItem>
+					{weights.map((weight) => <MenuItem key={weight.name} value={weight.name}>{weight.name}</MenuItem>)}
 				</Select>
 			}
 		], [

@@ -18,7 +18,7 @@ pub async fn get_periods_js(connection: tauri::State<'_, DatabaseConnection>) ->
 	let data = serde_json::to_string(&periods)
 			.into_report()
 			.attach_printable("Error serializing data to json")
-			.attach_printable(format!("periods: {:?}", periods))
+			.attach_printable_lazy(|| format!("periods: {:?}", periods))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -33,7 +33,7 @@ pub async fn create_period_js(connection: tauri::State<'_, DatabaseConnection>, 
 	let model: Period = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing period from json")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -52,7 +52,7 @@ pub async fn edit_period_js(connection: tauri::State<'_, DatabaseConnection>, js
 	let model: Period = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing period")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	
@@ -71,7 +71,7 @@ pub async fn delete_period_js(connection: tauri::State<'_, DatabaseConnection>, 
 	let delete: Delete = serde_json::from_str(&json)
 			.into_report()
 			.attach_printable("Error serializing delete")
-			.attach_printable(format!("json: {}", json))
+			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	

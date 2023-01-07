@@ -3,7 +3,7 @@ use std::fmt::Display;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-#[derive(TS, Deserialize, Serialize, Debug)]
+#[derive(TS, Deserialize, Serialize, Debug, Clone, Eq, PartialEq)]
 #[ts(export, export_to = "../src/entity/config/noteRange.ts")]
 pub struct NoteRange {
 	pub from: i32,
@@ -25,7 +25,7 @@ impl Display for NoteRange {
 	}
 }
 
-#[derive(TS, Deserialize, Serialize, Debug)]
+#[derive(TS, Deserialize, Serialize, Debug, Clone, Eq, PartialEq)]
 #[ts(export, export_to = "../src/entity/config/gradeModalDefaults.ts")]
 pub struct GradeModalDefaults {
 	pub grade_default: i32,
@@ -48,7 +48,7 @@ impl Default for GradeModalDefaults {
 impl Display for GradeModalDefaults {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		write!(f, "grade_default:{} subject_default:{:?} type_default:{:?} period_default:{:?}",
-		       self.grade_default, self.subject_default, self.type_default, self.period_default)
+				 self.grade_default, self.subject_default, self.type_default, self.period_default)
 	}
 }
 

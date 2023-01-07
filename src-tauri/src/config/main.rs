@@ -40,18 +40,18 @@ impl Config {
 	
 	fn load(&mut self) -> Result<(), ConfigError> {
 		let mut file = OpenOptions::new().read(true).open(self.path.as_path())
-		                                 .into_report()
-		                                 .attach_printable("error opening config file in read mode")
-		                                 .attach_printable(format!("path: {:?}", self.path.as_path()))
-		                                 .change_context(ConfigError)?;
+													.into_report()
+													.attach_printable("error opening config file in read mode")
+													.attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
+													.change_context(ConfigError)?;
 		
 		let mut buffer = String::new();
 		
 		file.read_to_string(&mut buffer)
-		    .into_report()
-		    .attach_printable("error reading config data from file")
-		    .attach_printable_lazy(|| format!("buffer: {}", buffer))
-		    .change_context(ConfigError)?;
+			 .into_report()
+			 .attach_printable("error reading config data from file")
+			 .attach_printable_lazy(|| format!("buffer: {}", buffer))
+			 .change_context(ConfigError)?;
 		
 		let data: Data = toml::from_str(buffer.as_str())
 				.into_report()
@@ -67,7 +67,7 @@ impl Config {
 		f(&mut self.data);
 		log::debug!("config-data: {:?}", self.data);
 		self.save()
-		    .attach_printable("error during saving after changes to config")?;
+			 .attach_printable("error during saving after changes to config")?;
 		Ok(())
 	}
 	
@@ -77,10 +77,10 @@ impl Config {
 	
 	pub fn save(&mut self) -> Result<(), ConfigError> {
 		let mut file = OpenOptions::new().write(true).append(false).open(self.path.as_path())
-		                                 .into_report()
-		                                 .attach_printable("error opening config file in write mode")
-		                                 .attach_printable(format!("path: {:?}", self.path.as_path()))
-		                                 .change_context(ConfigError)?;
+													.into_report()
+													.attach_printable("error opening config file in write mode")
+													.attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
+													.change_context(ConfigError)?;
 		
 		let data = toml::to_string(&self.data)
 				.into_report()
@@ -89,17 +89,17 @@ impl Config {
 				.change_context(ConfigError)?;
 		
 		file.set_len(0)
-		    .into_report()
-		    .attach_printable("error clearing config data file")
-		    .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
-		    .change_context(ConfigError)?;
+			 .into_report()
+			 .attach_printable("error clearing config data file")
+			 .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
+			 .change_context(ConfigError)?;
 		
 		file.write_all(data.as_bytes())
-		    .into_report()
-		    .attach_printable("error writing config data to file")
-		    .attach_printable_lazy(|| format!("data: {}", data))
-		    .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
-		    .change_context(ConfigError)?;
+			 .into_report()
+			 .attach_printable("error writing config data to file")
+			 .attach_printable_lazy(|| format!("data: {}", data))
+			 .attach_printable_lazy(|| format!("path: {:?}", self.path.as_path()))
+			 .change_context(ConfigError)?;
 		Ok(())
 	}
 }

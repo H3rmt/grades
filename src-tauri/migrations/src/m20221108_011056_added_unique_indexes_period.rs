@@ -16,7 +16,7 @@ impl MigrationTrait for Migration {
 				.name("period_name_index")
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
+		log::info!("SQL:{}", statement.to_string(SqliteQueryBuilder));
 		
 		manager.create_index(statement).await
 	}
@@ -31,7 +31,7 @@ impl MigrationTrait for Migration {
 		
 		// did just not work
 		let sql = "DROP INDEX period_name_index";
-		println!("SQL:{}", sql);
+		log::info!("SQL:{}", sql);
 		
 		let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
 		manager.get_connection().execute(stmt).await.map(|_| ())

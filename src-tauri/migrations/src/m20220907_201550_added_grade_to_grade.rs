@@ -16,7 +16,7 @@ impl MigrationTrait for Migration {
 				)
 				.to_owned();
 		
-		println!("SQL:{}", statement.to_string(SqliteQueryBuilder));
+		log::info!("SQL:{}", statement.to_string(SqliteQueryBuilder));
 		
 		manager.alter_table(statement).await
 	}
@@ -26,14 +26,14 @@ impl MigrationTrait for Migration {
 //				.table(Grade::Table)
 //				.drop_column(Grade::Grade)
 //				.to_owned();
-//		println!("SQL:{}", test.to_string(SqliteQueryBuilder));
+//		log::info!("SQL:{}", test.to_string(SqliteQueryBuilder));
 //		manager.alter_table(
 //			test
 //		).await
 		
 		// sea-orm thinks drop table not supported on SQLite, but it is
 		let sql = "ALTER TABLE `grades` DROP COLUMN `grade`";
-		println!("SQL:{}", sql);
+		log::info!("SQL:{}", sql);
 		
 		let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
 		manager.get_connection().execute(stmt).await.map(|_| ())

@@ -23,6 +23,10 @@ function useNoteRange(options: UseQueryOpts<NoteRange> = {}) {
 	return query<NoteRange>("note_range", options)
 }
 
+function useWeights(options: UseQueryOpts<Weight[]> = {}) {
+	return query<Weight[]>("weights", options)
+}
+
 function useGradeModalDefaults(options: UseQueryOpts<GradeModalDefaults> = {}) {
 	return query<GradeModalDefaults>("grade_modal_defaults", options)
 }
@@ -36,6 +40,7 @@ export {
 	useSubjects,
 	usePeriods,
 	useGrades,
+	useWeights,
 	useNoteRange,
 	useGradeModalDefaults,
 	useInfo

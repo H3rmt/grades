@@ -24,7 +24,7 @@ pub async fn get_info_js(config: tauri::State<'_, Mutex<Config>>) -> Result<Stri
 	let data = serde_json::to_string(&info)
 			.into_report()
 			.attach_printable("Error serializing info to json")
-			.attach_printable(format!("info: {:?}", info))
+			.attach_printable_lazy(|| format!("info: {:?}", info))
 			.change_context(CommandError)
 			.log_and_to_string()?;
 	

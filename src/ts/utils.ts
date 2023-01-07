@@ -38,3 +38,59 @@ export function convertWeight(weight: 'Default' | 'Double' | 'Half') {
 			return "/2"
 	}
 }
+
+function edit<T>(cmd: string, args: any): Promise<void> { // change to Promise<T> if entity returned
+	return inv("edit_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
+		// return entity
+		console.debug("edit_" + cmd, "success", args)
+	}).catch((e) => {
+		console.debug("edit_" + cmd, "fail", e, args)
+		throw e
+	})
+}
+
+function get<T>(cmd: string): Promise<T> {
+	return inv<string>("get_" + cmd + "_js").then((data: string) => {
+		console.debug("get_" + cmd, "success")
+		return JSON.parse(data)
+	}).catch((e) => {
+		console.debug("get_" + cmd, "fail", e)
+		throw e
+	})
+}
+
+type UseQueryOpts<
+		TQueryFnData = unknown,
+		TData = TQueryFnData,
+		TQueryKey extends QueryKey = QueryKey,
+> = Omit<
+		UseQueryOptions<TQueryFnData, unknown, TData, TQueryKey>,
+		'queryKey' | 'initialData'
+> & { initialData?: TQueryFnData | (() => TQueryFnData) }
+
+type UseMutationOpts<
+		TData = unknown,
+		TVariables = void,
+		TContext = unknown
+> = Omit<
+		UseMutationOptions<TData, unknown, TVariables, TContext>,
+		'mutationFn' | 'mutationKey'
+>
+
+export type {
+	reactSet,
+	UseQueryOpts,
+	UseMutationOpts
+}
+
+export {
+	nextFree,
+	capitalizeFirstLetter,
+	map,
+	nullableUseState,
+	edit,
+	get,
+	create,
+	del,
+	randColor,
+}
