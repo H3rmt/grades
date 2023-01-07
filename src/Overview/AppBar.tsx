@@ -1,6 +1,6 @@
 import {Button, IconButton, MenuItem, Select, SelectChangeEvent, Stack, useMediaQuery} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import {usePeriods} from "../commands/get";
+import {useGradeModalDefaults, usePeriods} from "../commands/get";
 import {errorToast, useToast} from "../ts/toast";
 import {modalConfirmed, modalOpen, period as Period} from "./atoms";
 import {useAtom} from 'jotai'
@@ -11,8 +11,8 @@ export function OverviewAppBar(props: Props) {
 	const oneButton = useMediaQuery('(max-width:700px)');
 	const plusButton = useMediaQuery('(max-width:400px)');
 	const [period, setPeriod] = useAtom(Period);
-	const [open, setOpen] = useAtom(modalOpen);
-	const [confirmed, setConfirmed] = useAtom(modalConfirmed);
+	const [, setOpen] = useAtom(modalOpen);
+	const [, setConfirmed] = useAtom(modalConfirmed);
 
 	const toast = useToast()
 
@@ -21,14 +21,24 @@ export function OverviewAppBar(props: Props) {
 			errorToast("Error loading Periods", toast, error)
 		}
 	});
-
+	
+	useGradeModalDefaults({
+		onSuccess: (data) => {
+			if (period == null)
+				setPeriod((data.period_default || "-1").toString())
+		},
+		onError: (error) => {
+			errorToast("Error loading gradeModalDefaults", toast, error)
+		}
+	});
 	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
 		setPeriod(event.target.value);
 	}
 
 	return <Stack spacing={2} direction="row" alignItems="start">
 		{periods.isSuccess &&
-				<Select color="secondary" variant="outlined" sx={{padding: 0, maxWidth: [120, 150, 300, 500, 600]}} value={period} size="small"
+				<Select color="secondary" variant="outlined" sx={{padding: 0, maxWidth: [120, 150, 300, 500, 600]}}
+						  value={period ?? "-1"} size="small"
 						  onChange={handlePeriodSelectChange}>
 					<MenuItem value="-1">
 						All&nbsp;
