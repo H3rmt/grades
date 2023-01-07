@@ -55,7 +55,6 @@ jobs:
         with:
           cache-dependency-path: ./workflows/yarn.lock
           node-version: 16
-          cache: yarn
-      - name: install app dependencies
-        run: yarn install --frozen-lockfile
+          cache: 'yarn'
+      - run: yarn --cwd ./workflows install --frozen-lockfile
       - run: yarn --cwd ./workflows dist
