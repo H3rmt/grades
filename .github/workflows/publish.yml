@@ -20,7 +20,8 @@ jobs:
           cache-dependency-path: ./workflows/yarn.lock
           node-version: 16
           cache: 'yarn'
-      - run: yarn --cwd .\workflows\ run dist
+      - run: yarn install --frozen-lockfile
+      - run: yarn --cwd .\workflows\ dist
       - name: Get Version
         id: get-version
         uses: SebRollen/toml-action@v1.0.2
@@ -92,7 +93,8 @@ jobs:
           cache-dependency-path: ./workflows/yarn.lock
           node-version: 16
           cache: 'yarn'
-      - run: yarn --cwd .\workflows\ run dist
+      - run: yarn install --frozen-lockfile
+      - run: yarn --cwd .\workflows\ dist
       - name: publish release
         id: publish-release
         uses: actions/github-script@v6
