@@ -59,4 +59,5 @@ jobs:
           node-version: 16
           cache: 'yarn'
       - run: yarn --cwd ./workflows install --frozen-lockfile
+      - run: yarn --cwd ./workflows check
       - run: yarn --cwd ./workflows dist
