@@ -48,7 +48,7 @@ jobs:
           if [[ ${arrVersionOld[0]} -lt ${arrVersionNew[0]} || ${arrVersionOld[1]} -lt ${arrVersionNew[1]} || ${arrVersionOld[2]} -lt ${arrVersionNew[2]} ]]; then
             if [[ ($((${arrVersionOld[0]}+1)) -eq ${arrVersionNew[0]} && ${arrVersionNew[1]} -eq 0 && ${arrVersionNew[2]} -eq 0) ||
               (${arrVersionOld[0]} -eq ${arrVersionNew[0]} && $((${arrVersionOld[1]}+1)) -eq ${arrVersionNew[1]} && ${arrVersionNew[2]} -eq 0) ||
-              (${arrVersionOld[0]} -eq ${arrVersionNew[0]} && ${arrVersionOld[1]} -eq ${arrVersionNew[1]} && $((${arrVersionNew[2]}+1)) -eq ${arrVersionNew[2]}) ]] \
+              (${arrVersionOld[0]} -eq ${arrVersionNew[0]} && ${arrVersionOld[1]} -eq ${arrVersionNew[1]} && $((${arrVersionOld[2]}+1)) -eq ${arrVersionNew[2]}) ]] \
               ; then
               echo "New Version $New is newer than $Old"
               exit 0
