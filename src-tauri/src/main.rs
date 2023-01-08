@@ -37,8 +37,8 @@ async fn main() {
 				eprintln!("{:?}", e);
 			}).expect("Error initializing logger");
 	
-	log::info!("version:{}; target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}",
-	         built_info::PKG_VERSION, built_info::TARGET, built_info::HOST, built_info::PROFILE, built_info::GIT_COMMIT_HASH.unwrap_or("GIT_COMMIT_HASH MISSING"), built_info::CFG_OS);
+	log::info!("version:{}; target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}, build_on:{}",
+	         built_info::PKG_VERSION, built_info::TARGET, built_info::HOST, built_info::PROFILE, built_info::GIT_COMMIT_HASH.unwrap_or("GIT_COMMIT_HASH MISSING"), built_info::CFG_OS, built_info::CI_PLATFORM.unwrap_or("local"));
 	
 	tauri::async_runtime::set(tokio::runtime::Handle::current());
 	

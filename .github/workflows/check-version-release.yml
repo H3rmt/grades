@@ -50,7 +50,7 @@ jobs:
               (${arrVersionOld[0]} -eq ${arrVersionNew[0]} && $((${arrVersionOld[1]}+1)) -eq ${arrVersionNew[1]} && ${arrVersionNew[2]} -eq 0) ||
               (${arrVersionOld[0]} -eq ${arrVersionNew[0]} && ${arrVersionOld[1]} -eq ${arrVersionNew[1]} && $((${arrVersionOld[2]}+1)) -eq ${arrVersionNew[2]}) ]] \
               ; then
-              echo "New Version $New is newer than $Old"
+              echo "New Version $New is 1 newer than $Old"
               exit 0
             else
               echo "New Version $New is to new from $Old"
