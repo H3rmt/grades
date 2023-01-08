@@ -436,6 +436,9 @@ export default function Settings(props: Props) {
 										commit_hash_short: {info.data.commit_hash_short}
 									</Typography>
 								</Link>
+								<Typography>
+									build_time: {dayjs(info.data.build_time).format('DD-MM-YYYY HH:mm:ss')}
+								</Typography>
 							</Stack>
 						</Paper>
 					</SettingsBox>

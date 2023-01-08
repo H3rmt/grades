@@ -14,6 +14,7 @@ pub async fn get_info_js() -> Result<String, String> {
 		target: built_info::TARGET.to_string(),
 		profile: built_info::PROFILE.to_string(),
 		build_on: built_info::CI_PLATFORM.unwrap_or("local").to_string(),
+		build_time: built_info::BUILT_TIME_UTC.to_string(),
 		repository: built_info::PKG_REPOSITORY.to_string(),
 		commit_hash_short: built_info::GIT_COMMIT_HASH.unwrap_or("GIT_COMMIT_HASH MISSING").to_string(),
 	};
@@ -40,6 +41,7 @@ struct Info {
 	target: String,
 	profile: String,
 	build_on: String,
+	build_time: String,
 	repository: String,
 	commit_hash_short: String,
 }
