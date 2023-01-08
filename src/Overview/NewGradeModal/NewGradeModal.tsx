@@ -21,7 +21,7 @@ import {
 	TextField,
 	Typography
 } from "@mui/material";
-import {errorToast, toastMessage, useToast} from "../../ts/toast";
+import {errorToast, toastMessage} from "../../ts/toast";
 import {Grade} from "../../entity";
 import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../../commands/get";
 import {useCreateGrade} from "../../commands/create";
@@ -33,6 +33,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 import {useAtom} from 'jotai'
 import {modalConfirmed, modalOpen} from "../atoms";
+import {useSnackbar} from "notistack";
 
 export default function NewGradeModal() {
 	const [grade, setGrade] = nullableUseState<Grade>()
@@ -40,7 +41,7 @@ export default function NewGradeModal() {
 	const [open, setOpen] = useAtom(modalOpen);
 	const [confirmed] = useAtom(modalConfirmed);
 
-	const toast = useToast()
+	const toast = useSnackbar()
 	const queryClient = useQueryClient()
 
 	const periods = usePeriods({
@@ -107,7 +108,6 @@ export default function NewGradeModal() {
 	}
 
 	const handleGradeConfirmedDateChange = (date: string | null, grade: Grade) => {
-		console.warn("handleGradeConfirmedDateChange", date)
 		setGrade({...grade, confirmed: date});
 	}
 
@@ -184,10 +184,11 @@ export default function NewGradeModal() {
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Subject</Typography>
-									{subjects.isSuccess && <Select value={grade.subject.toString()} margin="none" fullWidth
-																			 onChange={(event) => handleSubjectSelectChange(event, grade)}>
+									{subjects.isSuccess && <Select value={(grade.subject || '').toString()} margin="none" fullWidth
+																			 onChange={(event) => handleSubjectSelectChange(event, grade)}
+																			 title="Subject Select">
 										{subjects.data.map((subject) => {
-											return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
+											return <MenuItem value={subject.id} key={subject.id} sx={{color: subject.color}}>{subject.name}</MenuItem>
 										})}
 									</Select>}
 								</Stack>
@@ -195,10 +196,11 @@ export default function NewGradeModal() {
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Type</Typography>
-									{types.isSuccess && <Select value={grade.type.toString()} margin="none" fullWidth
-																		 onChange={(event) => handleTypeSelectChange(event, grade)}>
+									{types.isSuccess && <Select value={(grade.type || '').toString()} margin="none" fullWidth
+																		 onChange={(event) => handleTypeSelectChange(event, grade)}
+																		 title="Type Select">
 										{types.data.map((type) => {
-											return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
+											return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
 										})}
 									</Select>}
 								</Stack>
@@ -206,10 +208,11 @@ export default function NewGradeModal() {
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Period</Typography>
-									{periods.isSuccess && <Select value={grade.period.toString()} margin="none" fullWidth
-																			onChange={(event) => handlePeriodSelectChange(event, grade)}>
+									{periods.isSuccess && <Select value={(grade.period || '').toString()} margin="none" fullWidth
+																			onChange={(event) => handlePeriodSelectChange(event, grade)}
+																			title="Period Select">
 										{periods.data.map((period) => {
-											return <MenuItem value={period.id}>
+											return <MenuItem value={period.id} key={period.id}>
 												<Stack>
 													{period.name}
 													<br/>
@@ -227,28 +230,32 @@ export default function NewGradeModal() {
 									{noteRange.isSuccess && <>
 										<Stack spacing={2} direction="row">
 											<TextField value={grade.grade ?? ""} type="number" fullWidth margin="none"
-														  onChange={(event) => handleGradeInputChange(event, grade, noteRange.data)}/>
+														  onChange={(event) => handleGradeInputChange(event, grade, noteRange.data)}
+														  title="Grade Input"/>
 											{grade.grade !== null && <IconButton color="default" onClick={() => {
 												setGrade({...grade, grade: null})
 											}}><ClearIcon/>
 											</IconButton>
 											}
 										</Stack>
-										<Slider value={grade.grade !== null ? grade.grade : -1} color="secondary" min={noteRange.data.from}
+										<Slider value={grade.grade ?? noteRange.data.from} color="secondary"
+												  min={noteRange.data.from}
 												  max={noteRange.data.to}
-												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange.data)}/>
+												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange.data)}
+												  title="Grade Slider"/>
 									</>}
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Date</Typography>
-									<DatePicker value={dayjs(grade.date, 'DD-MM-YYYY')} onChange={d => {
-										handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
-									}} renderInput={(params) => {
+									<DatePicker value={dayjs(grade.date, 'DD-MM-YYYY')}
+													onChange={d => {
+														handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+													}} renderInput={(params) => {
 										// @ts-ignore
 										params.inputProps.value = grade.date;
-										return <TextField {...params} />
+										return <TextField {...params} title="Date Picker"/>
 									}} renderDay={(day, value, DayComponentProps) => <Badge
 											key={day.toString()}
 											overlap="circular"
@@ -262,12 +269,13 @@ export default function NewGradeModal() {
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Confirmed Date</Typography>
 									<Stack direction="row" spacing={0.5}>
-										<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : null} onChange={d => {
-											handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
-										}} renderInput={(params) => {
+										<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : null}
+														onChange={d => {
+															handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+														}} renderInput={(params) => {
 											// @ts-ignore
 											params.inputProps.value = grade.confirmed ? grade.confirmed : "";
-											return <TextField {...params} />
+											return <TextField {...params} title="Confirmed Date Picker"/>
 										}} renderDay={(day, value, DayComponentProps) => {
 											if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
 												DayComponentProps.disabled = true
@@ -290,18 +298,20 @@ export default function NewGradeModal() {
 								<Stack spacing={2} height={1}>
 									<Typography variant="h6" fontWeight="normal">Info</Typography>
 									<TextField multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
-												  onChange={(event) => handleInfoInputChange(event, grade)}/>
+												  onChange={(event) => handleInfoInputChange(event, grade)}
+												  title="Info Input"
+									/>
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={4} lg={3}>
 								<Stack spacing={1.5} height={1}>
 									<Typography variant="h6" fontWeight="normal">Grade Weight</Typography>
 									<FormGroup>
-										<RadioGroup defaultValue="Normal" value={grade.weight}
+										<RadioGroup defaultValue="Normal" value={grade.weight} title="Grade Weight Select"
 														onChange={(event) => handleWeightChange(event, grade)}>
 											{weights.isSuccess && weights.data.map((weight) => <FormControlLabel control={
 												<Radio color="secondary"/>
-											} label={weight.name} value={weight.name}/>)}
+											} label={weight.name} value={weight.name} key={weight.name}/>)}
 										</RadioGroup>
 									</FormGroup>
 								</Stack>

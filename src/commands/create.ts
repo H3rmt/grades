@@ -1,49 +1,21 @@
-import {QueryClient, useMutation} from "@tanstack/react-query";
-import {create, UseMutationOpts} from "../ts/utils";
+import {QueryClient} from "@tanstack/react-query";
+import {createMutation, UseMutationOpts} from "../ts/commands";
 import {Grade, Period, Subject, Type} from "../entity";
 
 function useCreateGrade(queryClient: QueryClient, options: UseMutationOpts<void, Grade> = {}) {
-	return useMutation(["grades"], async (grade: Grade) => {
-				return await create("grade", grade).then(async () => {
-					console.log("Created Grade")
-					await queryClient.invalidateQueries({queryKey: ["grades"]})
-				})
-			},
-			options
-	);
+	return createMutation(queryClient, "grade", options, "grades")
 }
 
 function useCreateType(queryClient: QueryClient, options: UseMutationOpts<void, Type> = {}) {
-	return useMutation(["types"], async (type: Type) => {
-				return await create("type", type).then(async () => {
-					console.log("Created Type")
-					await queryClient.invalidateQueries({queryKey: ["types"]})
-				})
-			},
-			options
-	);
+	return createMutation(queryClient, "type", options, "types")
 }
 
 function useCreateSubject(queryClient: QueryClient, options: UseMutationOpts<void, Subject> = {}) {
-	return useMutation(["subjects"], async (subject: Subject) => {
-				return await create("subject", subject).then(async () => {
-					console.log("Created Subject")
-					await queryClient.invalidateQueries({queryKey: ["subjects"]})
-				})
-			},
-			options
-	);
+	return createMutation(queryClient, "subject", options, "subjects")
 }
 
 function useCreatePeriod(queryClient: QueryClient, options: UseMutationOpts<void, Period> = {}) {
-	return useMutation(["periods"], async (period: Period) => {
-				return await create("period", period).then(async () => {
-					console.log("Created Period")
-					await queryClient.invalidateQueries({queryKey: ["periods"]})
-				})
-			},
-			options
-	);
+	return createMutation(queryClient, "period", options, "periods")
 }
 
 export {

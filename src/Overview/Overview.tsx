@@ -1,21 +1,22 @@
-import {useGrades, useNoteRange, useSubjects, useTypes, useWeights} from "../commands/get";
+import {useGrades, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../commands/get";
 import {CTable} from "../components/table/table";
-import {getCols} from "./table";
-import {errorToast, toastMessage, useToast} from "../ts/toast";
+import {errorToast, toastMessage} from "../ts/toast";
 import NewGradeModal from "./NewGradeModal/NewGradeModal";
 import {useEditGrade} from "../commands/edit";
 import {useQueryClient} from "@tanstack/react-query";
 import {useDeleteGrade} from "../commands/delete";
 import {Grade} from '../entity';
 import {useAtom} from 'jotai'
-import {period as Period} from "./atoms";
+import {selectedPeriod} from "./atoms";
+import {useSnackbar} from "notistack";
+import {getCols} from "./table";
 
 type Props = {}
 
 export default function Overview(props: Props) {
-	const [period] = useAtom(Period);
+	const [period] = useAtom(selectedPeriod);
 
-	const toast = useToast()
+	const toast = useSnackbar()
 	const queryClient = useQueryClient()
 
 	const grades = useGrades({
@@ -48,6 +49,12 @@ export default function Overview(props: Props) {
 		}
 	});
 
+	const periods = usePeriods({
+		onError: (error) => {
+			errorToast("Error loading Periods", toast, error)
+		}
+	});
+
 	const deleteGrade = useDeleteGrade(queryClient, {
 		onSuccess: () => {
 			toastMessage("success", "Deleted Grade", toast)
@@ -67,9 +74,9 @@ export default function Overview(props: Props) {
 	})
 
 	return (<>
-				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess &&
-						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period == "-1")}
-								  cols={getCols(noteRange.data, subjects.data, types.data, weights.data)}
+				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess && periods.isSuccess &&
+						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period === "-1" || period === null )}
+								  cols={getCols(noteRange.data, subjects.data, types.data, weights.data, periods.data)}
 								  delete={(id) => {
 									  deleteGrade.mutate(id)
 								  }}

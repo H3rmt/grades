@@ -2,11 +2,11 @@ import {Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Swi
 import {Page, Pages} from "../../App";
 import {reactSet} from "../../ts/utils";
 
-const Navbar = (props: { open: boolean, set: reactSet<boolean>, setPage: (page: Page) => void, pages: Pages, openPageName: string }) => {
+export default function Navbar(props: { open: boolean, set: reactSet<boolean>, setPage: (page: Page) => void, pages: Pages, openPageName: string }) {
 	const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 	return <SwipeableDrawer open={props.open} anchor="left" onOpen={() => props.set(true)} onClose={() => props.set(false)}
-									variant="temporary" disableBackdropTransition={false} disableDiscovery={iOS} swipeAreaWidth={40}>
+									variant="temporary" disableBackdropTransition={false} disableDiscovery={iOS} swipeAreaWidth={15}>
 		<Toolbar/>
 		<List disablePadding sx={{height: 1}}>
 			{Object.entries(props.pages).filter(([key]) => key != "settings").map(([key, page]) => (
@@ -35,7 +35,5 @@ const Navbar = (props: { open: boolean, set: reactSet<boolean>, setPage: (page: 
 								  sx={{textDecoration: "Settings" == props.openPageName ? "underline" : ""}}/>
 			</ListItemButton>
 		</ListItem>
-	</SwipeableDrawer>;
+	</SwipeableDrawer>
 };
-
-export default Navbar;

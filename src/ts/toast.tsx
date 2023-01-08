@@ -1,20 +1,20 @@
-import {OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar} from "notistack";
+import {OptionsObject, SnackbarKey, SnackbarMessage} from "notistack";
 import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Paper, Stack} from "@mui/material";
 import {useState} from "react";
 import CloseIcon from '@mui/icons-material/Close';
 
 type variant = "error" | "success" | "warning" | "info"
 
-function errorToast(
+export function errorToast(
 		message: string,
 		toast: toast,
-		error: any,
+		error: string | Error,
 		opts?: OptionsObject
 ): () => void {
 	return toastMessage("error", message, toast, undefined, error.toString(), opts)
 }
 
-function toastMessage(
+export function toastMessage(
 		variant: variant,
 		message: string,
 		toast: toast,
@@ -22,30 +22,25 @@ function toastMessage(
 		info?: string,
 		opts?: OptionsObject
 ): () => void {
-	let key = toast.openToast(message,
+	let key = toast.enqueueSnackbar(message,
 			Object.assign({
 						variant: variant,
 						anchorOrigin: {
 							vertical: 'bottom',
 							horizontal: 'right'
 						},
-						action: action(variant, toast.closeToast, undo, info),
+						action: action(variant, toast.closeSnackbar, undo, info),
 						persist: variant == "error",
 						autoHideDuration: variant == "warning" ? 3500 : 1500
 					}, opts
 			)
 	)
-	return () => toast.closeToast(key)
+	return () => toast.closeSnackbar(key)
 }
 
-type toast = {
-	openToast: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey
-	closeToast: (key?: SnackbarKey) => void
-}
-
-const useToast: () => toast = () => {
-	let {enqueueSnackbar, closeSnackbar} = useSnackbar()
-	return {openToast: enqueueSnackbar, closeToast: closeSnackbar}
+export type toast = {
+	enqueueSnackbar: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey
+	closeSnackbar: (key?: SnackbarKey) => void
 }
 
 function action(
@@ -89,14 +84,4 @@ function action(
 			</Dialog>}
 		</Stack>
 	}
-}
-
-export {
-	toastMessage,
-	useToast,
-	errorToast
-}
-
-export type {
-	toast
 }

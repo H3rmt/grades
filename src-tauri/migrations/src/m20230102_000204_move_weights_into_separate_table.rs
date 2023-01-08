@@ -22,10 +22,10 @@ impl MigrationTrait for Migration {
 		let statement2 = Query::insert()
 				.into_table(Weights::Table)
 				.columns([Weights::Name, Weights::Value])
-				.values(["Normal".into(), "{}*1".into()]).expect("Failed to insert normal weight")
-				.values(["Double".into(), "{}*2".into()]).expect("Failed to insert double weight")
-				.values(["Half".into(), "{}/2".into()]).expect("Failed to insert half weight")
-				.values(["Ignore".into(), "{}*0".into()]).expect("Failed to insert ignore weight")
+				.values(["Normal".into(), "1".into()]).expect("Failed to insert normal weight")
+				.values(["Double".into(), "2".into()]).expect("Failed to insert double weight")
+				.values(["Half".into(), "2".into()]).expect("Failed to insert half weight")
+				.values(["Ignore".into(), "0".into()]).expect("Failed to insert ignore weight")
 				.to_owned();
 		
 		log::info!("SQL:{}", statement.to_string(SqliteQueryBuilder));

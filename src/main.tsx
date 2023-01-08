@@ -15,7 +15,6 @@ import {QueryClient, QueryClientProvider,} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import {StrictMode} from "react";
 
-
 const darkTheme = createTheme({
 	palette: {
 		mode: 'dark',
@@ -37,7 +36,7 @@ const darkTheme = createTheme({
 	},
 });
 
-const queryClient = new QueryClient({defaultOptions: {queries: {networkMode: 'always', refetchOnWindowFocus: false}}});
+const queryClient = new QueryClient({defaultOptions: {queries: {retry: 1, networkMode: 'always', refetchOnWindowFocus: false}}});
 
 createRoot(document.getElementById("root") as HTMLElement).render(
 		<StrictMode>
