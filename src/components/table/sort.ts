@@ -13,12 +13,12 @@ function comp<Type>(a: Type, b: Type, orderFn: (d: Type) => any) {
 
 export type Order = 'asc' | 'desc';
 
-export function getComparator<Type extends IRow>(order: Order, orderBy: keyof Type, orderFn?: (d: Type) => unknown): (a: Column<Type>, b: Column<Type>) => number {
-	let fn = orderFn || ((d: Type) => d[orderBy]);
+export function getComparator<Type extends IRow>(order: Order, orderBy: keyof Type, orderFn?: (d: Type) => unknown): (a: [number, Column<Type>], b: [number, Column<Type>]) => number {
+	const fn = orderFn || ((d: Type) => d[orderBy]);
 	return order === 'desc' ?
-			(a, b) => comp(a.data, b.data, fn)
+			(a, b) => comp(a[1].data, b[1].data, fn)
 			:
-			(a, b) => -comp(a.data, b.data, fn);
+			(a, b) => -comp(a[1].data, b[1].data, fn);
 }
 
 export function setSort<Type extends IRow>(property: keyof Type, order: Order, orderBy: keyof Type): [Order, keyof Type] {

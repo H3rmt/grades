@@ -4,7 +4,7 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
-import {Order, setSort} from "./sort";
+import {getComparator, Order, setSort} from "./sort";
 import {Dialog, DialogContent, DialogTitle, Grid, IconButton, Paper, Stack, Table, TableSortLabel, Typography} from "@mui/material";
 import {capitalizeFirstLetter} from "../../ts/utils";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -89,9 +89,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 			</TableHead>
 			<TableBody>
 				{Array.from(data.entries())
-						// .sort(
-						// 		getComparator<Row>(order, orderBy, props.cols.get(orderBy)?.preSort ?? (a => a))
-						// )
+						.sort(getComparator<Row>(order, orderBy, props.cols.get(orderBy)?.preSort))
 						.map(([_, col]) => {
 							return <TableRow hover key={col.data.id} data-id={col.data.id} sx={{position: 'relative'}}>
 								{(props.delete ?? props.edit) && <TableCell>
