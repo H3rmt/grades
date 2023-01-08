@@ -22,8 +22,6 @@ export default async ({github, context, core, release_id, commit_head_message, v
 	})
 
 	core.notice(`published release: ${repo} v${version}`)
-
-	return `${repo}-v${version}`
 }
 
 
