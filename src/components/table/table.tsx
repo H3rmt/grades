@@ -5,7 +5,7 @@ import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import {Order, setSort} from "./sort";
-import {Dialog, DialogContent, DialogTitle, Grid, IconButton, Stack, Table, TableSortLabel, Typography} from "@mui/material";
+import {Dialog, DialogContent, DialogTitle, Grid, IconButton, Paper, Stack, Table, TableSortLabel, Typography} from "@mui/material";
 import {capitalizeFirstLetter} from "../../ts/utils";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -127,7 +127,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 												</IconButton>
 										}
 										{col.edit && Array.from(props.cols.values()).some((col) => col.extraEdit) && <IconButton
-												color="default"
+												color="info"
 												onClick={() => {
 													col.dialogOpen = !col.dialogOpen
 													setData(new Map(data));
@@ -137,26 +137,25 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 										{col.dialogOpen && <Dialog open={col.dialogOpen} onClose={() => {
 											col.dialogOpen = false
 											setData(new Map(data));
-										}} fullWidth maxWidth="md">
-											<DialogTitle variant="h5">New Grade</DialogTitle>
+										}} fullWidth>
+											<DialogTitle variant="h5">Edit Grade</DialogTitle>
 											<DialogContent>
-												<Grid container spacing={4} padding={2}>
-													{Array.from(props.cols.entries()).map(cd => {
-														const [key, colDef] = cd
-														if (colDef.extraEdit) {
-															return <Grid item xs={12} sm={6} lg={4}>
-																<Stack spacing={2}>
-																	<Typography variant="h6"
-																					fontWeight="normal">{colDef.name ?? capitalizeFirstLetter(key as string)}</Typography>
-																	<TableCell key={key as Key} onChange={forceUpdate} data-key={key}
-																				  data-data={col.data[key]}>
+												<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
+													<Grid container spacing={4} padding={2}>
+														{Array.from(props.cols.entries()).map(cd => {
+															const [key, colDef] = cd
+															if (colDef.extraEdit) {
+																return <Grid key={key as Key} item xs={12} sm={6} lg={6}>
+																	<Stack spacing={2} onChange={forceUpdate}>
+																		<Typography variant="h6"
+																						fontWeight="normal">{colDef.name ?? capitalizeFirstLetter(key as string)}</Typography>
 																		{colDef.edit(col.temp, forceUpdate) as ReactNode}
-																	</TableCell>
-																</Stack>
-															</Grid>
-														}
-													})}
-												</Grid>
+																	</Stack>
+																</Grid>
+															}
+														})}
+													</Grid>
+												</Paper>
 											</DialogContent>
 										</Dialog>
 										}
@@ -169,10 +168,13 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 										let format = colDef.format ?? ((d: Row) => <Typography>{d[key] as ReactNode}</Typography>)
 										let edit = (colDef?.edit ?? (() => format(col.data)))
 
-										return col.edit ?
-												<TableCell key={key as Key} onChange={forceUpdate} data-key={key} data-data={col.data[key]}>
-													{edit(col.temp, forceUpdate)}
-												</TableCell>
+										return col.edit ? colDef.extraEdit ?
+														<TableCell key={key as Key} data-key={key} data-data={col.data[key]}>
+															{format(col.temp)}
+														</TableCell> :
+														<TableCell key={key as Key} onChange={forceUpdate} data-key={key} data-data={col.data[key]}>
+															{edit(col.temp, forceUpdate)}
+														</TableCell>
 												:
 												<TableCell key={key as Key} data-key={key} data-data={col.data[key]}>
 													{format(col.data)}

@@ -1,4 +1,4 @@
-import {useGrades, useNoteRange, useSubjects, useTypes, useWeights} from "../commands/get";
+import {useGrades, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../commands/get";
 import {CTable} from "../components/table/table";
 import {errorToast, toastMessage} from "../ts/toast";
 import NewGradeModal from "./NewGradeModal/NewGradeModal";
@@ -49,6 +49,12 @@ export default function Overview(props: Props) {
 		}
 	});
 
+	const periods = usePeriods({
+		onError: (error) => {
+			errorToast("Error loading Periods", toast, error)
+		}
+	});
+
 	const deleteGrade = useDeleteGrade(queryClient, {
 		onSuccess: () => {
 			toastMessage("success", "Deleted Grade", toast)
@@ -70,7 +76,7 @@ export default function Overview(props: Props) {
 	return (<>
 				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess &&
 						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period === "-1" || period === null )}
-								  cols={getCols(noteRange.data, subjects.data, types.data, weights.data)}
+								  cols={getCols(noteRange.data, subjects.data, types.data, weights.data, periods.data)}
 								  delete={(id) => {
 									  deleteGrade.mutate(id)
 								  }}

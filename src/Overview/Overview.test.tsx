@@ -17,7 +17,8 @@ describe('Overview', () => {
 		expect(await screen.findByRole('columnheader', {exact: false, name: 'Date'})).to.exist
 		expect(await screen.findByRole('columnheader', {exact: false, name: 'Confirmed'})).to.exist
 		expect(await screen.findByRole('columnheader', {exact: false, name: 'Info'})).to.exist
-		expect(await screen.findByRole('columnheader', {exact: false, name: 'Weight'})).to.exist
+		// removed Header, can still be edited and viewed in edit dialog
+		// expect(await screen.findByRole('columnheader', {exact: false, name: 'Weight'})).to.exist
 		console.info('Table and all Table columns rendered')
 	})
 	test('Table renders Grades', async () => {
