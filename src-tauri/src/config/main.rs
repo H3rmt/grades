@@ -12,7 +12,7 @@ use crate::config::types::{AnalysisBox, GradeModalDefaults, NoteRange};
 pub struct Data {
 	pub note_range: NoteRange,
 	pub grade_modal_defaults: GradeModalDefaults,
-	pub analysis: Vec<AnalysisBox>,
+	// pub analysis: Vec<AnalysisBox>,
 }
 
 #[derive(Default, Debug)]

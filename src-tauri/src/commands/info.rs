@@ -9,7 +9,7 @@ use crate::config::main::Config;
 use crate::config::types::{AnalysisBox, AnalysisBoxPoint};
 
 #[tauri::command]
-pub async fn get_info_js(config: tauri::State<'_, Mutex<Config>>) -> Result<String, String> {
+pub async fn get_info_js() -> Result<String, String> {
 	let info = Info {
 		name: built_info::PKG_NAME.to_string(),
 		version: built_info::PKG_VERSION.to_string(),
@@ -19,7 +19,7 @@ pub async fn get_info_js(config: tauri::State<'_, Mutex<Config>>) -> Result<Stri
 		commit_hash: built_info::GIT_COMMIT_HASH.unwrap_or_default().to_string(),
 	};
 	
-	config.lock().await.set(|c| c.analysis = vec![AnalysisBox { test: vec![AnalysisBoxPoint { x: 12, y: 1 }], test2: None }, AnalysisBox { test: vec![AnalysisBoxPoint { x: 1, y: 24 }, AnalysisBoxPoint { x: 12, y: 1 }], test2: Some(AnalysisBoxPoint { x: 14, y: 6 }) }]).unwrap();
+	// config.lock().await.set(|c| c.analysis = vec![AnalysisBox { test: vec![AnalysisBoxPoint { x: 12, y: 1 }], test2: None }, AnalysisBox { test: vec![AnalysisBoxPoint { x: 1, y: 24 }, AnalysisBoxPoint { x: 12, y: 1 }], test2: Some(AnalysisBoxPoint { x: 14, y: 6 }) }]).unwrap();
 	
 	let data = serde_json::to_string(&info)
 			.into_report()
