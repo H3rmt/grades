@@ -1,6 +1,6 @@
 [package]
 name = "grades"
-version = "0.2.0"
+version = "0.2.1"
 description = "tauri app to manage grades in school"
 authors = ["H3rmt"]
 edition = "2021"
