@@ -2,21 +2,21 @@ import {Key, ReactNode, useCallback, useState} from "react";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
-import TableSortLabel from "@mui/material/TableSortLabel";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
-import {getComparator, Order, setSort} from "./sort";
-import {IconButton, Stack, Table, Typography} from "@mui/material";
+import {Order, setSort} from "./sort";
+import {Dialog, DialogContent, DialogTitle, Grid, IconButton, Stack, Table, TableSortLabel, Typography} from "@mui/material";
 import {capitalizeFirstLetter} from "../../ts/utils";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveButton from '@mui/icons-material/Save';
 import UndoIcon from '@mui/icons-material/Undo';
-import {cols, Column, ColumnDef, IRow} from "./defs";
+import {Cols, Column, ColumnDef, IRow} from "./defs";
+import HandymanIcon from '@mui/icons-material/Handyman';
 
 type Props<Row extends IRow> = {
 	data: Array<Row>
-	cols: cols<Row>
+	cols: Cols<Row>
 	delete?: (id: number) => void
 	edit?: (row: Row) => void
 }
@@ -47,7 +47,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 			co.data = col
 		} else {
 			// add new rows
-			data.set(col.id, {data: col, edit: false, temp: {...col}});
+			data.set(col.id, {data: col, dialogOpen: false, edit: false, temp: {...col}});
 			change = true
 		}
 	}
@@ -68,87 +68,130 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 			<TableHead sx={{bgcolor: "primary.main"}}>
 				<TableRow>
 					{(props.delete ?? props.edit) && <TableCell key="actions" padding="checkbox"/>}
-					{Array.from(props.cols.entries()).filter(([, col]) => !col.hide).map(([key, col]) => {
-						return <TableCell key={key as Key} sortDirection={orderBy === key ? order : false}
-												sx={{resize: "horizontal", overflow: "hidden"}}>
-							{
-								col.sort ?
-										<TableSortLabel
+					{Array.from(props.cols.entries()).map(cd => {
+						const [key, colDef] = cd
+						if (!colDef.hide) {
+							return <TableCell key={key.toString()} sortDirection={orderBy === key ? order : false}
+													sx={{resize: "horizontal", overflow: "hidden"}}>
+								{colDef.sort ? <TableSortLabel
 												active={orderBy === key}
 												direction={orderBy === key ? order : 'asc'}
 												onClick={() => handleRequestSort(key)}>
-											{col.name ?? capitalizeFirstLetter(key as string)}
+											{colDef.name ?? capitalizeFirstLetter(key.toString())}
 										</TableSortLabel>
 										:
-										col.name ?? capitalizeFirstLetter(key as string)
-							}
-						</TableCell>
+										colDef.name ?? capitalizeFirstLetter(key.toString())
+								}
+							</TableCell>
+						}
 					})}
 				</TableRow>
 			</TableHead>
 			<TableBody>
-				{[...data.values()].sort(getComparator<Row>(order, orderBy, props.cols.get(orderBy)?.preSort)).map((col) => {
-					return <TableRow hover key={col.data.id} data-id={col.data.id}>
-						{(props.delete ?? props.edit) && <TableCell>
-							<Stack direction="row">
-								{col.edit ?
-										<IconButton color="default" onClick={() => {
-											col.edit = false
-											setData(new Map(data));
-										}}><UndoIcon/>
+				{Array.from(data.entries())
+						// .sort(
+						// 		getComparator<Row>(order, orderBy, props.cols.get(orderBy)?.preSort ?? (a => a))
+						// )
+						.map(([_, col]) => {
+							return <TableRow hover key={col.data.id} data-id={col.data.id} sx={{position: 'relative'}}>
+								{(props.delete ?? props.edit) && <TableCell>
+									<Stack direction="row">
+										{col.edit ?
+												<IconButton color="default" onClick={() => {
+													col.edit = false
+													setData(new Map(data));
+												}}><UndoIcon/>
+												</IconButton>
+												:
+												props.delete && <IconButton color="error" onClick={() => {
+													props.delete && props.delete(col.data.id)
+													data.delete(col.data.id)
+													setData(new Map(data));
+												}}><DeleteIcon/>
+												</IconButton>
+										}
+										{col.edit ?
+												<IconButton color="success" onClick={() => {
+													col.edit = false
+													col.data = {...col.temp}
+													props.edit && props.edit(col.data)
+													setData(new Map(data));
+												}}><SaveButton/>
+												</IconButton>
+												:
+												props.edit && <IconButton color="default" onClick={() => {
+													col.edit = true
+													col.temp = {...col.data}
+													setData(new Map(data))
+												}}><EditIcon/>
+												</IconButton>
+										}
+										{col.edit && Array.from(props.cols.values()).some((col) => col.extraEdit) && <IconButton
+												color="default"
+												onClick={() => {
+													col.dialogOpen = !col.dialogOpen
+													setData(new Map(data));
+												}}><HandymanIcon/>
 										</IconButton>
-										:
-										props.delete && <IconButton color="error" onClick={() => {
-											props.delete && props.delete(col.data.id)
-											data.delete(col.data.id)
+										}
+										{col.dialogOpen && <Dialog open={col.dialogOpen} onClose={() => {
+											col.dialogOpen = false
 											setData(new Map(data));
-										}}><DeleteIcon/>
-										</IconButton>
+										}} fullWidth maxWidth="md">
+											<DialogTitle variant="h5">New Grade</DialogTitle>
+											<DialogContent>
+												<Grid container spacing={4} padding={2}>
+													{Array.from(props.cols.entries()).map(cd => {
+														const [key, colDef] = cd
+														if (colDef.extraEdit) {
+															return <Grid item xs={12} sm={6} lg={4}>
+																<Stack spacing={2}>
+																	<Typography variant="h6"
+																					fontWeight="normal">{colDef.name ?? capitalizeFirstLetter(key as string)}</Typography>
+																	<TableCell key={key as Key} onChange={forceUpdate} data-key={key}
+																				  data-data={col.data[key]}>
+																		{colDef.edit(col.temp, forceUpdate) as ReactNode}
+																	</TableCell>
+																</Stack>
+															</Grid>
+														}
+													})}
+												</Grid>
+											</DialogContent>
+										</Dialog>
+										}
+									</Stack>
+								</TableCell>
 								}
-								{col.edit ?
-										<IconButton color="success" onClick={() => {
-											col.edit = false
-											col.data = {...col.temp}
-											props.edit && props.edit(col.data)
-											setData(new Map(data));
-										}}><SaveButton/>
-										</IconButton>
-										:
-										props.edit && <IconButton color="default" onClick={() => {
-											col.edit = true
-											col.temp = {...col.data}
-											setData(new Map(data))
-										}}><EditIcon/>
-										</IconButton>
-								}
-							</Stack>
-						</TableCell>
-						}
-						{Array.from(props.cols.entries()).map((entry: [keyof Row, ColumnDef<Row>]) => {
-							const [key, row] = entry
-							let format = row.format ?? ((d: Row) => <Typography>{d[key] as ReactNode}</Typography>)
-							let edit = (row.edit ?? (() => format(col.data)))
+								{Array.from(props.cols.entries()).map(cd => {
+									const [key, colDef] = cd
+									if (!colDef.hide) {
+										let format = colDef.format ?? ((d: Row) => <Typography>{d[key] as ReactNode}</Typography>)
+										let edit = (colDef?.edit ?? (() => format(col.data)))
 
-							return col.edit ?
-									<TableCell key={key as Key} onChange={forceUpdate} data-key={key} data-data={col.data[key]} sx={{display: row.hide ? 'none' : ''}}>
-										{edit(col.temp, forceUpdate) as ReactNode}
-									</TableCell>
-									:
-									<TableCell key={key as Key} data-key={key} data-data={col.data[key]} sx={{display: row.hide ? 'none' : ''}}>
-										{format(col.data) as ReactNode}
-									</TableCell>
+										return col.edit ?
+												<TableCell key={key as Key} onChange={forceUpdate} data-key={key} data-data={col.data[key]}>
+													{edit(col.temp, forceUpdate)}
+												</TableCell>
+												:
+												<TableCell key={key as Key} data-key={key} data-data={col.data[key]}>
+													{format(col.data)}
+												</TableCell>
+									} else {
+										return <TableCell key={key as Key} data-key={key} data-data={col.data[key]} sx={{display: 'none'}}>
+											<Typography>{col.data[key] as ReactNode}</Typography>
+										</TableCell>
+									}
+								})}
+							</TableRow>;
 						})}
-					</TableRow>;
-				})}
 			</TableBody>
 		</Table>
 	</TableContainer>
-			;
 }
 
 export type {
 	IRow,
-	cols,
 	ColumnDef,
 	Column
 }

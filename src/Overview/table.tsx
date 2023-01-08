@@ -1,15 +1,14 @@
 import {Grade, Subject, Type, Weight} from "../entity";
-import {cols, ColumnDef} from "../components/table/defs";
+import {Cols, ColumnDef} from "../components/table/defs";
 import {Badge, IconButton, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import {map} from "../ts/utils";
 import {NoteRange} from "../entity/config";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 import dayjs, {Dayjs} from "dayjs";
 import ClearIcon from '@mui/icons-material/Clear';
-import React from "react";
 
 
-export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[]) => cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[]) => new Map<keyof Grade, ColumnDef<Grade>>(
+export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[]) => Cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[]) => new Map<keyof Grade, ColumnDef<Grade>>(
 		[[
 			"grade", {
 				sort: true,
@@ -96,27 +95,22 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 		], [
 			"weight", {
 				sort: true,
-				format: g => <Typography>{g.weight}</Typography>,
-				preSort: (g) => weights.find(weight => weight.name === g.weight)?.value ?? (() => {
-					console.error('weight:', g.weight);
-					return -1
-				})(),
 				edit: (g, update) => <Select value={g.weight} onChange={(i) => {
 					g.weight = i.target.value;
 					update()
 				}}>
 					{weights.map((weight) => <MenuItem key={weight.name} value={weight.name}>{weight.name}</MenuItem>)}
-				</Select>
+				</Select>,
+				extraEdit: true,
 			}
 		], [
 			"id", {
-				sort: true,
 				hide: true
 			}
 		], [
 			"period", {
-				sort: true,
-				hide: true
+				hide: true,
 			}
 		]]
 )
+
