@@ -93,3 +93,5 @@ export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, Col
 			}
 		]]
 )
+
+// TODO show id in extra window

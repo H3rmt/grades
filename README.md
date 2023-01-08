@@ -1,10 +1,12 @@
 # Grades
 
-#### A tauri desktop app to manage grades in school
+### A tauri desktop app to manage grades in school
 
-Backend written in Rust, uses SeaOrm and Sqlite to store data
+Backend written in Rust, using SeaOrm and Sqlite
 
-Frontend is written in React.js, Typescript, react-query and MUI using vite as bundler
+Frontend is written in Typescript, React with MUI and react-quer, using vite
+
+UI-Tests with vitest and testing-library
 
 ### Overview: 
 ![img](img/img.png)

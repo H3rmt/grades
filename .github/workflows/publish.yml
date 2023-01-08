@@ -21,7 +21,7 @@ jobs:
           node-version: 16
           cache: 'yarn'
       - run: yarn --cwd ./workflows install --frozen-lockfile
-      - run: yarn --cwd ./workflows dist
+      - run: yarn --cwd ./workflows run dist
       - name: Get Version
         id: get-version
         uses: SebRollen/toml-action@v1.0.2
@@ -94,7 +94,7 @@ jobs:
           node-version: 16
           cache: 'yarn'
       - run: yarn --cwd ./workflows install --frozen-lockfile
-      - run: yarn --cwd ./workflows dist
+      - run: yarn --cwd ./workflows run dist
       - name: publish release
         id: publish-release
         uses: actions/github-script@v6
@@ -118,7 +118,7 @@ jobs:
           version: ${{ needs.create-release.outputs.version }}
           gistId: 9f0a67b7ad425e9fb74b32f6afcab111
           releaseNotes: ${{ github.event.head_commit.message }}
-          releaseTagName: v${{ needs.publish-release.outputs.tag-name }}
+          releaseTagName: ${{ needs.publish-release.outputs.tag-name }}
 
           winsig: ${{ needs.tauri.outputs.winsig }}
           macsig: ${{ needs.tauri.outputs.macsig }}
