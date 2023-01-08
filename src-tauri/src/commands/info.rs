@@ -1,6 +1,5 @@
 use error_stack::{IntoReport, ResultExt};
 use serde::{Deserialize, Serialize};
-use tokio::sync::Mutex;
 use ts_rs::TS;
 
 use crate::built_info;
@@ -14,7 +13,9 @@ pub async fn get_info_js() -> Result<String, String> {
 		authors: built_info::PKG_AUTHORS.to_string(),
 		target: built_info::TARGET.to_string(),
 		profile: built_info::PROFILE.to_string(),
-		commit_hash: built_info::GIT_COMMIT_HASH.unwrap_or_default().to_string(),
+		build_on: built_info::CI_PLATFORM.unwrap_or("local").to_string(),
+		repository: built_info::PKG_REPOSITORY.to_string(),
+		commit_hash_short: built_info::GIT_COMMIT_HASH.unwrap_or("GIT_COMMIT_HASH MISSING").to_string(),
 	};
 	
 	// config.lock().await.set(|c| c.analysis = vec![AnalysisBox { test: vec![AnalysisBoxPoint { x: 12, y: 1 }], test2: None }, AnalysisBox { test: vec![AnalysisBoxPoint { x: 1, y: 24 }, AnalysisBoxPoint { x: 12, y: 1 }], test2: Some(AnalysisBoxPoint { x: 14, y: 6 }) }]).unwrap();
@@ -38,5 +39,7 @@ struct Info {
 	authors: String,
 	target: String,
 	profile: String,
-	commit_hash: String,
+	build_on: String,
+	repository: String,
+	commit_hash_short: String,
 }

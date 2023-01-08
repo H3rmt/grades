@@ -1,4 +1,17 @@
-import {Button, Grid, IconButton, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
+import {
+	Button,
+	Grid,
+	IconButton,
+	Link,
+	MenuItem,
+	Paper,
+	Select,
+	SelectChangeEvent,
+	Slider,
+	Stack,
+	TextField,
+	Typography
+} from '@mui/material';
 import {ChangeEvent, useState} from 'react';
 import {nextFree, nullableUseState, randColor} from "../ts/utils";
 import {CTable} from "../components/table/table";
@@ -415,8 +428,14 @@ export default function Settings(props: Props) {
 									profile: {info.data.profile}
 								</Typography>
 								<Typography>
-									commit-hash: {info.data.commit_hash}
+									build_on: {info.data.build_on}
 								</Typography>
+								<Link underline="hover" target="_blank" rel="noreferrer" color=""
+										href={`${info.data.repository}commit/${info.data.commit_hash_short}`}>
+									<Typography color="">
+										commit_hash_short: {info.data.commit_hash_short}
+									</Typography>
+								</Link>
 							</Stack>
 						</Paper>
 					</SettingsBox>
