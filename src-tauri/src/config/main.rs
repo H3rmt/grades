@@ -6,7 +6,7 @@ use error_stack::{IntoReport, Result, ResultExt};
 use serde::{Deserialize, Serialize};
 
 use crate::config::error::ConfigError;
-use crate::config::types::{AnalysisBox, GradeModalDefaults, NoteRange};
+use crate::config::types::{GradeModalDefaults, NoteRange};
 
 #[derive(Deserialize, Serialize, Default, Debug)]
 pub struct Data {

@@ -5,8 +5,6 @@ use ts_rs::TS;
 
 use crate::built_info;
 use crate::commands::utils::{CommandError, LogAndString};
-use crate::config::main::Config;
-use crate::config::types::{AnalysisBox, AnalysisBoxPoint};
 
 #[tauri::command]
 pub async fn get_info_js() -> Result<String, String> {
