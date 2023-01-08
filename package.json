@@ -8,7 +8,10 @@
 
 		"tauri dev": "tauri dev",
 		"tauri build": "tauri build",
-		"build ts entity": "cd src-tauri/entity && cargo test && cd .. && cargo test"
+		"build ts entity": "cd src-tauri/entity && cargo test && cd .. && cargo test",
+
+		"test": "vitest",
+		"coverage": "vitest run --coverage"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.10",
@@ -23,7 +26,7 @@
 
 		"notistack": "^2.0",
 		"dayjs": "^1.11",
-		"jotai ": "^1.12",
+		"jotai": "^1.12",
 		"@tanstack/react-query": "^4.19",
 		"@tanstack/react-query-devtools": "^4.19",
 
@@ -40,6 +43,14 @@
 	"devDependencies": {
 		"@types/node": "^18.11",
 		"@types/react": "^18.0",
-		"@types/react-dom": "^18.0"
+		"@types/react-dom": "^18.0",
+
+		"vitest": "^0.26",
+		"@vitest/coverage-c8": "^0.26",
+		"@vitest/ui": "^0.26",
+		"jsdom": "^20.0",
+		"css-mediaquery": "^0.1",
+		"@testing-library/react": "^13.4",
+		"@testing-library/user-event": "^14.4"
 	}
 }

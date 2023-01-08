@@ -1,9 +1,8 @@
 import {Button, Grid, IconButton, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
 import {ChangeEvent, useState} from 'react';
 import {nextFree, nullableUseState, randColor} from "../ts/utils";
-import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
-import {errorToast, toastMessage, useToast} from "../ts/toast";
+import {errorToast, toastMessage} from "../ts/toast";
 import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
@@ -15,12 +14,14 @@ import {useCreatePeriod, useCreateSubject, useCreateType} from "../commands/crea
 import dayjs from "dayjs";
 import {useDeletePeriod, useDeleteSubject, useDeleteType} from "../commands/delete";
 import {useEditGradeModalDefaults, useEditNoteRange, useEditPeriod, useEditSubject, useEditType} from "../commands/edit";
+import {useSnackbar} from "notistack";
+import SettingsBox from "../components/SettingsBox/SettingsBox";
 
 type Props = {}
 
 
-function Settings(props: Props) {
-	const toast = useToast()
+export default function Settings(props: Props) {
+	const toast = useSnackbar()
 	const queryClient = useQueryClient()
 
 	const [periods, setPeriods] = useState<Period[]>([])
@@ -308,22 +309,22 @@ function Settings(props: Props) {
 					}><Grid container spacing={4} padding={2}>
 						<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
 							<Stack spacing={2} direction="row" alignItems="center">
-								<Typography variant="h6" fontWeight="normal">Type</Typography>
-								<Select value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
-										  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
-									{types.map((type) => {
-										return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
+								<Typography variant="h6" fontWeight="normal">Subject</Typography>
+								<Select value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
+										  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
+									{subjects.map((subject) => {
+										return <MenuItem value={subject.id} key={subject.id} sx={{color: subject.color}}>{subject.name}</MenuItem>
 									})}
 								</Select>
 							</Stack>
 						</Grid>
 						<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
 							<Stack spacing={2} direction="row" alignItems="center">
-								<Typography variant="h6" fontWeight="normal">Subject</Typography>
-								<Select value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
-										  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
-									{subjects.map((subject) => {
-										return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
+								<Typography variant="h6" fontWeight="normal">Type</Typography>
+								<Select value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
+										  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
+									{types.map((type) => {
+										return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
 									})}
 								</Select>
 							</Stack>
@@ -334,7 +335,7 @@ function Settings(props: Props) {
 								<Select value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none" fullWidth
 										  onChange={(e) => handlePeriodSelectChange(e, gradeModalDefaults)}>
 									{periods.map((period) => {
-										return <MenuItem value={period.id}>
+										return <MenuItem value={period.id} key={period.id}>
 											<Stack>
 												{period.name}
 												<br/>
@@ -423,5 +424,3 @@ function Settings(props: Props) {
 		}
 	</Grid>
 }
-
-export default Settings;

@@ -1,15 +1,14 @@
-import {Grade, Subject, Type, Weight} from "../entity";
-import {cols, ColumnDef} from "../components/table/defs";
+import {Grade, Period, Subject, Type, Weight} from "../entity";
+import {Cols, ColumnDef} from "../components/table/defs";
 import {Badge, IconButton, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import {map} from "../ts/utils";
 import {NoteRange} from "../entity/config";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 import dayjs, {Dayjs} from "dayjs";
 import ClearIcon from '@mui/icons-material/Clear';
-import React from "react";
 
 
-const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[]) => cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[]) => new Map<keyof Grade, ColumnDef<Grade>>(
+export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[]) => Cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[]) => new Map<keyof Grade, ColumnDef<Grade>>(
 		[[
 			"grade", {
 				sort: true,
@@ -33,6 +32,13 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weight
 					console.error('subject:', g.subject);
 					return '--notfound--'
 				})()}</Typography>,
+				extraEdit: true,
+				edit: (g, update) => <Select fullWidth value={g.subject ?? ""} onChange={(i) => {
+					g.subject = Number(i.target.value)
+					update()
+				}}>
+					{subjects.map(sub => <MenuItem key={sub.id} value={sub.id}>{sub.name}</MenuItem>)}
+				</Select>
 			}
 		], [
 			"type", {
@@ -42,6 +48,13 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weight
 					console.error('type:', g.type);
 					return '--notfound--'
 				})()}</Typography>,
+				extraEdit: true,
+				edit: (g, update) => <Select fullWidth value={g.type ?? ""} onChange={(i) => {
+					g.type = Number(i.target.value)
+					update()
+				}}>
+					{types.map(type => <MenuItem key={type.id} value={type.id}>{type.name}</MenuItem>)}
+				</Select>
 			}
 		], [
 			"date", {
@@ -88,37 +101,44 @@ const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weight
 				preSort: (g) => dayjs(g.date, 'DD-MM-YYYY').unix()
 			}
 		], [
-			"info", {
-				// TODO enable or disable this sort
-				sort: true,
-				edit: (g) => <TextField fullWidth value={g.info} onChange={(i) => g.info = i.target.value}/>,
-				preSort: (g) => g.info.length > 0
+			"period", {
+				edit: (g, update) => <Select value={g.period} onChange={(i) => {
+					g.period = Number(i.target.value);
+					update()
+				}}>
+					{periods.map((period) => <MenuItem key={period.id} value={period.id}>
+						<Stack>
+							{period.name}
+							<br/>
+							<Typography variant="overline">{period.from} - {period.to}</Typography>
+						</Stack>
+					</MenuItem>)}
+				</Select>,
+				extraEdit: true,
+				hide: true,
 			}
 		], [
 			"weight", {
-				sort: true,
-				format: g => <Typography>{g.weight}</Typography>,
-				preSort: (g) => g.weight == "Half" ? 0.5 : g.weight == "Double" ? 2 : 1,
 				edit: (g, update) => <Select value={g.weight} onChange={(i) => {
 					g.weight = i.target.value;
 					update()
 				}}>
-					{weights.map((weight) => <MenuItem value={weight.name}>{weight.name}</MenuItem>)}
-				</Select>
-			}
-		], [
-			"id", {
-				sort: true,
+					{weights.map((weight) => <MenuItem key={weight.name} value={weight.name}>{weight.name}</MenuItem>)}
+				</Select>,
+				extraEdit: true,
 				hide: true
 			}
 		], [
-			"period", {
-				sort: true,
+			"info", {
+				sort: false,
+				format: g => <>{g.info.split('\n').map(s => <Typography key={s}>{s}</Typography>)}</>,
+				edit: (g) => <TextField multiline minRows={2} fullWidth value={g.info} onChange={(i) => g.info = i.target.value}/>,
+				extraEdit: true
+			}
+		], [
+			"id", {
 				hide: true
 			}
 		]]
 )
 
-export {
-	getCols
-};

@@ -5,20 +5,20 @@ import Overview from "./Overview/Overview";
 import Analysis from "./Analysis/Analysis";
 import Navbar from "./components/Navbar/Navbar";
 import Settings from "./Settings/Settings";
-import {Page as SPage} from "./entity"
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import {edit, get} from "./ts/utils";
-import {OverviewAppBar} from "./Overview/AppBar";
 import MenuIcon from "@mui/icons-material/Menu";
+import {useEditPageInCache, usePageInCache} from "./commands/cache";
+import {useQueryClient} from "@tanstack/react-query";
+import OverviewAppBar from "./Overview/OverviewAppBar";
 
-type Pages = {
+export type Pages = {
 	overview: Page
 	analysis: Page
 	settings: Page
 }
 
-type Page = {
+export type Page = {
 	page: ReactElement,
 	appBar: ReactElement,
 	name: string,
@@ -50,41 +50,35 @@ const pages: Pages = {
 	}
 }
 
-const App = () => {
+export default function App() {
 	const [openNav, setOpenNav] = useState(false);
-
 	const [openPage, setPage] = useState(pages.overview)
+
 	useEffect(() => {
 		setOpenNav(false)
 	}, [openPage])
 
-	// cache has special logging, no errorToast and console.error
-	const SetPage = (page: Page) => {
-		edit("page_in_cache", {"name": page.name}).then(() => {
-			console.debug("Stored page in cache")
-		}).catch((error) => {
-			console.warn("Error storing page in cache", error)
-			// errorToast("Error storing page in cache", toast, error)
-		})
-		setPage(page)
-	}
+	const queryClient = useQueryClient()
 
-	const GetPage = () => {
-		get<SPage>("page_from_cache").then((data: SPage) => {
-			console.log("loaded site from cache", data)
-			// @ts-ignore
-			if (pages[data.name.toLowerCase()]) {
-				// @ts-ignore
-				setPage(pages[data.name.toLowerCase()])
-			}
-		}).catch((error) => {
+	const page = usePageInCache({
+		onError: (error) => {
 			console.warn("Error loading site cache", error)
-		})
-	}
+			// errorToast("Error loading Periods", toast, error)
+		},
+		onSuccess: (page) => {
+			// @ts-ignore
+			if (pages[page.name.toLowerCase()]) {
+				// @ts-ignore
+				setPage(pages[page.name.toLowerCase()])
+			}
+		}
+	});
 
-	useEffect(() => {
-		GetPage()
-	}, [])
+	const editPage = useEditPageInCache(queryClient, {
+		onError: (error) => {
+			console.warn("Error loading site cache", error)
+		}
+	});
 
 	return (<>
 		<AppBar component="nav" enableColorOnDark position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
@@ -99,17 +93,10 @@ const App = () => {
 				{openPage.appBar}
 			</Toolbar>
 		</AppBar>
-		<Navbar open={openNav} set={setOpenNav} setPage={SetPage} pages={pages} openPageName={openPage.name}/>
+		<Navbar open={openNav} set={setOpenNav} setPage={setPage} pages={pages} openPageName={openPage.name}/>
 		<Box component="main">
-			<Toolbar />
+			<Toolbar/>
 			{openPage.page}
 		</Box>
 	</>)
-}
-
-export default App
-
-export type {
-	Page,
-	Pages
 }
