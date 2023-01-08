@@ -53,46 +53,46 @@ impl Display for GradeModalDefaults {
 }
 
 
-#[derive(TS, Deserialize, Serialize, Debug)]
-#[ts(export, export_to = "../src/entity/config/analysisBox.ts")]
-pub struct AnalysisBox {
-	pub test: Vec<AnalysisBoxPoint>,
-	pub test2: Option<AnalysisBoxPoint>,
-}
+// #[derive(TS, Deserialize, Serialize, Debug)]
+// #[ts(export, export_to = "../src/entity/config/analysisBox.ts")]
+// pub struct AnalysisBox {
+// 	pub test: Vec<AnalysisBoxPoint>,
+// 	pub test2: Option<AnalysisBoxPoint>,
+// }
 
-impl Default for AnalysisBox {
-	fn default() -> Self {
-		Self {
-			test: vec![AnalysisBoxPoint{x: 1, y: 11}],
-			test2: None,
-		}
-	}
-}
+// impl Default for AnalysisBox {
+// 	fn default() -> Self {
+// 		Self {
+// 			test: vec![AnalysisBoxPoint{x: 1, y: 11}],
+// 			test2: None,
+// 		}
+// 	}
+// }
 
-impl Display for AnalysisBox {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "test:{:?} test2:{:?}", self.test, self.test2)
-	}
-}
+// impl Display for AnalysisBox {
+// 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+// 		write!(f, "test:{:?} test2:{:?}", self.test, self.test2)
+// 	}
+// }
 
-#[derive(TS, Deserialize, Serialize, Debug)]
-#[ts(export, export_to = "../src/entity/config/analysisBox.ts")]
-pub struct AnalysisBoxPoint {
-	pub x: i32,
-	pub y: i32,
-}
+// #[derive(TS, Deserialize, Serialize, Debug)]
+// #[ts(export, export_to = "../src/entity/config/analysisBox.ts")]
+// pub struct AnalysisBoxPoint {
+// 	pub x: i32,
+// 	pub y: i32,
+// }
 
-impl Default for AnalysisBoxPoint {
-	fn default() -> Self {
-		Self {
-			x: 1,
-			y: 2,
-		}
-	}
-}
+// impl Default for AnalysisBoxPoint {
+// 	fn default() -> Self {
+// 		Self {
+// 			x: 1,
+// 			y: 2,
+// 		}
+// 	}
+// }
 
-impl Display for AnalysisBoxPoint {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "x:{} y:{}", self.x, self.y)
-	}
-}
+// impl Display for AnalysisBoxPoint {
+// 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+// 		write!(f, "x:{} y:{}", self.x, self.y)
+// 	}
+// }
