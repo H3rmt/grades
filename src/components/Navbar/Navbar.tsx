@@ -6,7 +6,7 @@ export default function Navbar(props: { open: boolean, set: reactSet<boolean>, s
 	const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 	return <SwipeableDrawer open={props.open} anchor="left" onOpen={() => props.set(true)} onClose={() => props.set(false)}
-									variant="temporary" disableBackdropTransition={false} disableDiscovery={iOS} swipeAreaWidth={40}>
+									variant="temporary" disableBackdropTransition={false} disableDiscovery={iOS} swipeAreaWidth={15}>
 		<Toolbar/>
 		<List disablePadding sx={{height: 1}}>
 			{Object.entries(props.pages).filter(([key]) => key != "settings").map(([key, page]) => (

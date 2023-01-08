@@ -74,7 +74,7 @@ export default function Overview(props: Props) {
 	})
 
 	return (<>
-				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess &&
+				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess && periods.isSuccess &&
 						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period === "-1" || period === null )}
 								  cols={getCols(noteRange.data, subjects.data, types.data, weights.data, periods.data)}
 								  delete={(id) => {

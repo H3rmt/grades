@@ -103,7 +103,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 		], [
 			"period", {
 				edit: (g, update) => <Select value={g.period} onChange={(i) => {
-					g.period = i.target.value;
+					g.period = Number(i.target.value);
 					update()
 				}}>
 					{periods.map((period) => <MenuItem key={period.id} value={period.id}>
