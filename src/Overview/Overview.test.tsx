@@ -21,10 +21,23 @@ describe('Overview', () => {
 		// expect(await screen.findByRole('columnheader', {exact: false, name: 'Weight'})).to.exist
 		console.info('Table and all Table columns rendered')
 	})
-	test('Table renders Grades', async () => {
+
+	test('Table renders no Grades', async () => {
 		mockIPC(mockData)
 
 		render(<Overview/>, {atoms: [[selectedPeriod, null]]})
+		await act(async () => {
+			await sleep(500)
+		})
+
+		for (const grade of mockData.grades) {
+			expect(await screen.queryAllByText(grade.id), "GradeID not found on Screen").to.be.empty
+		}
+	})
+	test('Table renders Grades', async () => {
+		mockIPC(mockData)
+
+		render(<Overview/>, {atoms: [[selectedPeriod, "-1"]]})
 		await act(async () => {
 			await sleep(500)
 		})
