@@ -1,4 +1,4 @@
-import {AppBar, Box, IconButton, Toolbar, Typography} from "@mui/material";
+import {AppBar, Box, Button, IconButton, Toolbar, Typography} from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings"
 import {ForwardRefExoticComponent, PropsWithoutRef, ReactElement, RefAttributes, useEffect, useRef, useState} from "react";
 import Overview from "./Overview/Overview";
@@ -23,7 +23,7 @@ type Pages = {
 }
 
 type Page = {
-	page: ForwardRefExoticComponent<PropsWithoutRef<PageProps> & RefAttributes<PageRef>>  //ReactElement,
+	page: ForwardRefExoticComponent<PropsWithoutRef<PageProps> & RefAttributes<PageRef>>
 	appBar: ReactElement,
 	name: string,
 	description: string,
@@ -67,6 +67,7 @@ const App = () => {
 
 	const [unsaved, setUnsaved] = useState(false);
 	const [unsavedMessage, setUnsavedMessage] = useState("");
+	const [unsavedNextPage, setUnsavedNextPage] = useState<Page>(openPage)
 
 	// cache has special logging, no errorToast and console.error
 	const changePage = (page: Page) => {
@@ -97,6 +98,7 @@ const App = () => {
 		if (changed) {
 			setUnsaved(true)
 			setUnsavedMessage(message)
+			setUnsavedNextPage(page)
 		} else {
 			setUnsaved(false)
 			changePage(page)
@@ -128,7 +130,14 @@ const App = () => {
 			<Toolbar/>
 			{<Page ref={childRef}/>}
 		</Box>
-		<Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)}/>
+		<Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)}>
+			<Button color="secondary" variant="outlined" onClick={() => {
+				setPage(unsavedNextPage)
+				setUnsaved(false)
+			}}>
+				Discard Changes
+			</Button>
+		</Info>
 	</>)
 }
 
