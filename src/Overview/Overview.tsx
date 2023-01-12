@@ -9,10 +9,12 @@ import {useDeleteGrade} from "../commands/delete";
 import {Grade} from '../entity';
 import {useAtom} from 'jotai'
 import {period as Period} from "./atoms";
+import {ForwardedRef, forwardRef} from "react";
+import {PageRef as Ref} from "../App";
 
 type Props = {}
 
-export default function Overview(props: Props) {
+const Overview = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
 	const [period] = useAtom(Period);
 
 	const toast = useToast()
@@ -76,20 +78,20 @@ export default function Overview(props: Props) {
 		}
 	})
 
-	return (<>
-				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess &&
-						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period == "-1")}
-								  cols={getCols(noteRange.data, subjects.data, types.data, weights.data)}
-								  delete={(id) => {
-									  deleteGrade.mutate(id)
-								  }}
-								  edit={(grade: Grade) => {
-									  editGrade.mutate(grade)
-								  }}
-						/>
+	return <>{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess &&
+			<CTable data={grades.data.filter(grade => grade.period === Number(period) || period == "-1")}
+					  cols={getCols(noteRange.data, subjects.data, types.data, weights.data)}
+					  delete={(id) => {
+						  deleteGrade.mutate(id)
+					  }}
+					  edit={(grade: Grade) => {
+						  editGrade.mutate(grade)
+					  }}
+			/>
 
-				}
-				<NewGradeModal/>
-			</>
-	)
-}
+	}
+		<NewGradeModal/>
+	</>
+})
+
+export default Overview
