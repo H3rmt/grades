@@ -24,6 +24,9 @@ const darkTheme = createTheme({
 		secondary: {
 			main: '#f50000'
 		},
+		off: {
+			main: '#383838',
+		},
 	},
 	breakpoints: {
 		values: {

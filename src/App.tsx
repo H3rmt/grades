@@ -1,16 +1,19 @@
-import {AppBar, Box, IconButton, Toolbar, Typography} from "@mui/material";
+import {AppBar, Box, Button, IconButton, Toolbar, Typography} from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings"
-import React, {ReactElement, useEffect, useState} from "react";
+import {ForwardRefExoticComponent, PropsWithoutRef, ReactElement, RefAttributes, useRef, useState} from "react";
 import Overview from "./Overview/Overview";
 import Analysis from "./Analysis/Analysis";
-import Navbar from "./components/Navbar/Navbar";
 import Settings from "./Settings/Settings";
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import MenuIcon from "@mui/icons-material/Menu";
+import {useAtom} from "jotai";
+import {navBarOpen} from "./atoms";
+import {Info} from "./components/Info/Info";
 import {useEditPageInCache, usePageInCache} from "./commands/cache";
 import {useQueryClient} from "@tanstack/react-query";
 import OverviewAppBar from "./Overview/OverviewAppBar";
+import Navbar from "./components/Navbar/Navbar";
 
 export type Pages = {
 	overview: Page
@@ -19,30 +22,33 @@ export type Pages = {
 }
 
 export type Page = {
-	page: ReactElement,
-	appBar: ReactElement,
-	name: string,
-	description: string,
-	icon: ReactElement
+	page: ForwardRefExoticComponent<PropsWithoutRef<PageProps> & RefAttributes<PageRef>>
+	appBar: ReactElement
+	name: string
+	description: string
+	icon: ReactElement,
 }
+
+export type PageProps = {}
+export type PageRef = { changed: () => [boolean, string] }
 
 const pages: Pages = {
 	overview: {
-		page: <Overview/>,
+		page: Overview,
 		appBar: <OverviewAppBar/>,
 		name: "Overview",
 		description: "Overview of all grades",
 		icon: <FormatListNumberedIcon/>,
 	},
 	analysis: {
-		page: <Analysis/>,
+		page: Analysis,
 		appBar: <></>,
 		name: "Analysis",
 		description: "Analysis of all grades",
 		icon: <QueryStatsIcon/>
 	},
 	settings: {
-		page: <Settings/>,
+		page: Settings,
 		appBar: <></>,
 		name: "Settings",
 		description: "Change types, subjects, etc.",
@@ -51,21 +57,25 @@ const pages: Pages = {
 }
 
 export default function App() {
-	const [openNav, setOpenNav] = useState(false);
 	const [openPage, setPage] = useState(pages.overview)
+	const [openNav, setOpenNav] = useAtom(navBarOpen);
 
-	useEffect(() => {
-		setOpenNav(false)
-	}, [openPage])
+	const childRef = useRef<PageRef>(null);
+
+	const [unsaved, setUnsaved] = useState(false);
+	const [unsavedMessage, setUnsavedMessage] = useState("");
+	const [unsavedNextPage, setUnsavedNextPage] = useState<Page>(openPage)
 
 	const queryClient = useQueryClient()
 
-	const page = usePageInCache({
+	usePageInCache({
 		onError: (error) => {
 			console.warn("Error loading site cache", error)
 			// errorToast("Error loading Periods", toast, error)
 		},
 		onSuccess: (page) => {
+			// @ts-ignore
+			console.log(pages[page.name.toLowerCase()])
 			// @ts-ignore
 			if (pages[page.name.toLowerCase()]) {
 				// @ts-ignore
@@ -80,6 +90,24 @@ export default function App() {
 		}
 	});
 
+	const openNewPage = (page: Page) => {
+		const [changed, message] = childRef?.current?.changed() ?? [false, ""]
+		if (changed) {
+			setUnsaved(true)
+			setUnsavedMessage(message)
+			setUnsavedNextPage(page)
+		} else {
+			setUnsaved(false)
+			editPage.mutate({name: page.name})
+			// @ts-ignore
+			if (pages[page.name.toLowerCase()]) {
+				// @ts-ignore
+				setPage(pages[page.name.toLowerCase()])
+			}
+		}
+		setOpenNav(false)
+	}
+
 	return (<>
 		<AppBar component="nav" enableColorOnDark position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
 			<Toolbar>
@@ -93,10 +121,18 @@ export default function App() {
 				{openPage.appBar}
 			</Toolbar>
 		</AppBar>
-		<Navbar open={openNav} set={setOpenNav} setPage={setPage} pages={pages} openPageName={openPage.name}/>
+		<Navbar setPage={openNewPage} pages={pages} openPageName={openPage.name}/>
 		<Box component="main">
 			<Toolbar/>
-			{openPage.page}
+			{<openPage.page ref={childRef}/>}
 		</Box>
+		<Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)}>
+			<Button color="secondary" variant="outlined" onClick={() => {
+				setPage(unsavedNextPage)
+				setUnsaved(false)
+			}}>
+				Discard Changes
+			</Button>
+		</Info>
 	</>)
 }

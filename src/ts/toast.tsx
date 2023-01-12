@@ -1,7 +1,8 @@
 import {OptionsObject, SnackbarKey, SnackbarMessage} from "notistack";
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Paper, Stack} from "@mui/material";
+import {Button, IconButton, Paper, Stack} from "@mui/material";
 import {useState} from "react";
 import CloseIcon from '@mui/icons-material/Close';
+import {Info} from "../components/Info/Info";
 
 type variant = "error" | "success" | "warning" | "info"
 
@@ -31,7 +32,7 @@ export function toastMessage(
 						},
 						action: action(variant, toast.closeSnackbar, undo, info),
 						persist: variant == "error",
-						autoHideDuration: variant == "warning" ? 3500 : 1500
+						autoHideDuration: variant == "warning" ? 3500 : (variant == "info" ? 3000 : 1500)
 					}, opts
 			)
 	)
@@ -69,19 +70,7 @@ function action(
 				close(id)
 			}}><CloseIcon/>
 			</IconButton>
-			{open && <Dialog open={true}>
-				<DialogTitle>Info</DialogTitle>
-				<DialogContent>
-					<DialogContentText>
-						{info}
-					</DialogContentText>
-				</DialogContent>
-				<DialogActions>
-					<Button color="secondary" variant="outlined" onClick={() => setOpen(false)}>
-						Close
-					</Button>
-				</DialogActions>
-			</Dialog>}
+			{info && <Info open={open} info={info} setOpen={setOpen}/>}
 		</Stack>
 	}
 }

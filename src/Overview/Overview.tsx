@@ -10,10 +10,12 @@ import {useAtom} from 'jotai'
 import {selectedPeriod} from "./atoms";
 import {useSnackbar} from "notistack";
 import {getCols} from "./table";
+import {ForwardedRef, forwardRef} from "react";
+import {PageRef as Ref} from "../App";
 
 type Props = {}
 
-export default function Overview(props: Props) {
+const Overview = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
 	const [period] = useAtom(selectedPeriod);
 
 	const toast = useSnackbar()
@@ -73,8 +75,7 @@ export default function Overview(props: Props) {
 		}
 	})
 
-	return (<>
-				{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess && periods.isSuccess &&
+	return <>{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess && periods.isSuccess &&
 						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period === "-1" || period === null )}
 								  cols={getCols(noteRange.data, subjects.data, types.data, weights.data, periods.data)}
 								  delete={(id) => {
@@ -85,8 +86,9 @@ export default function Overview(props: Props) {
 								  }}
 						/>
 
-				}
-				<NewGradeModal/>
-			</>
-	)
-}
+	}
+	<NewGradeModal/>
+	</>
+})
+
+export default Overview

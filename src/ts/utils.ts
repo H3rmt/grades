@@ -1,8 +1,5 @@
-import {Dispatch, SetStateAction, useState} from "react";
-import {QueryKey, UseMutationOptions, UseQueryOptions} from "@tanstack/react-query";
+import {useState} from "react";
 import {invoke} from "@tauri-apps/api";
-
-export type reactSet<T> = Dispatch<SetStateAction<T>>
 
 export function nullableUseState<T>() {
 	return useState<T | null>(null)
@@ -40,6 +37,15 @@ export function edit<T>(cmd: string, args: any): Promise<void> { // change to Pr
 	})
 }
 
+export function reset<T>(cmd: string): Promise<void> {
+	return invoke("reset_" + cmd + "_js").then(() => {
+		console.debug("reset_" + cmd, "success")
+	}).catch((e) => {
+		console.debug("reset_" + cmd, "fail", e)
+		throw e
+	})
+}
+
 export function get<T>(cmd: string): Promise<T> {
 	return invoke<string>("get_" + cmd + "_js").then((data: string) => {
 		console.debug("get_" + cmd, "success")
@@ -49,21 +55,3 @@ export function get<T>(cmd: string): Promise<T> {
 		throw e
 	})
 }
-
-export type UseQueryOpts<
-		TQueryFnData = unknown,
-		TData = TQueryFnData,
-		TQueryKey extends QueryKey = QueryKey,
-> = Omit<
-		UseQueryOptions<TQueryFnData, unknown, TData, TQueryKey>,
-		'queryKey' | 'initialData'
-> & { initialData?: TQueryFnData | (() => TQueryFnData) }
-
-export type UseMutationOpts<
-		TData = unknown,
-		TVariables = void,
-		TContext = unknown
-> = Omit<
-		UseMutationOptions<TData, unknown, TVariables, TContext>,
-		'mutationFn' | 'mutationKey'
->
