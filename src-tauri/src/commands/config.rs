@@ -109,3 +109,45 @@ pub async fn edit_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>
 	
 	Ok(())
 }
+
+#[tauri::command]
+pub async fn reset_grade_modal_defaults_js(config: tauri::State<'_, Mutex<Config>>) -> Result<(), String> {
+	log::debug!("reset_grade_modal_defaults_js");
+	
+	let grade_modal_defaults = GradeModalDefaults::default();
+	
+	{
+		let mut mutex = config.lock().await;
+		mutex.set(|data| {
+			data.grade_modal_defaults = grade_modal_defaults.clone();
+		})
+			  .attach_printable("Error resetting  grade_modal_defaults in config")
+			  .change_context(CommandError)
+			  .log_and_to_string()?;
+	}
+	
+	log::info!("reset grade_modal_defaults: {:?}", grade_modal_defaults);
+	
+	Ok(())
+}
+
+#[tauri::command]
+pub async fn reset_note_range_js(config: tauri::State<'_, Mutex<Config>>) -> Result<(), String> {
+	log::debug!("reset_note_range_js");
+	
+	let note_range = NoteRange::default();
+	
+	{
+		let mut mutex = config.lock().await;
+		mutex.set(|data| {
+			data.note_range = note_range.clone();
+		})
+			  .attach_printable("Error resetting note_range in config")
+			  .change_context(CommandError)
+			  .log_and_to_string()?;
+	}
+	
+	log::info!("reset note_range: {:?}", note_range);
+	
+	Ok(())
+}

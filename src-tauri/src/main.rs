@@ -8,7 +8,7 @@ use tokio::sync::Mutex;
 
 use commands::{
 	cache::{edit_page_in_cache_js, get_page_from_cache_js},
-	config::{edit_grade_modal_defaults_js, edit_note_range_js, get_grade_modal_defaults_js, get_note_rage_js},
+	config::{edit_grade_modal_defaults_js, edit_note_range_js, get_grade_modal_defaults_js, get_note_rage_js, reset_grade_modal_defaults_js, reset_note_range_js},
 	db::{
 		grades::{create_grade_js, delete_grade_js, edit_grade_js, get_grades_js},
 		periods::{create_period_js, delete_period_js, edit_period_js, get_periods_js},
@@ -108,7 +108,8 @@ async fn main() {
 				get_types_js, create_type_js, edit_type_js, delete_type_js,
 				get_subjects_js, create_subject_js, edit_subject_js, delete_subject_js,
 				edit_page_in_cache_js,get_page_from_cache_js, get_info_js, get_weights_js,
-				get_note_rage_js,get_grade_modal_defaults_js, edit_note_range_js, edit_grade_modal_defaults_js
+				get_note_rage_js,get_grade_modal_defaults_js, edit_note_range_js, edit_grade_modal_defaults_js,
+				reset_grade_modal_defaults_js,reset_note_range_js
         ])
 			.run(tauri::generate_context!())
 			.into_report()
@@ -119,6 +120,5 @@ async fn main() {
 }
 
 pub mod built_info {
-	// The file has been placed there by the build script.
 	include!(concat!(env!("OUT_DIR"), "/built.rs"));
 }
