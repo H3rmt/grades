@@ -1,5 +1,5 @@
 import {Button, Grid, IconButton, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
-import {ChangeEvent, useState} from 'react';
+import {ChangeEvent, useEffect, useState} from 'react';
 import {nextFree, nullableUseState, randColor} from "../ts/utils";
 import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
@@ -48,6 +48,7 @@ function Settings(props: Props) {
 	});
 
 	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
+	const [noteRangeChanged, setNoteRangeChanged] = useState(false)
 	const noteRangeS = useNoteRange({
 		onSuccess: (data) => setNoteRange(data),
 		onError: (error) => {
@@ -56,6 +57,7 @@ function Settings(props: Props) {
 	});
 
 	const [gradeModalDefaults, setGradeModalDefaults] = nullableUseState<GradeModalDefaults>()
+	const [gradeModalDefaultsChanged, setGradeModalDefaultsChanged] = useState(false)
 	const gradeModalDefaultsS = useGradeModalDefaults({
 		onSuccess: (data) => setGradeModalDefaults(data),
 		onError: (error) => {
@@ -187,8 +189,8 @@ function Settings(props: Props) {
 
 	const handleCreatePeriod = async (periods: Period[]) => {
 		await createPeriod.mutate({
-			to: dayjs().add(6, "months").format("DD-MM-YYYY"),
 			from: dayjs().format("DD-MM-YYYY"),
+			to: dayjs().add(6, "months").format("DD-MM-YYYY"),
 			name: nextFree(periods.map(i => i.name), "New Period"),
 			id: -1
 		})
@@ -236,6 +238,12 @@ function Settings(props: Props) {
 		let closeClear = toastMessage("warning", "Reset NoteRange", toast, undo)
 	}
 
+	useEffect(() => {
+		if (noteRangeS.isSuccess && noteRange) {
+			setNoteRangeChanged(noteRangeS.data.from !== noteRange.from || noteRangeS.data.to !== noteRange.to)
+		}
+	}, [noteRange])
+
 	const handlePeriodSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
 		setGradeModalDefaults({...gradeModalDefaults, period_default: Number(event.target.value)})
 	}
@@ -270,6 +278,13 @@ function Settings(props: Props) {
 		let closeClear = toastMessage("warning", "Reset Defaults", toast, undo)
 	}
 
+	useEffect(() => {
+		if (gradeModalDefaultsS.isSuccess && gradeModalDefaults) {
+			const {grade_default, period_default, subject_default, type_default} = gradeModalDefaultsS.data
+			setGradeModalDefaultsChanged(grade_default !== gradeModalDefaults.grade_default || period_default !== gradeModalDefaults.period_default || subject_default !== gradeModalDefaults.subject_default || type_default !== gradeModalDefaults.type_default)
+		}
+	}, [gradeModalDefaults])
+
 	return <Grid container spacing={2} padding={2}>
 		{typesS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
 			<SettingsBox title="Types" top={
@@ -299,10 +314,12 @@ function Settings(props: Props) {
 				<Grid item xs={12} sm={12} md={6} xl={6}>
 					<SettingsBox title="Defaults" top={
 						<Stack direction="row">
-							<IconButton color="error" onClick={() => handleDefaultsReset(gradeModalDefaults, gradeModalDefaultsS.data)}>
-								<UndoIcon/>
-							</IconButton>
-							<IconButton color="success" onClick={() => editGradeModalDefaults.mutate(gradeModalDefaults)}><SaveButton/>
+							{gradeModalDefaultsChanged &&
+									<IconButton color="error" onClick={() => handleDefaultsReset(gradeModalDefaults, gradeModalDefaultsS.data)}>
+										<UndoIcon/>
+									</IconButton>}
+							<IconButton disabled={!gradeModalDefaultsChanged} color={gradeModalDefaultsChanged ? "success" : "off"}
+											onClick={() => editGradeModalDefaults.mutate(gradeModalDefaults)}><SaveButton/>
 							</IconButton>
 						</Stack>
 					}><Grid container spacing={4} padding={2}>
@@ -362,10 +379,12 @@ function Settings(props: Props) {
 				<Grid item xs={12} sm={12} md={6} xl={6}>
 					<SettingsBox title="Note Range" top={
 						<Stack direction="row">
-							<IconButton color="error" onClick={() => handleNoteRangeReset(noteRange, noteRangeS.data)}>
-								<UndoIcon/>
-							</IconButton>
-							<IconButton color="success" onClick={() => editNoteRange.mutate(noteRange)}>
+							{noteRangeChanged &&
+									<IconButton color="error" onClick={() => noteRangeChanged && handleNoteRangeReset(noteRange, noteRangeS.data)}>
+										<UndoIcon/>
+									</IconButton>}
+							<IconButton disabled={!noteRangeChanged} color={noteRangeChanged ? "success" : "off"}
+											onClick={() => noteRangeChanged && editNoteRange.mutate(noteRange)}>
 								<SaveButton/>
 							</IconButton>
 						</Stack>

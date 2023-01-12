@@ -15,7 +15,6 @@ import {QueryClient, QueryClientProvider,} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import {StrictMode} from "react";
 
-
 const darkTheme = createTheme({
 	palette: {
 		mode: 'dark',
@@ -24,6 +23,9 @@ const darkTheme = createTheme({
 		},
 		secondary: {
 			main: '#f50000'
+		},
+		off: {
+			main: '#383838',
 		},
 	},
 	breakpoints: {
