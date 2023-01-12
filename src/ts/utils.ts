@@ -61,6 +61,15 @@ function edit<T>(cmd: string, args: any): Promise<void> { // change to Promise<T
 	})
 }
 
+function reset<T>(cmd: string): Promise<void> {
+	return inv("reset_" + cmd + "_js").then(() => {
+		console.debug("reset_" + cmd, "success")
+	}).catch((e) => {
+		console.debug("reset_" + cmd, "fail", e)
+		throw e
+	})
+}
+
 function get<T>(cmd: string): Promise<T> {
 	return inv<string>("get_" + cmd + "_js").then((data: string) => {
 		console.debug("get_" + cmd, "success")
@@ -106,10 +115,6 @@ export {
 	capitalizeFirstLetter,
 	map,
 	nullableUseState,
-	edit,
-	get,
-	create,
-	del,
+	edit, get, create, del, reset,
 	randColor,
-	// convertWeight
 }

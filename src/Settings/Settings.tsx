@@ -8,13 +8,15 @@ import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
 import SaveButton from "@mui/icons-material/Save";
-import UndoIcon from "@mui/icons-material/Undo";
 import {useGradeModalDefaults, useInfo, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/get";
 import {useQueryClient} from "@tanstack/react-query";
 import {useCreatePeriod, useCreateSubject, useCreateType} from "../commands/create";
 import dayjs from "dayjs";
 import {useDeletePeriod, useDeleteSubject, useDeleteType} from "../commands/delete";
 import {useEditGradeModalDefaults, useEditNoteRange, useEditPeriod, useEditSubject, useEditType} from "../commands/edit";
+import RestoreIcon from '@mui/icons-material/Restore';
+import {useResetGradeModalDefaults, useResetNoteRange} from "../commands/reset";
+import CloseIcon from "@mui/icons-material/Close";
 
 type Props = {}
 
@@ -161,12 +163,30 @@ function Settings(props: Props) {
 		}
 	})
 
+	const resetNoteRange = useResetNoteRange(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Reset Note Range", toast)
+		},
+		onError: (error) => {
+			errorToast("Error resting Note Range", toast, error)
+		}
+	})
+
 	const editGradeModalDefaults = useEditGradeModalDefaults(queryClient, {
 		onSuccess: () => {
 			toastMessage("success", "Saved Grade Modal Defaults", toast)
 		},
 		onError: (error) => {
 			errorToast("Error saving Grade Modal Defaults", toast, error)
+		}
+	})
+
+	const resetGradeModalDefaults = useResetGradeModalDefaults(queryClient, {
+		onSuccess: () => {
+			toastMessage("success", "Reset Grade Modal Defaults", toast)
+		},
+		onError: (error) => {
+			errorToast("Error resting Grade Modal Defaults", toast, error)
 		}
 	})
 
@@ -224,7 +244,7 @@ function Settings(props: Props) {
 		})
 	}
 
-	const handleNoteRangeReset = async (noteRange: NoteRange, noteRangeS: NoteRange) => {
+	const handleNoteRangeReload = async (noteRange: NoteRange, noteRangeS: NoteRange) => {
 		let old = Object.assign({}, noteRange)
 
 		setNoteRange(noteRangeS)
@@ -236,6 +256,14 @@ function Settings(props: Props) {
 		}
 
 		let closeClear = toastMessage("warning", "Reset NoteRange", toast, undo)
+	}
+
+	const handleNoteRangeReset = async () => {
+		resetNoteRange.mutate()
+	}
+
+	const handleNoteRangeSave = async (noteRange: NoteRange) => {
+		editNoteRange.mutate(noteRange)
 	}
 
 	useEffect(() => {
@@ -264,7 +292,7 @@ function Settings(props: Props) {
 		setGradeModalDefaults({...gradeModalDefaults, grade_default: Number(event.target.value)})
 	};
 
-	const handleDefaultsReset = async (gradeModalDefaults: GradeModalDefaults, gradeModalDefaultsS: GradeModalDefaults) => {
+	const handleDefaultsReload = async (gradeModalDefaults: GradeModalDefaults, gradeModalDefaultsS: GradeModalDefaults) => {
 		let old = Object.assign({}, gradeModalDefaults)
 
 		setGradeModalDefaults(gradeModalDefaultsS)
@@ -276,6 +304,14 @@ function Settings(props: Props) {
 		}
 
 		let closeClear = toastMessage("warning", "Reset Defaults", toast, undo)
+	}
+
+	const handleDefaultsReset = async () => {
+		resetGradeModalDefaults.mutate()
+	}
+
+	const handleDefaultsSave = async (gradeModalDefaults: GradeModalDefaults) => {
+		editGradeModalDefaults.mutate(gradeModalDefaults)
 	}
 
 	useEffect(() => {
@@ -312,14 +348,17 @@ function Settings(props: Props) {
 		}
 		{gradeModalDefaults !== null && gradeModalDefaultsS.isSuccess && noteRange !== null &&
 				<Grid item xs={12} sm={12} md={6} xl={6}>
-					<SettingsBox title="Defaults" top={
+					<SettingsBox title="Defaults for new Grade" top={
 						<Stack direction="row">
+							<IconButton color="error" onClick={handleDefaultsReset}>
+								<RestoreIcon/>
+							</IconButton>
 							{gradeModalDefaultsChanged &&
-									<IconButton color="error" onClick={() => handleDefaultsReset(gradeModalDefaults, gradeModalDefaultsS.data)}>
-										<UndoIcon/>
+									<IconButton color="warning" onClick={() => handleDefaultsReload(gradeModalDefaults, gradeModalDefaultsS.data)}>
+										<CloseIcon/>
 									</IconButton>}
 							<IconButton disabled={!gradeModalDefaultsChanged} color={gradeModalDefaultsChanged ? "success" : "off"}
-											onClick={() => editGradeModalDefaults.mutate(gradeModalDefaults)}><SaveButton/>
+											onClick={() => handleDefaultsSave(gradeModalDefaults)}><SaveButton/>
 							</IconButton>
 						</Stack>
 					}><Grid container spacing={4} padding={2}>
@@ -379,12 +418,15 @@ function Settings(props: Props) {
 				<Grid item xs={12} sm={12} md={6} xl={6}>
 					<SettingsBox title="Note Range" top={
 						<Stack direction="row">
+							<IconButton color="error" onClick={handleNoteRangeReset}>
+								<RestoreIcon/>
+							</IconButton>
 							{noteRangeChanged &&
-									<IconButton color="error" onClick={() => noteRangeChanged && handleNoteRangeReset(noteRange, noteRangeS.data)}>
-										<UndoIcon/>
+									<IconButton color="warning" onClick={() => handleNoteRangeReload(noteRange, noteRangeS.data)}>
+										<CloseIcon/>
 									</IconButton>}
 							<IconButton disabled={!noteRangeChanged} color={noteRangeChanged ? "success" : "off"}
-											onClick={() => noteRangeChanged && editNoteRange.mutate(noteRange)}>
+											onClick={() => handleNoteRangeSave(noteRange)}>
 								<SaveButton/>
 							</IconButton>
 						</Stack>
