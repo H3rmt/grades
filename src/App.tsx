@@ -1,6 +1,6 @@
 import {AppBar, Box, Button, IconButton, Toolbar, Typography} from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings"
-import {ForwardRefExoticComponent, PropsWithoutRef, ReactElement, RefAttributes, useEffect, useRef, useState} from "react";
+import {ForwardRefExoticComponent, PropsWithoutRef, ReactElement, RefAttributes, useRef, useState} from "react";
 import Overview from "./Overview/Overview";
 import Analysis from "./Analysis/Analysis";
 import Settings from "./Settings/Settings";
@@ -13,6 +13,7 @@ import {Info} from "./components/Info/Info";
 import {useEditPageInCache, usePageInCache} from "./commands/cache";
 import {useQueryClient} from "@tanstack/react-query";
 import OverviewAppBar from "./Overview/OverviewAppBar";
+import Navbar from "./components/Navbar/Navbar";
 
 export type Pages = {
 	overview: Page
@@ -28,8 +29,8 @@ export type Page = {
 	icon: ReactElement,
 }
 
-type PageProps = {}
-type PageRef = { changed: () => [boolean, string] }
+export type PageProps = {}
+export type PageRef = { changed: () => [boolean, string] }
 
 const pages: Pages = {
 	overview: {
@@ -56,7 +57,6 @@ const pages: Pages = {
 }
 
 export default function App() {
-	const [openNav, setOpenNav] = useState(false);
 	const [openPage, setPage] = useState(pages.overview)
 	const [openNav, setOpenNav] = useAtom(navBarOpen);
 
@@ -74,6 +74,8 @@ export default function App() {
 			// errorToast("Error loading Periods", toast, error)
 		},
 		onSuccess: (page) => {
+			// @ts-ignore
+			console.log(pages[page.name.toLowerCase()])
 			// @ts-ignore
 			if (pages[page.name.toLowerCase()]) {
 				// @ts-ignore
@@ -96,7 +98,12 @@ export default function App() {
 			setUnsavedNextPage(page)
 		} else {
 			setUnsaved(false)
-			editPage.
+			editPage.mutate({name: page.name})
+			// @ts-ignore
+			if (pages[page.name.toLowerCase()]) {
+				// @ts-ignore
+				setPage(pages[page.name.toLowerCase()])
+			}
 		}
 		setOpenNav(false)
 	}

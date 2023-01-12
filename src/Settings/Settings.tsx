@@ -12,8 +12,6 @@ import {
 	TextField,
 	Typography
 } from '@mui/material';
-import {ChangeEvent, useState} from 'react';
-import {Button, Grid, IconButton, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
 import {ChangeEvent, ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState} from 'react';
 import {nextFree, nullableUseState, randColor} from "../ts/utils";
 import {CTable} from "../components/table/table";
@@ -33,11 +31,9 @@ import SettingsBox from "../components/SettingsBox/SettingsBox";
 import RestoreIcon from '@mui/icons-material/Restore';
 import {useResetGradeModalDefaults, useResetNoteRange} from "../commands/reset";
 import CloseIcon from "@mui/icons-material/Close";
-import {PageProps as Props, PageRef as Ref} from "../App";
+import {PageProps as Props, PageRef} from "../App";
 
-
-
-const Settings = forwardRef(function Settings(props: Props) {
+const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<PageRef>) {
 	const toast = useSnackbar()
 	const queryClient = useQueryClient()
 
