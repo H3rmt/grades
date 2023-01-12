@@ -12,6 +12,7 @@ use crate::config::types::{GradeModalDefaults, NoteRange};
 pub struct Data {
 	pub note_range: NoteRange,
 	pub grade_modal_defaults: GradeModalDefaults,
+	// pub analysis: Vec<AnalysisBox>,
 }
 
 #[derive(Default, Debug)]
@@ -64,6 +65,7 @@ impl Config {
 	
 	pub fn set<F: FnOnce(&mut Data)>(&mut self, f: F) -> Result<(), ConfigError> {
 		f(&mut self.data);
+		log::debug!("config-data: {:?}", self.data);
 		self.save()
 			 .attach_printable("error during saving after changes to config")?;
 		Ok(())

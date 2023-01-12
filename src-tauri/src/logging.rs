@@ -24,7 +24,7 @@ fn format(
 }
 
 pub fn logger() -> Result<(), LoggerInitError> {
-	let logger = Logger::try_with_env_or_str("RUST_LOG=grades=info,migrations=info")
+	let logger = Logger::try_with_env_or_str("grades=info,migrations=info")
 			.into_report()
 			.attach_printable("Error initializing logger")
 			.change_context_lazy(|| LoggerInitError)?;

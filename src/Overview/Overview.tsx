@@ -1,23 +1,24 @@
-import {useGrades, useNoteRange, useSubjects, useTypes, useWeights} from "../commands/get";
+import {useGrades, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../commands/get";
 import {CTable} from "../components/table/table";
-import {getCols} from "./table";
-import {errorToast, toastMessage, useToast} from "../ts/toast";
+import {errorToast, toastMessage} from "../ts/toast";
 import NewGradeModal from "./NewGradeModal/NewGradeModal";
 import {useEditGrade} from "../commands/edit";
 import {useQueryClient} from "@tanstack/react-query";
 import {useDeleteGrade} from "../commands/delete";
 import {Grade} from '../entity';
 import {useAtom} from 'jotai'
-import {period as Period} from "./atoms";
+import {selectedPeriod} from "./atoms";
+import {useSnackbar} from "notistack";
+import {getCols} from "./table";
 import {ForwardedRef, forwardRef} from "react";
 import {PageRef as Ref} from "../App";
 
 type Props = {}
 
 const Overview = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
-	const [period] = useAtom(Period);
+	const [period] = useAtom(selectedPeriod);
 
-	const toast = useToast()
+	const toast = useSnackbar()
 	const queryClient = useQueryClient()
 
 	const grades = useGrades({
@@ -50,15 +51,11 @@ const Overview = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
 		}
 	});
 
-	// const gradeModalDefaults = useGradeModalDefaults({
-	// 	onSuccess: (data) => {
-	// 		if (period == null)
-	// 			setPeriod((data.period_default || "-1").toString())
-	// 	},
-	// 	onError: (error) => {
-	// 		errorToast("Error loading gradeModalDefaults", toast, error)
-	// 	}
-	// });
+	const periods = usePeriods({
+		onError: (error) => {
+			errorToast("Error loading Periods", toast, error)
+		}
+	});
 
 	const deleteGrade = useDeleteGrade(queryClient, {
 		onSuccess: () => {
@@ -78,19 +75,19 @@ const Overview = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
 		}
 	})
 
-	return <>{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess &&
-			<CTable data={grades.data.filter(grade => grade.period === Number(period) || period == "-1")}
-					  cols={getCols(noteRange.data, subjects.data, types.data, weights.data)}
-					  delete={(id) => {
-						  deleteGrade.mutate(id)
-					  }}
-					  edit={(grade: Grade) => {
-						  editGrade.mutate(grade)
-					  }}
-			/>
+	return <>{grades.isSuccess && subjects.isSuccess && types.isSuccess && noteRange.isSuccess && weights.isSuccess && periods.isSuccess &&
+						<CTable data={grades.data.filter(grade => grade.period === Number(period) || period === "-1" || period === null )}
+								  cols={getCols(noteRange.data, subjects.data, types.data, weights.data, periods.data)}
+								  delete={(id) => {
+									  deleteGrade.mutate(id)
+								  }}
+								  edit={(grade: Grade) => {
+									  editGrade.mutate(grade)
+								  }}
+						/>
 
 	}
-		<NewGradeModal/>
+	<NewGradeModal/>
 	</>
 })
 

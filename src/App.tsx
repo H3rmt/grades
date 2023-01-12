@@ -3,30 +3,28 @@ import SettingsIcon from "@mui/icons-material/Settings"
 import {ForwardRefExoticComponent, PropsWithoutRef, ReactElement, RefAttributes, useEffect, useRef, useState} from "react";
 import Overview from "./Overview/Overview";
 import Analysis from "./Analysis/Analysis";
-import Navbar from "./components/Navbar/Navbar";
 import Settings from "./Settings/Settings";
-import {Page as SPage} from "./entity"
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import {edit, get} from "./ts/utils";
-import {OverviewAppBar} from "./Overview/AppBar";
 import MenuIcon from "@mui/icons-material/Menu";
-import {useToast} from "./ts/toast";
 import {useAtom} from "jotai";
 import {navBarOpen} from "./atoms";
 import {Info} from "./components/Info/Info";
+import {useEditPageInCache, usePageInCache} from "./commands/cache";
+import {useQueryClient} from "@tanstack/react-query";
+import OverviewAppBar from "./Overview/OverviewAppBar";
 
-type Pages = {
+export type Pages = {
 	overview: Page
 	analysis: Page
 	settings: Page
 }
 
-type Page = {
+export type Page = {
 	page: ForwardRefExoticComponent<PropsWithoutRef<PageProps> & RefAttributes<PageRef>>
-	appBar: ReactElement,
-	name: string,
-	description: string,
+	appBar: ReactElement
+	name: string
+	description: string
 	icon: ReactElement,
 }
 
@@ -57,9 +55,8 @@ const pages: Pages = {
 	}
 }
 
-const App = () => {
-	const toast = useToast();
-
+export default function App() {
+	const [openNav, setOpenNav] = useState(false);
 	const [openPage, setPage] = useState(pages.overview)
 	const [openNav, setOpenNav] = useAtom(navBarOpen);
 
@@ -69,29 +66,27 @@ const App = () => {
 	const [unsavedMessage, setUnsavedMessage] = useState("");
 	const [unsavedNextPage, setUnsavedNextPage] = useState<Page>(openPage)
 
-	// cache has special logging, no errorToast and console.error
-	const changePage = (page: Page) => {
-		edit("page_in_cache", {"name": page.name}).then(() => {
-			console.debug("Stored page in cache")
-		}).catch((error) => {
-			console.warn("Error storing page in cache", error)
-			// errorToast("Error storing page in cache", toast, error)
-		})
-		setPage(page)
-	}
+	const queryClient = useQueryClient()
 
-	const loadPage = () => {
-		get<SPage>("page_from_cache").then((data: SPage) => {
-			console.log("loaded site from cache", data)
-			// @ts-ignore
-			if (pages[data.name.toLowerCase()]) {
-				// @ts-ignore
-				setPage(pages[data.name.toLowerCase()])
-			}
-		}).catch((error) => {
+	usePageInCache({
+		onError: (error) => {
 			console.warn("Error loading site cache", error)
-		})
-	}
+			// errorToast("Error loading Periods", toast, error)
+		},
+		onSuccess: (page) => {
+			// @ts-ignore
+			if (pages[page.name.toLowerCase()]) {
+				// @ts-ignore
+				setPage(pages[page.name.toLowerCase()])
+			}
+		}
+	});
+
+	const editPage = useEditPageInCache(queryClient, {
+		onError: (error) => {
+			console.warn("Error loading site cache", error)
+		}
+	});
 
 	const openNewPage = (page: Page) => {
 		const [changed, message] = childRef?.current?.changed() ?? [false, ""]
@@ -101,16 +96,10 @@ const App = () => {
 			setUnsavedNextPage(page)
 		} else {
 			setUnsaved(false)
-			changePage(page)
+			editPage.
 		}
 		setOpenNav(false)
 	}
-
-	useEffect(() => {
-		loadPage()
-	}, [])
-
-	const Page = openPage.page
 
 	return (<>
 		<AppBar component="nav" enableColorOnDark position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
@@ -128,7 +117,7 @@ const App = () => {
 		<Navbar setPage={openNewPage} pages={pages} openPageName={openPage.name}/>
 		<Box component="main">
 			<Toolbar/>
-			{<Page ref={childRef}/>}
+			{<openPage.page ref={childRef}/>}
 		</Box>
 		<Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)}>
 			<Button color="secondary" variant="outlined" onClick={() => {
@@ -139,13 +128,4 @@ const App = () => {
 			</Button>
 		</Info>
 	</>)
-}
-
-export default App
-
-export type {
-	Page,
-	Pages,
-	PageRef,
-	PageProps
 }

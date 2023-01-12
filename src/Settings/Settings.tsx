@@ -1,9 +1,23 @@
+import {
+	Button,
+	Grid,
+	IconButton,
+	Link,
+	MenuItem,
+	Paper,
+	Select,
+	SelectChangeEvent,
+	Slider,
+	Stack,
+	TextField,
+	Typography
+} from '@mui/material';
+import {ChangeEvent, useState} from 'react';
 import {Button, Grid, IconButton, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
 import {ChangeEvent, ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState} from 'react';
 import {nextFree, nullableUseState, randColor} from "../ts/utils";
-import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
-import {errorToast, toastMessage, useToast} from "../ts/toast";
+import {errorToast, toastMessage} from "../ts/toast";
 import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
@@ -14,14 +28,17 @@ import {useCreatePeriod, useCreateSubject, useCreateType} from "../commands/crea
 import dayjs from "dayjs";
 import {useDeletePeriod, useDeleteSubject, useDeleteType} from "../commands/delete";
 import {useEditGradeModalDefaults, useEditNoteRange, useEditPeriod, useEditSubject, useEditType} from "../commands/edit";
+import {useSnackbar} from "notistack";
+import SettingsBox from "../components/SettingsBox/SettingsBox";
 import RestoreIcon from '@mui/icons-material/Restore';
 import {useResetGradeModalDefaults, useResetNoteRange} from "../commands/reset";
 import CloseIcon from "@mui/icons-material/Close";
 import {PageProps as Props, PageRef as Ref} from "../App";
 
 
-const Settings = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
-	const toast = useToast()
+
+const Settings = forwardRef(function Settings(props: Props) {
+	const toast = useSnackbar()
 	const queryClient = useQueryClient()
 
 	const [periods, setPeriods] = useState<Period[]>([])
@@ -398,22 +415,22 @@ const Settings = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
 					}><Grid container spacing={4} padding={2}>
 						<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
 							<Stack spacing={2} direction="row" alignItems="center">
-								<Typography variant="h6" fontWeight="normal">Type</Typography>
-								<Select value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
-										  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
-									{types.map((type) => {
-										return <MenuItem sx={{color: type.color}} value={type.id}>{type.name}</MenuItem>
+								<Typography variant="h6" fontWeight="normal">Subject</Typography>
+								<Select value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
+										  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
+									{subjects.map((subject) => {
+										return <MenuItem value={subject.id} key={subject.id} sx={{color: subject.color}}>{subject.name}</MenuItem>
 									})}
 								</Select>
 							</Stack>
 						</Grid>
 						<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
 							<Stack spacing={2} direction="row" alignItems="center">
-								<Typography variant="h6" fontWeight="normal">Subject</Typography>
-								<Select value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
-										  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
-									{subjects.map((subject) => {
-										return <MenuItem sx={{color: subject.color}} value={subject.id}>{subject.name}</MenuItem>
+								<Typography variant="h6" fontWeight="normal">Type</Typography>
+								<Select value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
+										  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
+									{types.map((type) => {
+										return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
 									})}
 								</Select>
 							</Stack>
@@ -424,7 +441,7 @@ const Settings = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
 								<Select value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none" fullWidth
 										  onChange={(e) => handlePeriodSelectChange(e, gradeModalDefaults)}>
 									{periods.map((period) => {
-										return <MenuItem value={period.id}>
+										return <MenuItem value={period.id} key={period.id}>
 											<Stack>
 												{period.name}
 												<br/>
@@ -509,7 +526,16 @@ const Settings = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
 									profile: {info.data.profile}
 								</Typography>
 								<Typography>
-									commit-hash: {info.data.commit_hash}
+									build_on: {info.data.build_on}
+								</Typography>
+								<Link underline="hover" target="_blank" rel="noreferrer" color=""
+										href={`${info.data.repository}commit/${info.data.commit_hash_short}`}>
+									<Typography color="">
+										commit_hash_short: {info.data.commit_hash_short}
+									</Typography>
+								</Link>
+								<Typography>
+									build_time: {dayjs(info.data.build_time).format('DD-MM-YYYY HH:mm:ss')}
 								</Typography>
 							</Stack>
 						</Paper>

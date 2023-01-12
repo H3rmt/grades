@@ -1,10 +1,10 @@
-import {cols, ColumnDef} from "../components/table/defs";
+import {Cols, ColumnDef} from "../components/table/defs";
 import {Period, Subject, Type} from "../entity";
 import {Badge, Input, TextField, Typography} from "@mui/material";
-import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 import dayjs, {Dayjs} from "dayjs";
+import {DatePicker, PickersDay} from "@mui/x-date-pickers";
 
-const getTypeCols: () => cols<Type> = () => new Map<keyof Type, ColumnDef<Type>>(
+export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDef<Type>>(
 		[[
 			"name", {
 				sort: true,
@@ -24,7 +24,7 @@ const getTypeCols: () => cols<Type> = () => new Map<keyof Type, ColumnDef<Type>>
 		]]
 )
 
-const getSubjectCols: () => cols<Subject> = () => new Map<keyof Subject, ColumnDef<Subject>>(
+export const getSubjectCols: () => Cols<Subject> = () => new Map<keyof Subject, ColumnDef<Subject>>(
 		[[
 			"name", {
 				sort: true,
@@ -44,7 +44,7 @@ const getSubjectCols: () => cols<Subject> = () => new Map<keyof Subject, ColumnD
 		]]
 )
 
-const getPeriodCols: () => cols<Period> = () => new Map<keyof Period, ColumnDef<Period>>(
+export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, ColumnDef<Period>>(
 		[[
 			"name", {
 				sort: true,
@@ -94,8 +94,4 @@ const getPeriodCols: () => cols<Period> = () => new Map<keyof Period, ColumnDef<
 		]]
 )
 
-export {
-	getPeriodCols,
-	getSubjectCols,
-	getTypeCols
-};
+// TODO show id in extra window
