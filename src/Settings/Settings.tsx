@@ -1,5 +1,5 @@
 import {Button, Grid, IconButton, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography} from '@mui/material';
-import {ChangeEvent, useEffect, useState} from 'react';
+import {ChangeEvent, ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState} from 'react';
 import {nextFree, nullableUseState, randColor} from "../ts/utils";
 import {SettingsBox} from "../components/SettingsBox/SettingsBox";
 import {CTable} from "../components/table/table";
@@ -17,11 +17,10 @@ import {useEditGradeModalDefaults, useEditNoteRange, useEditPeriod, useEditSubje
 import RestoreIcon from '@mui/icons-material/Restore';
 import {useResetGradeModalDefaults, useResetNoteRange} from "../commands/reset";
 import CloseIcon from "@mui/icons-material/Close";
+import {PageProps as Props, PageRef as Ref} from "../App";
 
-type Props = {}
 
-
-function Settings(props: Props) {
+const Settings = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
 	const toast = useToast()
 	const queryClient = useQueryClient()
 
@@ -284,6 +283,7 @@ function Settings(props: Props) {
 		}
 	}, [noteRange])
 
+
 	const handlePeriodSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
 		setGradeModalDefaults({...gradeModalDefaults, period_default: Number(event.target.value)})
 	}
@@ -342,6 +342,18 @@ function Settings(props: Props) {
 			setGradeModalDefaultsChanged(grade_default !== gradeModalDefaults.grade_default || period_default !== gradeModalDefaults.period_default || subject_default !== gradeModalDefaults.subject_default || type_default !== gradeModalDefaults.type_default)
 		}
 	}, [gradeModalDefaults])
+
+
+	useImperativeHandle(ref, () => ({
+		changed() {
+			if (gradeModalDefaultsChanged)
+				return [true, "Defaults for new Grade not saved"]
+			if (noteRangeChanged)
+				return [true, "NoteRange not saved"]
+			return [false, ""]
+		}
+	}));
+
 
 	return <Grid container spacing={2} padding={2}>
 		{typesS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
@@ -505,6 +517,6 @@ function Settings(props: Props) {
 				</Grid>
 		}
 	</Grid>
-}
+})
 
 export default Settings;

@@ -1,6 +1,6 @@
 import {AppBar, Box, IconButton, Toolbar, Typography} from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings"
-import React, {ReactElement, useEffect, useState} from "react";
+import {ForwardRefExoticComponent, PropsWithoutRef, ReactElement, RefAttributes, useEffect, useRef, useState} from "react";
 import Overview from "./Overview/Overview";
 import Analysis from "./Analysis/Analysis";
 import Navbar from "./components/Navbar/Navbar";
@@ -11,6 +11,10 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {edit, get} from "./ts/utils";
 import {OverviewAppBar} from "./Overview/AppBar";
 import MenuIcon from "@mui/icons-material/Menu";
+import {useToast} from "./ts/toast";
+import {useAtom} from "jotai";
+import {navBarOpen} from "./atoms";
+import {Info} from "./components/Info/Info";
 
 type Pages = {
 	overview: Page
@@ -19,30 +23,33 @@ type Pages = {
 }
 
 type Page = {
-	page: ReactElement,
+	page: ForwardRefExoticComponent<PropsWithoutRef<PageProps> & RefAttributes<PageRef>>  //ReactElement,
 	appBar: ReactElement,
 	name: string,
 	description: string,
-	icon: ReactElement
+	icon: ReactElement,
 }
+
+type PageProps = {}
+type PageRef = { changed: () => [boolean, string] }
 
 const pages: Pages = {
 	overview: {
-		page: <Overview/>,
+		page: Overview,
 		appBar: <OverviewAppBar/>,
 		name: "Overview",
 		description: "Overview of all grades",
 		icon: <FormatListNumberedIcon/>,
 	},
 	analysis: {
-		page: <Analysis/>,
+		page: Analysis,
 		appBar: <></>,
 		name: "Analysis",
 		description: "Analysis of all grades",
 		icon: <QueryStatsIcon/>
 	},
 	settings: {
-		page: <Settings/>,
+		page: Settings,
 		appBar: <></>,
 		name: "Settings",
 		description: "Change types, subjects, etc.",
@@ -51,15 +58,18 @@ const pages: Pages = {
 }
 
 const App = () => {
-	const [openNav, setOpenNav] = useState(false);
+	const toast = useToast();
 
 	const [openPage, setPage] = useState(pages.overview)
-	useEffect(() => {
-		setOpenNav(false)
-	}, [openPage])
+	const [openNav, setOpenNav] = useAtom(navBarOpen);
+
+	const childRef = useRef<PageRef>(null);
+
+	const [unsaved, setUnsaved] = useState(false);
+	const [unsavedMessage, setUnsavedMessage] = useState("");
 
 	// cache has special logging, no errorToast and console.error
-	const SetPage = (page: Page) => {
+	const changePage = (page: Page) => {
 		edit("page_in_cache", {"name": page.name}).then(() => {
 			console.debug("Stored page in cache")
 		}).catch((error) => {
@@ -69,7 +79,7 @@ const App = () => {
 		setPage(page)
 	}
 
-	const GetPage = () => {
+	const loadPage = () => {
 		get<SPage>("page_from_cache").then((data: SPage) => {
 			console.log("loaded site from cache", data)
 			// @ts-ignore
@@ -82,9 +92,23 @@ const App = () => {
 		})
 	}
 
+	const openNewPage = (page: Page) => {
+		const [changed, message] = childRef?.current?.changed() ?? [false, ""]
+		if (changed) {
+			setUnsaved(true)
+			setUnsavedMessage(message)
+		} else {
+			setUnsaved(false)
+			changePage(page)
+		}
+		setOpenNav(false)
+	}
+
 	useEffect(() => {
-		GetPage()
+		loadPage()
 	}, [])
+
+	const Page = openPage.page
 
 	return (<>
 		<AppBar component="nav" enableColorOnDark position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
@@ -99,11 +123,12 @@ const App = () => {
 				{openPage.appBar}
 			</Toolbar>
 		</AppBar>
-		<Navbar open={openNav} set={setOpenNav} setPage={SetPage} pages={pages} openPageName={openPage.name}/>
+		<Navbar setPage={openNewPage} pages={pages} openPageName={openPage.name}/>
 		<Box component="main">
-			<Toolbar />
-			{openPage.page}
+			<Toolbar/>
+			{<Page ref={childRef}/>}
 		</Box>
+		<Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)}/>
 	</>)
 }
 
@@ -111,5 +136,7 @@ export default App
 
 export type {
 	Page,
-	Pages
+	Pages,
+	PageRef,
+	PageProps
 }

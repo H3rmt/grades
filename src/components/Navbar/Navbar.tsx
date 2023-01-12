@@ -1,11 +1,14 @@
 import {Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar} from "@mui/material";
 import {Page, Pages} from "../../App";
-import {reactSet} from "../../ts/utils";
+import {useAtom} from "jotai";
+import {navBarOpen} from "../../atoms";
 
-const Navbar = (props: { open: boolean, set: reactSet<boolean>, setPage: (page: Page) => void, pages: Pages, openPageName: string }) => {
+const Navbar = (props: { setPage: (page: Page) => void, pages: Pages, openPageName: string }) => {
 	const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-	return <SwipeableDrawer open={props.open} anchor="left" onOpen={() => props.set(true)} onClose={() => props.set(false)}
+	const [openNav, setOpenNav] = useAtom(navBarOpen);
+
+	return <SwipeableDrawer open={openNav} anchor="left" onOpen={() => setOpenNav(true)} onClose={() => setOpenNav(false)}
 									variant="temporary" disableBackdropTransition={false} disableDiscovery={iOS} swipeAreaWidth={40}>
 		<Toolbar/>
 		<List disablePadding sx={{height: 1}}>

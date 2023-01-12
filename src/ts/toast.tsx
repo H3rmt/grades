@@ -1,7 +1,8 @@
 import {OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar} from "notistack";
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Paper, Stack} from "@mui/material";
+import {Button, IconButton, Paper, Stack} from "@mui/material";
 import {useState} from "react";
 import CloseIcon from '@mui/icons-material/Close';
+import {Info} from "../components/Info/Info";
 
 type variant = "error" | "success" | "warning" | "info"
 
@@ -74,19 +75,7 @@ function action(
 				close(id)
 			}}><CloseIcon/>
 			</IconButton>
-			{open && <Dialog open={true}>
-				<DialogTitle>Info</DialogTitle>
-				<DialogContent>
-					<DialogContentText>
-						{info}
-					</DialogContentText>
-				</DialogContent>
-				<DialogActions>
-					<Button color="secondary" variant="outlined" onClick={() => setOpen(false)}>
-						Close
-					</Button>
-				</DialogActions>
-			</Dialog>}
+			{info && <Info open={open} info={info} setOpen={setOpen}/>}
 		</Stack>
 	}
 }
