@@ -165,7 +165,8 @@ function Settings(props: Props) {
 
 	const resetNoteRange = useResetNoteRange(queryClient, {
 		onSuccess: () => {
-			toastMessage("success", "Reset Note Range", toast)
+			// toast by undo (with undo button)
+			// toastMessage("success", "Reset Note Range", toast)
 		},
 		onError: (error) => {
 			errorToast("Error resting Note Range", toast, error)
@@ -183,7 +184,8 @@ function Settings(props: Props) {
 
 	const resetGradeModalDefaults = useResetGradeModalDefaults(queryClient, {
 		onSuccess: () => {
-			toastMessage("success", "Reset Grade Modal Defaults", toast)
+			// toast by undo (with undo button)
+			// toastMessage("success", "Reset Grade Modal Defaults", toast)
 		},
 		onError: (error) => {
 			errorToast("Error resting Grade Modal Defaults", toast, error)
@@ -251,15 +253,25 @@ function Settings(props: Props) {
 
 		const undo = () => {
 			setNoteRange(old)
+			toastMessage("success", "Undid reload NoteRange", toast)
+			closeClear()
+		}
+
+		let closeClear = toastMessage("warning", "Reload NoteRange", toast, undo)
+	}
+
+	const handleNoteRangeReset = async (noteRange: NoteRange) => {
+		let old = Object.assign({}, noteRange)
+
+		resetNoteRange.mutate()
+
+		const undo = () => {
+			editNoteRange.mutate(old)
 			toastMessage("success", "Undid reset NoteRange", toast)
 			closeClear()
 		}
 
-		let closeClear = toastMessage("warning", "Reset NoteRange", toast, undo)
-	}
-
-	const handleNoteRangeReset = async () => {
-		resetNoteRange.mutate()
+		let closeClear = toastMessage("info", "Reset NoteRange", toast, undo)
 	}
 
 	const handleNoteRangeSave = async (noteRange: NoteRange) => {
@@ -299,15 +311,25 @@ function Settings(props: Props) {
 
 		const undo = () => {
 			setGradeModalDefaults(old)
+			toastMessage("success", "Undid reload Defaults", toast)
+			closeClear()
+		}
+
+		let closeClear = toastMessage("warning", "Reload Defaults", toast, undo)
+	}
+
+	const handleDefaultsReset = async (defaults: GradeModalDefaults) => {
+		let old = Object.assign({}, defaults)
+
+		resetGradeModalDefaults.mutate()
+
+		const undo = () => {
+			editGradeModalDefaults.mutate(old)
 			toastMessage("success", "Undid reset Defaults", toast)
 			closeClear()
 		}
 
-		let closeClear = toastMessage("warning", "Reset Defaults", toast, undo)
-	}
-
-	const handleDefaultsReset = async () => {
-		resetGradeModalDefaults.mutate()
+		let closeClear = toastMessage("info", "Reset Defaults", toast, undo)
 	}
 
 	const handleDefaultsSave = async (gradeModalDefaults: GradeModalDefaults) => {
@@ -350,7 +372,7 @@ function Settings(props: Props) {
 				<Grid item xs={12} sm={12} md={6} xl={6}>
 					<SettingsBox title="Defaults for new Grade" top={
 						<Stack direction="row">
-							<IconButton color="error" onClick={handleDefaultsReset}>
+							<IconButton color="error" onClick={() => handleDefaultsReset(gradeModalDefaultsS.data)}>
 								<RestoreIcon/>
 							</IconButton>
 							{gradeModalDefaultsChanged &&
@@ -418,7 +440,7 @@ function Settings(props: Props) {
 				<Grid item xs={12} sm={12} md={6} xl={6}>
 					<SettingsBox title="Note Range" top={
 						<Stack direction="row">
-							<IconButton color="error" onClick={handleNoteRangeReset}>
+							<IconButton color="error" onClick={() => handleNoteRangeReset(noteRangeS.data)}>
 								<RestoreIcon/>
 							</IconButton>
 							{noteRangeChanged &&
