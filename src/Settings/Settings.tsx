@@ -12,7 +12,7 @@ import {
 	TextField,
 	Typography
 } from '@mui/material';
-import {ChangeEvent, useState} from 'react';
+import {ChangeEvent, ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState} from 'react';
 import {nextFree, nullableUseState, randColor} from "../ts/utils";
 import {CTable} from "../components/table/table";
 import {errorToast, toastMessage} from "../ts/toast";
@@ -20,7 +20,6 @@ import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
 import SaveButton from "@mui/icons-material/Save";
-import UndoIcon from "@mui/icons-material/Undo";
 import {useGradeModalDefaults, useInfo, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/get";
 import {useQueryClient} from "@tanstack/react-query";
 import {useCreatePeriod, useCreateSubject, useCreateType} from "../commands/create";
@@ -29,11 +28,12 @@ import {useDeletePeriod, useDeleteSubject, useDeleteType} from "../commands/dele
 import {useEditGradeModalDefaults, useEditNoteRange, useEditPeriod, useEditSubject, useEditType} from "../commands/edit";
 import {useSnackbar} from "notistack";
 import SettingsBox from "../components/SettingsBox/SettingsBox";
+import RestoreIcon from '@mui/icons-material/Restore';
+import {useResetGradeModalDefaults, useResetNoteRange} from "../commands/reset";
+import CloseIcon from "@mui/icons-material/Close";
+import {PageProps as Props, PageRef} from "../App";
 
-type Props = {}
-
-
-export default function Settings(props: Props) {
+const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<PageRef>) {
 	const toast = useSnackbar()
 	const queryClient = useQueryClient()
 
@@ -62,6 +62,7 @@ export default function Settings(props: Props) {
 	});
 
 	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
+	const [noteRangeChanged, setNoteRangeChanged] = useState(false)
 	const noteRangeS = useNoteRange({
 		onSuccess: (data) => setNoteRange(data),
 		onError: (error) => {
@@ -70,6 +71,7 @@ export default function Settings(props: Props) {
 	});
 
 	const [gradeModalDefaults, setGradeModalDefaults] = nullableUseState<GradeModalDefaults>()
+	const [gradeModalDefaultsChanged, setGradeModalDefaultsChanged] = useState(false)
 	const gradeModalDefaultsS = useGradeModalDefaults({
 		onSuccess: (data) => setGradeModalDefaults(data),
 		onError: (error) => {
@@ -173,12 +175,32 @@ export default function Settings(props: Props) {
 		}
 	})
 
+	const resetNoteRange = useResetNoteRange(queryClient, {
+		onSuccess: () => {
+			// toast by undo (with undo button)
+			// toastMessage("success", "Reset Note Range", toast)
+		},
+		onError: (error) => {
+			errorToast("Error resting Note Range", toast, error)
+		}
+	})
+
 	const editGradeModalDefaults = useEditGradeModalDefaults(queryClient, {
 		onSuccess: () => {
 			toastMessage("success", "Saved Grade Modal Defaults", toast)
 		},
 		onError: (error) => {
 			errorToast("Error saving Grade Modal Defaults", toast, error)
+		}
+	})
+
+	const resetGradeModalDefaults = useResetGradeModalDefaults(queryClient, {
+		onSuccess: () => {
+			// toast by undo (with undo button)
+			// toastMessage("success", "Reset Grade Modal Defaults", toast)
+		},
+		onError: (error) => {
+			errorToast("Error resting Grade Modal Defaults", toast, error)
 		}
 	})
 
@@ -201,8 +223,8 @@ export default function Settings(props: Props) {
 
 	const handleCreatePeriod = async (periods: Period[]) => {
 		await createPeriod.mutate({
-			to: dayjs().add(6, "months").format("DD-MM-YYYY"),
 			from: dayjs().format("DD-MM-YYYY"),
+			to: dayjs().add(6, "months").format("DD-MM-YYYY"),
 			name: nextFree(periods.map(i => i.name), "New Period"),
 			id: -1
 		})
@@ -236,19 +258,44 @@ export default function Settings(props: Props) {
 		})
 	}
 
-	const handleNoteRangeReset = async (noteRange: NoteRange, noteRangeS: NoteRange) => {
+	const handleNoteRangeReload = async (noteRange: NoteRange, noteRangeS: NoteRange) => {
 		let old = Object.assign({}, noteRange)
 
 		setNoteRange(noteRangeS)
 
 		const undo = () => {
 			setNoteRange(old)
+			toastMessage("success", "Undid reload NoteRange", toast)
+			closeClear()
+		}
+
+		let closeClear = toastMessage("warning", "Reload NoteRange", toast, undo)
+	}
+
+	const handleNoteRangeReset = async (noteRange: NoteRange) => {
+		let old = Object.assign({}, noteRange)
+
+		resetNoteRange.mutate()
+
+		const undo = () => {
+			editNoteRange.mutate(old)
 			toastMessage("success", "Undid reset NoteRange", toast)
 			closeClear()
 		}
 
-		let closeClear = toastMessage("warning", "Reset NoteRange", toast, undo)
+		let closeClear = toastMessage("info", "Reset NoteRange", toast, undo)
 	}
+
+	const handleNoteRangeSave = async (noteRange: NoteRange) => {
+		editNoteRange.mutate(noteRange)
+	}
+
+	useEffect(() => {
+		if (noteRangeS.isSuccess && noteRange) {
+			setNoteRangeChanged(noteRangeS.data.from !== noteRange.from || noteRangeS.data.to !== noteRange.to)
+		}
+	}, [noteRange])
+
 
 	const handlePeriodSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
 		setGradeModalDefaults({...gradeModalDefaults, period_default: Number(event.target.value)})
@@ -270,19 +317,56 @@ export default function Settings(props: Props) {
 		setGradeModalDefaults({...gradeModalDefaults, grade_default: Number(event.target.value)})
 	};
 
-	const handleDefaultsReset = async (gradeModalDefaults: GradeModalDefaults, gradeModalDefaultsS: GradeModalDefaults) => {
+	const handleDefaultsReload = async (gradeModalDefaults: GradeModalDefaults, gradeModalDefaultsS: GradeModalDefaults) => {
 		let old = Object.assign({}, gradeModalDefaults)
 
 		setGradeModalDefaults(gradeModalDefaultsS)
 
 		const undo = () => {
 			setGradeModalDefaults(old)
+			toastMessage("success", "Undid reload Defaults", toast)
+			closeClear()
+		}
+
+		let closeClear = toastMessage("warning", "Reload Defaults", toast, undo)
+	}
+
+	const handleDefaultsReset = async (defaults: GradeModalDefaults) => {
+		let old = Object.assign({}, defaults)
+
+		resetGradeModalDefaults.mutate()
+
+		const undo = () => {
+			editGradeModalDefaults.mutate(old)
 			toastMessage("success", "Undid reset Defaults", toast)
 			closeClear()
 		}
 
-		let closeClear = toastMessage("warning", "Reset Defaults", toast, undo)
+		let closeClear = toastMessage("info", "Reset Defaults", toast, undo)
 	}
+
+	const handleDefaultsSave = async (gradeModalDefaults: GradeModalDefaults) => {
+		editGradeModalDefaults.mutate(gradeModalDefaults)
+	}
+
+	useEffect(() => {
+		if (gradeModalDefaultsS.isSuccess && gradeModalDefaults) {
+			const {grade_default, period_default, subject_default, type_default} = gradeModalDefaultsS.data
+			setGradeModalDefaultsChanged(grade_default !== gradeModalDefaults.grade_default || period_default !== gradeModalDefaults.period_default || subject_default !== gradeModalDefaults.subject_default || type_default !== gradeModalDefaults.type_default)
+		}
+	}, [gradeModalDefaults])
+
+
+	useImperativeHandle(ref, () => ({
+		changed() {
+			if (gradeModalDefaultsChanged)
+				return [true, "Defaults for new Grade not saved"]
+			if (noteRangeChanged)
+				return [true, "NoteRange not saved"]
+			return [false, ""]
+		}
+	}));
+
 
 	return <Grid container spacing={2} padding={2}>
 		{typesS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
@@ -311,12 +395,17 @@ export default function Settings(props: Props) {
 		}
 		{gradeModalDefaults !== null && gradeModalDefaultsS.isSuccess && noteRange !== null &&
 				<Grid item xs={12} sm={12} md={6} xl={6}>
-					<SettingsBox title="Defaults" top={
+					<SettingsBox title="Defaults for new Grade" top={
 						<Stack direction="row">
-							<IconButton color="error" onClick={() => handleDefaultsReset(gradeModalDefaults, gradeModalDefaultsS.data)}>
-								<UndoIcon/>
+							<IconButton color="error" onClick={() => handleDefaultsReset(gradeModalDefaultsS.data)}>
+								<RestoreIcon/>
 							</IconButton>
-							<IconButton color="success" onClick={() => editGradeModalDefaults.mutate(gradeModalDefaults)}><SaveButton/>
+							{gradeModalDefaultsChanged &&
+									<IconButton color="warning" onClick={() => handleDefaultsReload(gradeModalDefaults, gradeModalDefaultsS.data)}>
+										<CloseIcon/>
+									</IconButton>}
+							<IconButton disabled={!gradeModalDefaultsChanged} color={gradeModalDefaultsChanged ? "success" : "off"}
+											onClick={() => handleDefaultsSave(gradeModalDefaults)}><SaveButton/>
 							</IconButton>
 						</Stack>
 					}><Grid container spacing={4} padding={2}>
@@ -376,10 +465,15 @@ export default function Settings(props: Props) {
 				<Grid item xs={12} sm={12} md={6} xl={6}>
 					<SettingsBox title="Note Range" top={
 						<Stack direction="row">
-							<IconButton color="error" onClick={() => handleNoteRangeReset(noteRange, noteRangeS.data)}>
-								<UndoIcon/>
+							<IconButton color="error" onClick={() => handleNoteRangeReset(noteRangeS.data)}>
+								<RestoreIcon/>
 							</IconButton>
-							<IconButton color="success" onClick={() => editNoteRange.mutate(noteRange)}>
+							{noteRangeChanged &&
+									<IconButton color="warning" onClick={() => handleNoteRangeReload(noteRange, noteRangeS.data)}>
+										<CloseIcon/>
+									</IconButton>}
+							<IconButton disabled={!noteRangeChanged} color={noteRangeChanged ? "success" : "off"}
+											onClick={() => handleNoteRangeSave(noteRange)}>
 								<SaveButton/>
 							</IconButton>
 						</Stack>
@@ -445,4 +539,6 @@ export default function Settings(props: Props) {
 				</Grid>
 		}
 	</Grid>
-}
+})
+
+export default Settings;

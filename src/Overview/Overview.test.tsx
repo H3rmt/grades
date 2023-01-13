@@ -33,6 +33,8 @@ describe('Overview', () => {
 		for (const grade of mockData.grades) {
 			expect(await screen.queryAllByText(grade.id), "GradeID not found on Screen").to.be.empty
 		}
+
+		console.info('Table and all Table columns rendered')
 	})
 	test('Table renders Grades', async () => {
 		mockIPC(mockData)
