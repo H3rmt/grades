@@ -18,7 +18,8 @@ export default async ({github, context, core, release_id, commit_head_message, v
 		release_id: release_id,
 		body: `### Changes:\n${commit_head_message}\n\n**Changelog**: https://github.com/${owner}/${repo}/compare/${data.tag_name}...${repo}-v${version}`,
 		draft: false,
-		prerelease: false
+		prerelease: false,
+		make_latest: false
 	})
 
 	core.notice(`published release: ${repo} v${version}`)
