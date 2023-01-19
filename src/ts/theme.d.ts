@@ -1,17 +1,17 @@
 declare module '@mui/material/styles' {
 
 	interface Palette {
-		off: Palette['primary'];
+		// off: Palette['primary'];
 	}
 
 	interface PaletteOptions {
-		off: PaletteOptions['primary'];
+		// off: PaletteOptions['primary'];
 	}
 }
 
 declare module '@mui/material/IconButton/IconButton' {
 	interface IconButtonPropsColorOverrides {
-		off: true;
+		// off: true;
 	}
 }
 

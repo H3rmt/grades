@@ -1,10 +1,10 @@
-import {Button, IconButton, MenuItem, Select, SelectChangeEvent, Stack, Typography, useMediaQuery} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import {Autocomplete, Button, MenuItem, Select, SelectChangeEvent, Stack, TextField, Typography, useMediaQuery} from "@mui/material";
 import {useGradeModalDefaults, usePeriods} from "../commands/get";
 import {errorToast} from "../ts/toast";
 import {modalConfirmed, modalOpen, selectedPeriod} from "./atoms";
 import {useAtom} from 'jotai'
 import {useSnackbar} from "notistack";
+import {SyntheticEvent} from "react";
 
 type Props = {};
 
@@ -36,8 +36,8 @@ export default function OverviewAppBar(props: Props) {
 		setPeriod(event.target.value);
 	}
 
-	return <Stack spacing={2} direction="row" alignItems="start">
-		<Select color="secondary" autoWidth variant="outlined" sx={{padding: 0, maxWidth: [120, 150, 300, 500, 600]}}
+	return <Stack spacing={2} direction="row" alignItems="center">
+		<Select color="secondary" autoWidth variant="outlined" sx={{ maxWidth: [120, 150, 300, 500, 600]}}
 				  value={period ?? "-1"} size="small" onChange={handlePeriodSelectChange} title="Period Select"
 				  renderValue={(i: string) => periods?.data?.find(p => p.id === Number(i))?.name ?? "All"}>
 			<MenuItem key="-1" value="-1">
@@ -55,10 +55,11 @@ export default function OverviewAppBar(props: Props) {
 		</Select>
 		{(() => {
 			if (plusButton)
-				return <IconButton color="secondary" onClick={() => {
-					setConfirmed(false)
-					setOpen(true)
-				}} title="New Grade"><AddIcon/></IconButton>
+				return <></> // TODO ADD floating action Button
+					// return <IconButton color="secondary" onClick={() => {
+					// 	setConfirmed(false)
+					// 	setOpen(true)
+			// }} title="New Grade"><AddIcon/></IconButton>
 			else if (oneButton)
 				return <Button variant="contained" color="secondary" onClick={() => {
 					setConfirmed(false)

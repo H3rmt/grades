@@ -109,9 +109,9 @@ export default function App() {
 	}
 
 	return (<>
-		<AppBar component="nav" enableColorOnDark position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
+		<AppBar component="nav" position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
 			<Toolbar>
-				<IconButton color="inherit" aria-label="open drawer" edge="start" size="medium" onClick={() => {
+				<IconButton color="inherit" aria-label="open drawer" edge="start" onClick={() => {
 					setOpenNav(!openNav)
 				}}><MenuIcon/>
 				</IconButton>
@@ -126,8 +126,8 @@ export default function App() {
 			<Toolbar/>
 			{<openPage.page ref={childRef}/>}
 		</Box>
-		<Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)}>
-			<Button color="secondary" variant="outlined" onClick={() => {
+		<Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)} closeText="Continue Edit">
+			<Button variant="contained" onClick={() => {
 				setPage(unsavedNextPage)
 				setUnsaved(false)
 			}}>

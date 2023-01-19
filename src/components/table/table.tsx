@@ -10,9 +10,9 @@ import {capitalizeFirstLetter} from "../../ts/utils";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveButton from '@mui/icons-material/Save';
-import UndoIcon from '@mui/icons-material/Undo';
 import {Cols, Column, ColumnDef, IRow} from "./defs";
 import HandymanIcon from '@mui/icons-material/Handyman';
+import CloseIcon from "@mui/icons-material/Close";
 
 type Props<Row extends IRow> = {
 	data: Array<Row>
@@ -65,7 +65,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 
 	return <TableContainer sx={{overflowY: 'auto'}} component="div">
 		<Table size="medium">
-			<TableHead sx={{bgcolor: "primary.main"}}>
+			<TableHead>
 				<TableRow>
 					{(props.delete ?? props.edit) && <TableCell key="actions" padding="checkbox"/>}
 					{Array.from(props.cols.entries()).map(cd => {
@@ -98,7 +98,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 												<IconButton color="default" onClick={() => {
 													col.edit = false
 													setData(new Map(data));
-												}}><UndoIcon/>
+												}}><CloseIcon/>
 												</IconButton>
 												:
 												props.delete && <IconButton color="error" onClick={() => {

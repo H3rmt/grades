@@ -371,7 +371,7 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 	return <Grid container spacing={2} padding={2}>
 		{typesS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
 			<SettingsBox title="Types" top={
-				<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateType(types)}>Add</Button>
+				<Button variant="outlined" size="small" onClick={() => handleCreateType(types)}>Add</Button>
 			}><CTable data={types} cols={getTypeCols()} delete={(id) => deleteType.mutate(id)}
 						 edit={(type) => editType.mutate(type)}/>
 			</SettingsBox>
@@ -379,7 +379,7 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 		}
 		{subjectsS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
 			<SettingsBox title="Subjects" top={
-				<Button color="secondary" variant="contained" size="small" onClick={() => handleCreateSubject(subjects)}>Add</Button>
+				<Button variant="outlined" size="small" onClick={() => handleCreateSubject(subjects)}>Add</Button>
 			}><CTable data={subjects} cols={getSubjectCols()} delete={(id) => deleteSubject.mutate(id)}
 						 edit={(subject) => editSubject.mutate(subject)}/>
 			</SettingsBox>
@@ -387,7 +387,7 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 		}
 		{periodsS.isSuccess && <Grid item xs={12} sm={12} md={12} xl={6}>
 			<SettingsBox title="Periods" top={
-				<Button color="secondary" variant="contained" size="small" onClick={() => handleCreatePeriod(periods)}>Add</Button>
+				<Button variant="outlined" size="small" onClick={() => handleCreatePeriod(periods)}>Add</Button>
 			}><CTable data={periods} cols={getPeriodCols()} delete={(id) => deletePeriod.mutate(id)}
 						 edit={(period) => editPeriod.mutate(period)}/>
 			</SettingsBox>
@@ -404,7 +404,7 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 									<IconButton color="warning" onClick={() => handleDefaultsReload(gradeModalDefaults, gradeModalDefaultsS.data)}>
 										<CloseIcon/>
 									</IconButton>}
-							<IconButton disabled={!gradeModalDefaultsChanged} color={gradeModalDefaultsChanged ? "success" : "off"}
+							<IconButton disabled={!gradeModalDefaultsChanged} color="success"
 											onClick={() => handleDefaultsSave(gradeModalDefaults)}><SaveButton/>
 							</IconButton>
 						</Stack>
@@ -412,7 +412,7 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 						<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
 							<Stack spacing={2} direction="row" alignItems="center">
 								<Typography variant="h6" fontWeight="normal">Subject</Typography>
-								<Select value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
+								<Select color="secondary" value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
 										  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
 									{subjects.map((subject) => {
 										return <MenuItem value={subject.id} key={subject.id} sx={{color: subject.color}}>{subject.name}</MenuItem>
@@ -423,7 +423,7 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 						<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
 							<Stack spacing={2} direction="row" alignItems="center">
 								<Typography variant="h6" fontWeight="normal">Type</Typography>
-								<Select value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
+								<Select color="secondary" value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
 										  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
 									{types.map((type) => {
 										return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
@@ -434,7 +434,7 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 						<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
 							<Stack spacing={2} direction="row" alignItems="center">
 								<Typography variant="h6" fontWeight="normal">Period</Typography>
-								<Select value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none" fullWidth
+								<Select color="secondary" value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none" fullWidth
 										  onChange={(e) => handlePeriodSelectChange(e, gradeModalDefaults)}>
 									{periods.map((period) => {
 										return <MenuItem value={period.id} key={period.id}>
@@ -451,9 +451,9 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 						<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
 							<Stack spacing={2} direction="row" alignItems="center">
 								<Typography variant="h6" fontWeight="normal">Grade</Typography>
-								<Slider value={gradeModalDefaults.grade_default} color="secondary" min={noteRange.from} max={noteRange.to}
+								<Slider color="secondary" value={gradeModalDefaults.grade_default} min={noteRange.from} max={noteRange.to}
 										  onChange={(e, v) => handleGradeSliderChange(e, v, gradeModalDefaults)}/>
-								<TextField value={gradeModalDefaults.grade_default} type="number" margin="none"
+								<TextField color="secondary" value={gradeModalDefaults.grade_default} type="number" margin="none"
 											  onChange={(e) => handleGradeInputChange(e, gradeModalDefaults)}/>
 							</Stack>
 						</Grid>
@@ -472,8 +472,7 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 									<IconButton color="warning" onClick={() => handleNoteRangeReload(noteRange, noteRangeS.data)}>
 										<CloseIcon/>
 									</IconButton>}
-							<IconButton disabled={!noteRangeChanged} color={noteRangeChanged ? "success" : "off"}
-											onClick={() => handleNoteRangeSave(noteRange)}>
+							<IconButton disabled={!noteRangeChanged} color="success" onClick={() => handleNoteRangeSave(noteRange)}>
 								<SaveButton/>
 							</IconButton>
 						</Stack>
@@ -482,18 +481,18 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 							<Grid item xs={12} sm={6} lg={6}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">From</Typography>
-									<TextField value={noteRange.from} type="number" fullWidth margin="none"
+									<TextField color="secondary" value={noteRange.from} type="number" fullWidth margin="none"
 												  onChange={(e) => handleNoteRangeFromInputChange(e, noteRange)}/>
-									<Slider value={noteRange.from} color="secondary" min={0} max={29}
+									<Slider color="secondary" value={noteRange.from} min={0} max={29}
 											  onChange={(e, v) => handleNoteRangeFromSliderChange(e, v, noteRange)}/>
 								</Stack>
 							</Grid>
 							<Grid item xs={12} sm={6} lg={6}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">To</Typography>
-									<TextField value={noteRange.to} type="number" fullWidth margin="none"
+									<TextField color="secondary" value={noteRange.to} type="number" fullWidth margin="none"
 												  onChange={(e) => handleNoteRangeToInputChange(e, noteRange)}/>
-									<Slider value={noteRange.to} color="secondary" min={1} max={30}
+									<Slider color="secondary" value={noteRange.to} min={1} max={30}
 											  onChange={(e, v) => handleNoteRangeToSliderChange(e, v, noteRange)}/>
 								</Stack>
 							</Grid>

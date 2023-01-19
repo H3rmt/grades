@@ -14,18 +14,16 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {QueryClient, QueryClientProvider,} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import {StrictMode} from "react";
+import {blue, green, pink} from "@mui/material/colors";
 
-const darkTheme = createTheme({
+const theme = createTheme({
 	palette: {
-		mode: 'dark',
+		mode: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'light',
 		primary: {
-			main: '#383838'
+			main: blue[800],
 		},
 		secondary: {
-			main: '#f50000'
-		},
-		off: {
-			main: '#383838',
+			main: pink[500]
 		},
 	},
 	breakpoints: {
@@ -39,11 +37,11 @@ const darkTheme = createTheme({
 	},
 });
 
-const queryClient = new QueryClient({defaultOptions: {queries: {retry: 1, networkMode: 'always', refetchOnWindowFocus: false}}});
+const queryClient = new QueryClient({defaultOptions: {queries: {retry: 2, networkMode: 'always', refetchOnWindowFocus: false}}});
 
 createRoot(document.getElementById("root") as HTMLElement).render(
 		<StrictMode>
-			<ThemeProvider theme={darkTheme}>
+			<ThemeProvider theme={theme}>
 				<LocalizationProvider dateAdapter={AdapterDayjs}>
 					<QueryClientProvider client={queryClient}>
 						<CssBaseline enableColorScheme/>

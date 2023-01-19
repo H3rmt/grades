@@ -184,7 +184,7 @@ export default function NewGradeModal() {
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Subject</Typography>
-									{subjects.isSuccess && <Select value={(grade.subject || '').toString()} margin="none" fullWidth
+									{subjects.isSuccess && <Select color="secondary" value={(grade.subject || '').toString()} margin="none" fullWidth
 																			 onChange={(event) => handleSubjectSelectChange(event, grade)}
 																			 title="Subject Select">
 										{subjects.data.map((subject) => {
@@ -196,7 +196,7 @@ export default function NewGradeModal() {
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Type</Typography>
-									{types.isSuccess && <Select value={(grade.type || '').toString()} margin="none" fullWidth
+									{types.isSuccess && <Select color="secondary" value={(grade.type || '').toString()} margin="none" fullWidth
 																		 onChange={(event) => handleTypeSelectChange(event, grade)}
 																		 title="Type Select">
 										{types.data.map((type) => {
@@ -208,7 +208,7 @@ export default function NewGradeModal() {
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Period</Typography>
-									{periods.isSuccess && <Select value={(grade.period || '').toString()} margin="none" fullWidth
+									{periods.isSuccess && <Select color="secondary" value={(grade.period || '').toString()} margin="none" fullWidth
 																			onChange={(event) => handlePeriodSelectChange(event, grade)}
 																			title="Period Select">
 										{periods.data.map((period) => {
@@ -228,17 +228,16 @@ export default function NewGradeModal() {
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Grade</Typography>
 									{noteRange.isSuccess && <>
-										<Stack spacing={2} direction="row">
-											<TextField value={grade.grade ?? ""} type="number" fullWidth margin="none"
+										<Stack spacing={1} direction="row" alignItems="center">
+											<TextField color="secondary" value={grade.grade ?? ""} type="number" fullWidth margin="none"
 														  onChange={(event) => handleGradeInputChange(event, grade, noteRange.data)}
 														  title="Grade Input"/>
-											{grade.grade !== null && <IconButton color="default" onClick={() => {
+											{grade.grade !== null && <IconButton onClick={() => {
 												setGrade({...grade, grade: null})
 											}}><ClearIcon/>
-											</IconButton>
-											}
+											</IconButton>}
 										</Stack>
-										<Slider value={grade.grade ?? noteRange.data.from} color="secondary"
+										<Slider color="secondary" value={grade.grade ?? noteRange.data.from}
 												  min={noteRange.data.from}
 												  max={noteRange.data.to}
 												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange.data)}
@@ -255,7 +254,7 @@ export default function NewGradeModal() {
 													}} renderInput={(params) => {
 										// @ts-ignore
 										params.inputProps.value = grade.date;
-										return <TextField {...params} title="Date Picker"/>
+										return <TextField {...params} color="secondary" title="Date Picker"/>
 									}} renderDay={(day, value, DayComponentProps) => <Badge
 											key={day.toString()}
 											overlap="circular"
@@ -268,14 +267,14 @@ export default function NewGradeModal() {
 							<Grid item xs={12} sm={6} lg={4}>
 								<Stack spacing={2}>
 									<Typography variant="h6" fontWeight="normal">Confirmed Date</Typography>
-									<Stack direction="row" spacing={0.5}>
+									<Stack direction="row" spacing={1} alignItems="center">
 										<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : null}
 														onChange={d => {
 															handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
 														}} renderInput={(params) => {
 											// @ts-ignore
 											params.inputProps.value = grade.confirmed ? grade.confirmed : "";
-											return <TextField {...params} title="Confirmed Date Picker"/>
+											return <TextField {...params} color="secondary" title="Confirmed Date Picker"/>
 										}} renderDay={(day, value, DayComponentProps) => {
 											if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
 												DayComponentProps.disabled = true
@@ -287,7 +286,7 @@ export default function NewGradeModal() {
 											</Badge>
 										}
 										}/>
-										{grade.confirmed && <IconButton color="default" onClick={() => {
+										{grade.confirmed && <IconButton onClick={() => {
 											setGrade({...grade, confirmed: null})
 										}}><ClearIcon/>
 										</IconButton>}
@@ -297,7 +296,7 @@ export default function NewGradeModal() {
 							<Grid item xs={12} sm={8} lg={9}>
 								<Stack spacing={2} height={1}>
 									<Typography variant="h6" fontWeight="normal">Info</Typography>
-									<TextField multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
+									<TextField color="secondary" multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
 												  onChange={(event) => handleInfoInputChange(event, grade)}
 												  title="Info Input"
 									/>
@@ -307,7 +306,7 @@ export default function NewGradeModal() {
 								<Stack spacing={1.5} height={1}>
 									<Typography variant="h6" fontWeight="normal">Grade Weight</Typography>
 									<FormGroup>
-										<RadioGroup defaultValue="Normal" value={grade.weight} title="Grade Weight Select"
+										<RadioGroup color="secondary" defaultValue="Normal" value={grade.weight} title="Grade Weight Select"
 														onChange={(event) => handleWeightChange(event, grade)}>
 											{weights.isSuccess && weights.data.map((weight) => <FormControlLabel control={
 												<Radio color="secondary"/>
@@ -322,16 +321,14 @@ export default function NewGradeModal() {
 		</DialogContent>
 		<DialogActions sx={{gap: 0.7}}>
 			{gradeModalDefaults.isSuccess &&
-					<Button onClick={() => handleClear(gradeModalDefaults.data)} type="submit" variant="outlined"
-							  color="secondary">Clear</Button>
+					<Button onClick={() => handleClear(gradeModalDefaults.data)} type="submit" variant="contained" color="warning">Clear</Button>
 			}
-			<Button onClick={() => setOpen(false)} type="submit" variant="outlined"
-					  color="secondary">Close</Button>
+			<Button onClick={() => setOpen(false)} type="submit" variant="contained">Close</Button>
 			{grade !== null &&
 					<Button onClick={() => {
 						createGrade.mutate(grade);
 						setOpen(false)
-					}} type="submit" variant="outlined" color="success">Create</Button>
+					}} type="submit" variant="contained" color="success">Create</Button>
 			}
 		</DialogActions>
 	</Dialog>;
