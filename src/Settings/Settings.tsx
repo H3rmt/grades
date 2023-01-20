@@ -7,6 +7,7 @@ import {
 	Paper,
 	Select,
 	SelectChangeEvent,
+	Skeleton,
 	Slider,
 	Stack,
 	TextField,
@@ -32,6 +33,7 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import {useResetGradeModalDefaults, useResetNoteRange} from "../commands/reset";
 import CloseIcon from "@mui/icons-material/Close";
 import {PageProps as Props, PageRef} from "../App";
+import ReactQueryData from "../components/ReactQueryData/ReactQueryData";
 
 const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<PageRef>) {
 	const toast = useSnackbar()
@@ -500,43 +502,50 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 					</SettingsBox>
 				</Grid>
 		}
-		{info.isSuccess &&
-				<Grid item xs={12} sm={6} md={6} xl={6}>
-					<SettingsBox title="Info">
-						<Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">
-							<Stack spacing={1} direction="column">
-								<Typography>
-									name: {info.data.name}
+
+		<Grid item xs={12} sm={6} md={6} xl={6}>
+			<SettingsBox title="Info">
+				<ReactQueryData query={info} display={
+					(data) => <Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">
+						<Stack spacing={1} direction="column">
+							<Typography>
+								name: {data.name}
+							</Typography>
+							<Typography>
+								version: {data.version}
+							</Typography>
+							<Typography>
+								authors: {data.authors}
+							</Typography>
+							<Typography>
+								target: {data.target}
+							</Typography>
+							<Typography>
+								profile: {data.profile}
+							</Typography>
+							<Typography>
+								build_on: {data.build_on}
+							</Typography>
+							<Link underline="hover" target="_blank" rel="noreferrer" color=""
+									href={`${data.repository}commit/${data.commit_hash_short}`}>
+								<Typography color="">
+									commit_hash_short: {data.commit_hash_short}
 								</Typography>
-								<Typography>
-									version: {info.data.version}
-								</Typography>
-								<Typography>
-									authors: {info.data.authors}
-								</Typography>
-								<Typography>
-									target: {info.data.target}
-								</Typography>
-								<Typography>
-									profile: {info.data.profile}
-								</Typography>
-								<Typography>
-									build_on: {info.data.build_on}
-								</Typography>
-								<Link underline="hover" target="_blank" rel="noreferrer" color=""
-										href={`${info.data.repository}commit/${info.data.commit_hash_short}`}>
-									<Typography color="">
-										commit_hash_short: {info.data.commit_hash_short}
-									</Typography>
-								</Link>
-								<Typography>
-									build_time: {dayjs(info.data.build_time).format('DD-MM-YYYY HH:mm:ss')}
-								</Typography>
-							</Stack>
-						</Paper>
-					</SettingsBox>
-				</Grid>
-		}
+							</Link>
+							<Typography>
+								build_time: {dayjs(data.build_time).format('DD-MM-YYYY HH:mm:ss')}
+							</Typography>
+						</Stack>
+					</Paper>
+				} loading={
+					() => <Skeleton variant="rounded" height={150}/>} error={
+					(err) => <Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">
+						<Typography color="error">
+							{err.toString()}
+						</Typography>
+					</Paper>}/>
+			</SettingsBox>
+		</Grid>
 	</Grid>
 })
 
