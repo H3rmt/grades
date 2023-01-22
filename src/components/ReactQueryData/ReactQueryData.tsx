@@ -1,26 +1,29 @@
 import {UseQueryResult} from "@tanstack/react-query";
-import React from "react";
-import {Typography} from "@mui/material";
+import {Paper, Typography} from "@mui/material";
+import {loadingSkeleton} from "./loadings";
 
 type Props<T> = {
 	query: UseQueryResult<T, string | Error>;
-
+	data: T;
 	loading?: () => JSX.Element;
+	loadingHeight?: number;
 	error?: (err: Error | string) => JSX.Element;
-	display: (t: T) => JSX.Element;
-
+	display: (data: NonNullable<T>) => JSX.Element | JSX.Element[];
 }
 
 export default function ReactQueryData<T>(props: Props<T>) {
-	const {data, isError, error, isLoading} = props.query;
-
-	if (isLoading) {
-		return (props?.loading ?? (() => <Typography>Loading...</Typography>))()
+	if (props.query.isLoading || props.data === undefined) {
+		return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)();
 	}
 
-	if (isError) {
-		return (props?.error ?? ((err: Error | string) => <Typography color="error">{err.toString()}</Typography>))(error)
+	if (props.query.isError) {
+		return props.error ? props.error(props.query.error) :
+				<Paper variant="outlined" sx={{borderWidth: 2, padding: 0.5, borderColor: "error.main"}}>
+					<Typography color="error.main" variant="subtitle2">
+						Error: {props.query.error.toString()}
+					</Typography>
+				</Paper>
 	}
 
-	return props.display(data);
+	return <>{props.display(props.data as NonNullable<T>)}</>;
 }
