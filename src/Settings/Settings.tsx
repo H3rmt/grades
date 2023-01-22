@@ -7,208 +7,44 @@ import {
 	Paper,
 	Select,
 	SelectChangeEvent,
-	Skeleton,
 	Slider,
 	Stack,
 	TextField,
 	Typography
 } from '@mui/material';
-import {ChangeEvent, ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState} from 'react';
-import {nextFree, nullableUseState, randColor} from "../ts/utils";
+import {ChangeEvent, ForwardedRef, forwardRef, useImperativeHandle} from 'react';
+import {nextFree, randColor} from "../ts/utils";
 import {CTable} from "../components/table/table";
-import {errorToast, toastMessage} from "../ts/toast";
 import {Period, Subject, Type} from "../entity";
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
 import SaveButton from "@mui/icons-material/Save";
-import {useGradeModalDefaults, useInfo, useNoteRange, usePeriods, useSubjects, useTypes} from "../commands/get";
-import {useQueryClient} from "@tanstack/react-query";
-import {useCreatePeriod, useCreateSubject, useCreateType} from "../commands/create";
+import {useInfo} from "../commands/get";
 import dayjs from "dayjs";
-import {useDeletePeriod, useDeleteSubject, useDeleteType} from "../commands/delete";
-import {useEditGradeModalDefaults, useEditNoteRange, useEditPeriod, useEditSubject, useEditType} from "../commands/edit";
-import {useSnackbar} from "notistack";
 import SettingsBox from "../components/SettingsBox/SettingsBox";
 import RestoreIcon from '@mui/icons-material/Restore';
-import {useResetGradeModalDefaults, useResetNoteRange} from "../commands/reset";
 import CloseIcon from "@mui/icons-material/Close";
 import {PageProps as Props, PageRef} from "../App";
 import ReactQueryData from "../components/ReactQueryData/ReactQueryData";
+import {useEditGradeModalDefaults, useEditNoteRange} from '../commands/edit';
+import {useEditPeriods, useEditSubjects, useEditTypes} from '../commands/editList';
 
 const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<PageRef>) {
-	const toast = useSnackbar()
-	const queryClient = useQueryClient()
+	const [noteRange, setNoteRange, noteRangeS, noteRangeEdited, resetNoteRange, reloadNoteRange, saveNoteRange] = useEditNoteRange();
 
-	const [periods, setPeriods] = useState<Period[]>([])
-	const periodsS = usePeriods({
-		onSuccess: (data) => setPeriods(data),
-		onError: (error) => {
-			errorToast("Error loading Periods", toast, error)
-		}
-	});
+	const [gradeModalDefaults, setGradeModalDefaults, gradeModalDefaultsS, gradeModalDefaultsEdited, resetGradeModalDefaults, reloadGradeModalDefaults, saveGradeModalDefaults] = useEditGradeModalDefaults();
 
-	const [types, setTypes] = useState<Type[]>([])
-	const typesS = useTypes({
-		onSuccess: (data) => setTypes(data),
-		onError: (error) => {
-			errorToast("Error loading Types", toast, error)
-		}
-	});
+	const [periods, , periodsS, , addPeriod, editPeriod, removePeriod] = useEditPeriods();
 
-	const [subjects, setSubjects] = useState<Subject[]>([])
-	const subjectsS = useSubjects({
-		onSuccess: (data) => setSubjects(data),
-		onError: (error) => {
-			errorToast("Error loading Subjects", toast, error)
-		}
-	});
+	const [subjects, , subjectsS, , addSubject, editSubject, removeSubject] = useEditSubjects();
 
-	const [noteRange, setNoteRange] = nullableUseState<NoteRange>()
-	const [noteRangeChanged, setNoteRangeChanged] = useState(false)
-	const noteRangeS = useNoteRange({
-		onSuccess: (data) => setNoteRange(data),
-		onError: (error) => {
-			errorToast("Error loading noteRange", toast, error)
-		}
-	});
+	const [types, , typesS, , addType, editType, removeType] = useEditTypes();
 
-	const [gradeModalDefaults, setGradeModalDefaults] = nullableUseState<GradeModalDefaults>()
-	const [gradeModalDefaultsChanged, setGradeModalDefaultsChanged] = useState(false)
-	const gradeModalDefaultsS = useGradeModalDefaults({
-		onSuccess: (data) => setGradeModalDefaults(data),
-		onError: (error) => {
-			errorToast("Error loading gradeModalDefaults", toast, error)
-		}
-	});
-
-	const info = useInfo({
-		onError: (error) => {
-			errorToast("Error loading info", toast, error)
-		}
-	});
-
-	const createType = useCreateType(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Created Type", toast)
-		},
-		onError: (error) => {
-			errorToast("Error creating Type", toast, error)
-		}
-	})
-
-	const createSubject = useCreateSubject(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Created Subject", toast)
-		},
-		onError: (error) => {
-			errorToast("Error creating Subject", toast, error)
-		}
-	})
-
-	const createPeriod = useCreatePeriod(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Created Period", toast)
-		},
-		onError: (error) => {
-			errorToast("Error creating Period", toast, error)
-		}
-	})
-
-	const deleteType = useDeleteType(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Deleted Type", toast)
-		},
-		onError: (error) => {
-			errorToast("Error deleting Type", toast, error)
-		}
-	})
-
-	const deleteSubject = useDeleteSubject(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Deleted Subject", toast)
-		},
-		onError: (error) => {
-			errorToast("Error deleting Subject", toast, error)
-		}
-	})
-
-	const deletePeriod = useDeletePeriod(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Deleted Period", toast)
-		},
-		onError: (error) => {
-			errorToast("Error deleting Period", toast, error)
-		}
-	})
-
-	const editType = useEditType(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Edited Type", toast)
-		},
-		onError: (error) => {
-			errorToast("Error editing Type", toast, error)
-		}
-	})
-
-	const editSubject = useEditSubject(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Edited Subject", toast)
-		},
-		onError: (error) => {
-			errorToast("Error editing Subject", toast, error)
-		}
-	})
-
-	const editPeriod = useEditPeriod(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Edited Period", toast)
-		},
-		onError: (error) => {
-			errorToast("Error editing Period", toast, error)
-		}
-	})
-
-	const editNoteRange = useEditNoteRange(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Saved Note Range", toast)
-		},
-		onError: (error) => {
-			errorToast("Error saving Note Range", toast, error)
-		}
-	})
-
-	const resetNoteRange = useResetNoteRange(queryClient, {
-		onSuccess: () => {
-			// toast by undo (with undo button)
-			// toastMessage("success", "Reset Note Range", toast)
-		},
-		onError: (error) => {
-			errorToast("Error resting Note Range", toast, error)
-		}
-	})
-
-	const editGradeModalDefaults = useEditGradeModalDefaults(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Saved Grade Modal Defaults", toast)
-		},
-		onError: (error) => {
-			errorToast("Error saving Grade Modal Defaults", toast, error)
-		}
-	})
-
-	const resetGradeModalDefaults = useResetGradeModalDefaults(queryClient, {
-		onSuccess: () => {
-			// toast by undo (with undo button)
-			// toastMessage("success", "Reset Grade Modal Defaults", toast)
-		},
-		onError: (error) => {
-			errorToast("Error resting Grade Modal Defaults", toast, error)
-		}
-	})
+	const [info, , infoS] = useInfo();
 
 
 	const handleCreateType = async (types: Type[]) => {
-		await createType.mutate({
+		addType({
 			color: randColor(),
 			name: nextFree(types.map(i => i.name), "New Type"),
 			id: -1
@@ -216,7 +52,7 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 	}
 
 	const handleCreateSubject = async (subjects: Subject[]) => {
-		await createSubject.mutate({
+		addSubject({
 			color: randColor(),
 			name: nextFree(subjects.map(i => i.name), "New Subject"),
 			id: -1
@@ -224,7 +60,7 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 	}
 
 	const handleCreatePeriod = async (periods: Period[]) => {
-		await createPeriod.mutate({
+		addPeriod({
 			from: dayjs().format("DD-MM-YYYY"),
 			to: dayjs().add(6, "months").format("DD-MM-YYYY"),
 			name: nextFree(periods.map(i => i.name), "New Period"),
@@ -260,45 +96,6 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 		})
 	}
 
-	const handleNoteRangeReload = async (noteRange: NoteRange, noteRangeS: NoteRange) => {
-		let old = Object.assign({}, noteRange)
-
-		setNoteRange(noteRangeS)
-
-		const undo = () => {
-			setNoteRange(old)
-			toastMessage("success", "Undid reload NoteRange", toast)
-			closeClear()
-		}
-
-		let closeClear = toastMessage("warning", "Reload NoteRange", toast, undo)
-	}
-
-	const handleNoteRangeReset = async (noteRange: NoteRange) => {
-		let old = Object.assign({}, noteRange)
-
-		resetNoteRange.mutate()
-
-		const undo = () => {
-			editNoteRange.mutate(old)
-			toastMessage("success", "Undid reset NoteRange", toast)
-			closeClear()
-		}
-
-		let closeClear = toastMessage("info", "Reset NoteRange", toast, undo)
-	}
-
-	const handleNoteRangeSave = async (noteRange: NoteRange) => {
-		editNoteRange.mutate(noteRange)
-	}
-
-	useEffect(() => {
-		if (noteRangeS.isSuccess && noteRange) {
-			setNoteRangeChanged(noteRangeS.data.from !== noteRange.from || noteRangeS.data.to !== noteRange.to)
-		}
-	}, [noteRange])
-
-
 	const handlePeriodSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
 		setGradeModalDefaults({...gradeModalDefaults, period_default: Number(event.target.value)})
 	}
@@ -319,166 +116,156 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 		setGradeModalDefaults({...gradeModalDefaults, grade_default: Number(event.target.value)})
 	};
 
-	const handleDefaultsReload = async (gradeModalDefaults: GradeModalDefaults, gradeModalDefaultsS: GradeModalDefaults) => {
-		let old = Object.assign({}, gradeModalDefaults)
-
-		setGradeModalDefaults(gradeModalDefaultsS)
-
-		const undo = () => {
-			setGradeModalDefaults(old)
-			toastMessage("success", "Undid reload Defaults", toast)
-			closeClear()
-		}
-
-		let closeClear = toastMessage("warning", "Reload Defaults", toast, undo)
-	}
-
-	const handleDefaultsReset = async (defaults: GradeModalDefaults) => {
-		let old = Object.assign({}, defaults)
-
-		resetGradeModalDefaults.mutate()
-
-		const undo = () => {
-			editGradeModalDefaults.mutate(old)
-			toastMessage("success", "Undid reset Defaults", toast)
-			closeClear()
-		}
-
-		let closeClear = toastMessage("info", "Reset Defaults", toast, undo)
-	}
-
-	const handleDefaultsSave = async (gradeModalDefaults: GradeModalDefaults) => {
-		editGradeModalDefaults.mutate(gradeModalDefaults)
-	}
-
-	useEffect(() => {
-		if (gradeModalDefaultsS.isSuccess && gradeModalDefaults) {
-			const {grade_default, period_default, subject_default, type_default} = gradeModalDefaultsS.data
-			setGradeModalDefaultsChanged(grade_default !== gradeModalDefaults.grade_default || period_default !== gradeModalDefaults.period_default || subject_default !== gradeModalDefaults.subject_default || type_default !== gradeModalDefaults.type_default)
-		}
-	}, [gradeModalDefaults])
-
-
 	useImperativeHandle(ref, () => ({
 		changed() {
-			if (gradeModalDefaultsChanged)
+			if (gradeModalDefaultsEdited)
 				return [true, "Defaults for new Grade not saved"]
-			if (noteRangeChanged)
+			if (noteRangeEdited)
 				return [true, "NoteRange not saved"]
 			return [false, ""]
 		}
 	}));
 
-
 	return <Grid container spacing={2} padding={2}>
-		{typesS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
+		<Grid item xs={12} sm={12} md={6} xl={6}>
 			<SettingsBox title="Types" top={
-				<Button variant="outlined" size="small" onClick={() => handleCreateType(types)}>Add</Button>
-			}><CTable data={types} cols={getTypeCols()} delete={(id) => deleteType.mutate(id)}
-						 edit={(type) => editType.mutate(type)}/>
+				<ReactQueryData query={typesS} data={types} display={(types) =>
+						<Button variant="outlined" size="small" onClick={() => handleCreateType(types)}>Add</Button>
+				}/>
+			}><ReactQueryData query={typesS} data={types} display={(types) =>
+					<CTable data={types} cols={getTypeCols()} delete={(id) => removeType(id)}
+							  edit={(type) => editType(type)}/>
+			} loadingHeight={100}/>
 			</SettingsBox>
 		</Grid>
-		}
-		{subjectsS.isSuccess && <Grid item xs={12} sm={12} md={6} xl={6}>
+		<Grid item xs={12} sm={12} md={6} xl={6}>
 			<SettingsBox title="Subjects" top={
-				<Button variant="outlined" size="small" onClick={() => handleCreateSubject(subjects)}>Add</Button>
-			}><CTable data={subjects} cols={getSubjectCols()} delete={(id) => deleteSubject.mutate(id)}
-						 edit={(subject) => editSubject.mutate(subject)}/>
+				<ReactQueryData query={subjectsS} data={subjects} display={(subjects) =>
+						<Button variant="outlined" size="small" onClick={() => handleCreateSubject(subjects)}>Add</Button>
+				}/>
+			}><ReactQueryData query={subjectsS} data={subjects} display={(subjects) =>
+					<CTable data={subjects} cols={getSubjectCols()} delete={(id) => removeSubject(id)}
+							  edit={(subject) => editSubject(subject)}/>
+			} loadingHeight={100}/>
 			</SettingsBox>
 		</Grid>
-		}
-		{periodsS.isSuccess && <Grid item xs={12} sm={12} md={12} xl={6}>
+		<Grid item xs={12} sm={12} md={6} xl={6}>
 			<SettingsBox title="Periods" top={
-				<Button variant="outlined" size="small" onClick={() => handleCreatePeriod(periods)}>Add</Button>
-			}><CTable data={periods} cols={getPeriodCols()} delete={(id) => deletePeriod.mutate(id)}
-						 edit={(period) => editPeriod.mutate(period)}/>
+				<ReactQueryData query={periodsS} data={periods} display={(periods) =>
+						<Button variant="outlined" size="small" onClick={() => handleCreatePeriod(periods)}>Add</Button>
+				}/>
+			}><ReactQueryData query={periodsS} data={periods} display={(periods) =>
+					<CTable data={periods} cols={getPeriodCols()} delete={(id) => removePeriod(id)}
+							  edit={(period) => editPeriod(period)}/>
+			} loadingHeight={100}/>
 			</SettingsBox>
 		</Grid>
-		}
-		{gradeModalDefaults !== null && gradeModalDefaultsS.isSuccess && noteRange !== null &&
-				<Grid item xs={12} sm={12} md={6} xl={6}>
-					<SettingsBox title="Defaults for new Grade" top={
+		<Grid item xs={12} sm={12} md={6} xl={6}>
+			<SettingsBox title="Defaults for new Grade" top={
+				<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={() =>
 						<Stack direction="row">
-							<IconButton color="error" onClick={() => handleDefaultsReset(gradeModalDefaultsS.data)}>
+							<IconButton color="error" onClick={resetGradeModalDefaults}>
 								<RestoreIcon/>
 							</IconButton>
-							{gradeModalDefaultsChanged &&
-									<IconButton color="warning" onClick={() => handleDefaultsReload(gradeModalDefaults, gradeModalDefaultsS.data)}>
+							{gradeModalDefaultsEdited &&
+									<IconButton color="warning" onClick={reloadGradeModalDefaults}>
 										<CloseIcon/>
 									</IconButton>}
-							<IconButton disabled={!gradeModalDefaultsChanged} color="success"
-											onClick={() => handleDefaultsSave(gradeModalDefaults)}><SaveButton/>
+							<IconButton disabled={!gradeModalDefaultsEdited} color="success"
+											onClick={saveGradeModalDefaults}><SaveButton/>
 							</IconButton>
 						</Stack>
-					}><Grid container spacing={4} padding={2}>
-						<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
-							<Stack spacing={2} direction="row" alignItems="center">
-								<Typography variant="h6" fontWeight="normal">Subject</Typography>
-								<Select color="secondary" value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
-										  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
-									{subjects.map((subject) => {
-										return <MenuItem value={subject.id} key={subject.id} sx={{color: subject.color}}>{subject.name}</MenuItem>
-									})}
-								</Select>
-							</Stack>
-						</Grid>
-						<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
-							<Stack spacing={2} direction="row" alignItems="center">
-								<Typography variant="h6" fontWeight="normal">Type</Typography>
-								<Select color="secondary" value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
-										  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
-									{types.map((type) => {
-										return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
-									})}
-								</Select>
-							</Stack>
-						</Grid>
-						<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
-							<Stack spacing={2} direction="row" alignItems="center">
-								<Typography variant="h6" fontWeight="normal">Period</Typography>
-								<Select color="secondary" value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none" fullWidth
-										  onChange={(e) => handlePeriodSelectChange(e, gradeModalDefaults)}>
-									{periods.map((period) => {
-										return <MenuItem value={period.id} key={period.id}>
-											<Stack>
-												{period.name}
-												<br/>
-												<Typography variant="overline">{period.from} - {period.to}</Typography>
-											</Stack>
-										</MenuItem>
-									})}
-								</Select>
-							</Stack>
-						</Grid>
-						<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
-							<Stack spacing={2} direction="row" alignItems="center">
-								<Typography variant="h6" fontWeight="normal">Grade</Typography>
-								<Slider color="secondary" value={gradeModalDefaults.grade_default} min={noteRange.from} max={noteRange.to}
-										  onChange={(e, v) => handleGradeSliderChange(e, v, gradeModalDefaults)}/>
-								<TextField color="secondary" value={gradeModalDefaults.grade_default} type="number" margin="none"
-											  onChange={(e) => handleGradeInputChange(e, gradeModalDefaults)}/>
-							</Stack>
-						</Grid>
-					</Grid>
-					</SettingsBox>
+				}/>
+			}><Grid container spacing={4} padding={2}>
+				<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
+					<Stack spacing={2} direction="row" alignItems="center">
+						<Typography variant="h6" fontWeight="normal">Subject</Typography>
+						<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
+								<ReactQueryData query={subjectsS} data={subjects} display={(subjects) =>
+										<Select color="secondary" value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none" fullWidth
+												  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
+											{subjects.map((subject) => {
+												return <MenuItem value={subject.id} key={subject.id}
+																	  sx={{color: subject.color}}>{subject.name}</MenuItem>
+											})}
+										</Select>
+								}/>
+						}/>
+					</Stack>
 				</Grid>
-		}
-		{noteRange !== null && noteRangeS.isSuccess &&
-				<Grid item xs={12} sm={12} md={6} xl={6}>
-					<SettingsBox title="Note Range" top={
+				<Grid item xs={12} sm={6} md={12} lg={6} xl={6}>
+					<Stack spacing={2} direction="row" alignItems="center">
+						<Typography variant="h6" fontWeight="normal">Type</Typography>
+						<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
+								<ReactQueryData query={typesS} data={types} display={(types) =>
+										<Select color="secondary" value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
+												  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
+											{types.map((type) => {
+												return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
+											})}
+										</Select>
+								}/>
+						}/>
+					</Stack>
+				</Grid>
+				<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
+					<Stack spacing={2} direction="row" alignItems="center">
+						<Typography variant="h6" fontWeight="normal">Period</Typography>
+						<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
+								<ReactQueryData query={periodsS} data={periods} display={(periods) =>
+										<Select color="secondary" value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none" fullWidth
+												  onChange={(e) => handlePeriodSelectChange(e, gradeModalDefaults)}>
+											{periods.map((period) => {
+												return <MenuItem value={period.id} key={period.id}>
+													<Stack>
+														{period.name}
+														<br/>
+														<Typography variant="overline">{period.from} - {period.to}</Typography>
+													</Stack>
+												</MenuItem>
+											})}
+										</Select>
+								}/>
+						}/>
+					</Stack>
+				</Grid>
+				<Grid item xs={12} sm={6} md={12} lg={12} xl={6}>
+					<Stack spacing={2} direction="row" alignItems="center">
+						<Typography variant="h6" fontWeight="normal">Grade</Typography>
+						<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
+								<ReactQueryData query={noteRangeS} data={noteRange} display={(noteRange) =>
+										<>
+											<Slider color="secondary" value={gradeModalDefaults.grade_default} min={noteRange.from} max={noteRange.to}
+													  onChange={(e, v) => handleGradeSliderChange(e, v, gradeModalDefaults)}/>
+											<TextField color="secondary" value={gradeModalDefaults.grade_default} type="number" margin="none"
+														  onChange={(e) => handleGradeInputChange(e, gradeModalDefaults)}/>
+										</>
+								}/>
+						}/>
+					</Stack>
+
+				</Grid>
+			</Grid>
+			</SettingsBox>
+		</Grid>
+		<Grid item xs={12} sm={12} md={6} xl={6}>
+			<SettingsBox title="Note Range" top={
+				<ReactQueryData query={noteRangeS} data={noteRange} display={() =>
 						<Stack direction="row">
-							<IconButton color="error" onClick={() => handleNoteRangeReset(noteRangeS.data)}>
+							<IconButton color="error" onClick={resetNoteRange}>
 								<RestoreIcon/>
 							</IconButton>
-							{noteRangeChanged &&
-									<IconButton color="warning" onClick={() => handleNoteRangeReload(noteRange, noteRangeS.data)}>
+							{noteRangeEdited &&
+									<IconButton color="warning" onClick={reloadNoteRange}>
 										<CloseIcon/>
 									</IconButton>}
-							<IconButton disabled={!noteRangeChanged} color="success" onClick={() => handleNoteRangeSave(noteRange)}>
+							<IconButton disabled={!noteRangeEdited} color="success" onClick={saveNoteRange}>
 								<SaveButton/>
 							</IconButton>
 						</Stack>
-					}>
+				}/>
+			}>
+				<ReactQueryData query={noteRangeS} data={noteRange} display={(noteRange) =>
 						<Grid container spacing={4} padding={2}>
 							<Grid item xs={12} sm={6} lg={6}>
 								<Stack spacing={2}>
@@ -499,51 +286,46 @@ const Settings = forwardRef(function Settings(props: Props, ref: ForwardedRef<Pa
 								</Stack>
 							</Grid>
 						</Grid>
-					</SettingsBox>
-				</Grid>
-		}
+				}/>
+			</SettingsBox>
+		</Grid>
 
 		<Grid item xs={12} sm={6} md={6} xl={6}>
 			<SettingsBox title="Info">
-				<ReactQueryData query={info} display={
-					(data) => <Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">
-						<Stack spacing={1} direction="column">
-							<Typography>
-								name: {data.name}
-							</Typography>
-							<Typography>
-								version: {data.version}
-							</Typography>
-							<Typography>
-								authors: {data.authors}
-							</Typography>
-							<Typography>
-								target: {data.target}
-							</Typography>
-							<Typography>
-								profile: {data.profile}
-							</Typography>
-							<Typography>
-								build_on: {data.build_on}
-							</Typography>
-							<Link underline="hover" target="_blank" rel="noreferrer" color=""
-									href={`${data.repository}commit/${data.commit_hash_short}`}>
-								<Typography color="">
-									commit_hash_short: {data.commit_hash_short}
+				<ReactQueryData query={infoS} data={info} display={(info) =>
+						<Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">
+							<Stack spacing={1} direction="column">
+								<Typography>
+									name: {info.name}
 								</Typography>
-							</Link>
-							<Typography>
-								build_time: {dayjs(data.build_time).format('DD-MM-YYYY HH:mm:ss')}
-							</Typography>
-						</Stack>
-					</Paper>
-				} loading={
-					() => <Skeleton variant="rounded" height={150}/>} error={
-					(err) => <Paper sx={{padding: 1, overflow: "auto"}} variant="outlined">
-						<Typography color="error">
-							{err.toString()}
-						</Typography>
-					</Paper>}/>
+								<Typography>
+									version: {info.version}
+								</Typography>
+								<Typography>
+									authors: {info.authors}
+								</Typography>
+								<Typography>
+									target: {info.target}
+								</Typography>
+								<Typography>
+									profile: {info.profile}
+								</Typography>
+								<Typography>
+									build_on: {info.build_on}
+								</Typography>
+								<Link underline="hover" target="_blank" rel="noreferrer" color=""
+										href={`${info.repository}commit/${info.commit_hash_short}`}>
+									<Typography color="">
+										commit_hash_short: {info.commit_hash_short}
+									</Typography>
+								</Link>
+								<Typography>
+									build_time: {dayjs(info.build_time).format('DD-MM-YYYY HH:mm:ss')}
+								</Typography>
+							</Stack>
+						</Paper>
+				} loadingHeight={150}
+				/>
 			</SettingsBox>
 		</Grid>
 	</Grid>

@@ -1,10 +1,9 @@
-import {Autocomplete, Button, MenuItem, Select, SelectChangeEvent, Stack, TextField, Typography, useMediaQuery} from "@mui/material";
+import {Button, MenuItem, Select, SelectChangeEvent, Stack, Typography, useMediaQuery} from "@mui/material";
 import {useGradeModalDefaults, usePeriods} from "../commands/get";
-import {errorToast} from "../ts/toast";
 import {modalConfirmed, modalOpen, selectedPeriod} from "./atoms";
 import {useAtom} from 'jotai'
-import {useSnackbar} from "notistack";
-import {SyntheticEvent} from "react";
+import {useEffect} from "react";
+import ReactQueryData from "../components/ReactQueryData/ReactQueryData";
 
 type Props = {};
 
@@ -15,44 +14,38 @@ export default function OverviewAppBar(props: Props) {
 	const [, setOpen] = useAtom(modalOpen);
 	const [, setConfirmed] = useAtom(modalConfirmed);
 
-	const toast = useSnackbar()
+	const [periods, , periodsS] = usePeriods();
 
-	const periods = usePeriods({
-		onError: (error) => {
-			errorToast("Error loading Periods", toast, error)
-		}
-	});
+	const [gradeModalDefaults] = useGradeModalDefaults();
 
-	useGradeModalDefaults({
-		onSuccess: (data) => {
-			if (period == null)
-				setPeriod((data.period_default || "-1").toString())
-		},
-		onError: (error) => {
-			errorToast("Error loading gradeModalDefaults", toast, error)
-		}
-	});
+	useEffect(() => {
+		if (period === undefined && gradeModalDefaults !== undefined)
+			setPeriod((gradeModalDefaults.period_default || "-1").toString())
+	}, [gradeModalDefaults])
+
 	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
+		console.log(event.target.value)
 		setPeriod(event.target.value);
 	}
 
 	return <Stack spacing={2} direction="row" alignItems="center">
-		<Select color="secondary" autoWidth variant="outlined" sx={{ maxWidth: [120, 150, 300, 500, 600]}}
-				  value={period ?? "-1"} size="small" onChange={handlePeriodSelectChange} title="Period Select"
-				  renderValue={(i: string) => periods?.data?.find(p => p.id === Number(i))?.name ?? "All"}>
-			<MenuItem key="-1" value="-1">
-				<Typography sx={{fontStyle: "italic"}}>All&nbsp;</Typography>
-			</MenuItem>
-			{periods.isSuccess && periods.data.map((period) => {
-				return <MenuItem key={period.id} value={period.id}>
-					<Stack>
-						{period.name}
-						<br/>
-						<Typography variant="overline">{period.from} - {period.to}</Typography>
-					</Stack>
-				</MenuItem>
-			})}
-		</Select>
+		<ReactQueryData query={periodsS} data={periods} display={(periods) =>
+				<Select color="secondary" autoWidth variant="outlined" sx={{maxWidth: [120, 150, 300, 500, 600]}}
+						  value={period ?? "-1"} size="small" onChange={handlePeriodSelectChange} title="Period Select"
+						  renderValue={(i: string) => (periods.find(p => p.id === Number(i))?.name ?? "All Periods")}>
+					<MenuItem key="-1" value="-1">
+						<Typography sx={{fontStyle: "italic"}}>All&nbsp;</Typography>
+					</MenuItem>
+					{periods.map((p) => <MenuItem key={p.id} value={p.id}>
+						<Stack>
+							{p.name}
+							<br/>
+							<Typography variant="overline">{p.from} - {p.to}</Typography>
+						</Stack>
+					</MenuItem>)
+					}
+				</Select>
+		}/>
 		{(() => {
 			if (plusButton)
 				return <></> // TODO ADD floating action Button

@@ -26,7 +26,7 @@ import {Grade} from "../../entity";
 import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../../commands/get";
 import {useCreateGrade} from "../../commands/create";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
-import {nullableUseState} from '../../ts/utils';
+import {useUndefinedState} from '../../ts/utils';
 import dayjs, {Dayjs} from "dayjs";
 import {useQueryClient} from "@tanstack/react-query";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -36,7 +36,7 @@ import {modalConfirmed, modalOpen} from "../atoms";
 import {useSnackbar} from "notistack";
 
 export default function NewGradeModal() {
-	const [grade, setGrade] = nullableUseState<Grade>()
+	const [grade, setGrade] = useUndefinedState<Grade>()
 
 	const [open, setOpen] = useAtom(modalOpen);
 	const [confirmed] = useAtom(modalConfirmed);

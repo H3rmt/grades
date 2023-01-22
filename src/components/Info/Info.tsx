@@ -5,13 +5,12 @@ type Props = {
 	info: string
 	open: boolean
 	setOpen: (open: boolean) => void
-	closeText?:string
+	closeText?: string
 	children?: ReactNode
 };
 
-
 export function Info(props: Props) {
-	return <Dialog open={props.open} >
+	return <Dialog open={props.open}>
 		<DialogTitle>Info</DialogTitle>
 		<DialogContent>
 			<DialogContentText>

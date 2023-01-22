@@ -23,6 +23,8 @@ export function toastMessage(
 		info?: string,
 		opts?: OptionsObject
 ): () => void {
+	console.debug("toastMessage", variant, message, undo)
+
 	let key = toast.enqueueSnackbar(message,
 			Object.assign({
 						variant: variant,
@@ -54,11 +56,11 @@ function action(
 		let [open, setOpen] = useState(false)
 
 		return <Stack direction="row" spacing={1.5}>
-			{undo && <Button variant="contained" onClick={() => {
+			{undo && <Button variant="outlined" onClick={() => {
 				undo(id)
 			}}>Undo
 			</Button>}
-			{info && <Button variant="contained" onClick={() => {
+			{info && <Button variant="outlined" onClick={() => {
 				setOpen(true)
 			}}>Info
 			</Button>}
