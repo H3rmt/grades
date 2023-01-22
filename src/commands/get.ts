@@ -3,8 +3,6 @@ import {GradeModalDefaults, NoteRange} from "../entity/config";
 import {query} from "../ts/commands";
 import {errorToast} from "../ts/toast";
 import {UseQueryResult} from "@tanstack/react-query";
-import {useUndefinedState} from "../ts/utils";
-import {Dispatch, SetStateAction} from "react";
 import {useSnackbar} from "notistack";
 
 
@@ -40,19 +38,17 @@ function useInfo() {
 	return get<Info>("info", "Info")
 }
 
-function get<T>(key: string, name: string): [T | undefined, Dispatch<SetStateAction<T | undefined>>, UseQueryResult<T, string | Error>] {
+function get<T>(key: string, name: string): [T | undefined, undefined, UseQueryResult<T, string | Error>] {
 	const toast = useSnackbar()
-	const [edit, setEdit] = useUndefinedState<T>()
 
 	const dataServer = query<T>(key, {
-		onSuccess: (data) => setEdit(data),
 		onError: (error) => {
 			errorToast(`Error loading ${name}`, toast, error)
 
 		}
 	})
 
-	return [edit, setEdit, dataServer]
+	return [dataServer.data, undefined, dataServer]
 }
 
 export {
