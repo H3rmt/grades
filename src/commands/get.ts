@@ -1,38 +1,58 @@
 import {Grade, Info, Period, Subject, Type, Weight} from "../entity";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
-import {query, UseQueryOpts} from "../ts/commands";
+import {query} from "../ts/commands";
+import {errorToast} from "../ts/toast";
+import {UseQueryResult} from "@tanstack/react-query";
+import {useUndefinedState} from "../ts/utils";
+import {Dispatch, SetStateAction} from "react";
+import {useSnackbar} from "notistack";
 
 
-function useGrades(options: UseQueryOpts<Grade[]> = {}) {
-	return query("grades", options)
+function useGrades() {
+	return get<Grade[]>("grades", "Grades")
 }
 
-function useTypes(options: UseQueryOpts<Type[]> = {}) {
-	return query("types", options)
+function useTypes() {
+	return get<Type[]>("types", "Types")
 }
 
-function useSubjects(options: UseQueryOpts<Subject[]> = {}) {
-	return query("subjects", options)
+function useSubjects() {
+	return get<Subject[]>("subjects", "Subjects")
 }
 
-function usePeriods(options: UseQueryOpts<Period[]> = {}) {
-	return query("periods", options)
+function usePeriods() {
+	return get<Period[]>("periods", "Periods")
 }
 
-function useNoteRange(options: UseQueryOpts<NoteRange> = {}) {
-	return query("note_range", options)
+function useNoteRange() {
+	return get<NoteRange>("note_range", "Note Range")
 }
 
-function useWeights(options: UseQueryOpts<Weight[]> = {}) {
-	return query("weights", options)
+function useWeights() {
+	return get<Weight[]>("weights", "Weights")
 }
 
-function useGradeModalDefaults(options: UseQueryOpts<GradeModalDefaults> = {}) {
-	return query("grade_modal_defaults", options)
+function useGradeModalDefaults() {
+	return get<GradeModalDefaults>("grade_modal_defaults", "New Grade Defaults")
 }
 
-function useInfo(options: UseQueryOpts<Info> = {}) {
-	return query("info", options)
+function useInfo() {
+	return get<Info>("info", "Info")
+}
+
+function get<T>(key: string, name: string): [T | undefined, Dispatch<SetStateAction<T | undefined>>, UseQueryResult<T, string | Error>] {
+	const toast = useSnackbar()
+	const [edit, setEdit] = useUndefinedState<T>()
+
+	const dataServer = query<T>(key, {
+		onSuccess: (data) => setEdit(data),
+		onError: (error) => {
+			errorToast(`Error loading ${name}`, toast, error)
+
+		}
+	})
+
+	return [edit, setEdit, dataServer]
 }
 
 export {
