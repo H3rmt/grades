@@ -12,7 +12,7 @@ type Props<T> = {
 }
 
 export default function ReactQueryData<T>(props: Props<T>) {
-	if (props.query.isLoading || props.data === undefined) {
+	if (props.query.isLoading) {
 		return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)();
 	}
 
@@ -23,6 +23,10 @@ export default function ReactQueryData<T>(props: Props<T>) {
 						Error: {props.query.error.toString()}
 					</Typography>
 				</Paper>
+	}
+
+	if (props.data === undefined) {
+		return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)();
 	}
 
 	return <>{props.display(props.data as NonNullable<T>)}</>;
