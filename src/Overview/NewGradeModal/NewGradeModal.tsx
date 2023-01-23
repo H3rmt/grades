@@ -29,17 +29,29 @@ import {useUndefinedState} from '../../ts/utils';
 import dayjs, {Dayjs} from "dayjs";
 import ClearIcon from "@mui/icons-material/Clear";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
-import {useAtom} from 'jotai'
-import {modalConfirmed, modalOpen} from "../atoms";
 import {useSnackbar} from "notistack";
 import ReactQueryData from "../../components/ReactQueryData/ReactQueryData";
 import {useCreateGrade} from "../../commands/create";
+import {RLink} from "../../components/Navbar/Navbar";
+import {useSearch} from "@tanstack/react-router";
+import {rootRoute} from "../../ts/root";
 
-export default function NewGradeModal() {
+export type NewGradeModalSearch = {
+	confirmed: boolean
+}
+
+export function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used for testing*/) {
 	const [grade, setGrade] = useUndefinedState<Grade>()
 
-	const [open, setOpen] = useAtom(modalOpen);
-	const [confirmed] = useAtom(modalConfirmed);
+	let confirmed: boolean
+	if(props.confirmed === undefined) {
+		// @ts-ignore
+		const params = useSearch<"newGrade", true, NewGradeModalSearch, NewGradeModalSearch>({from: newGradeRoute.id})
+		confirmed = params.confirmed
+	} else {
+		confirmed = props.confirmed
+	}
+
 	const [previousConfirmed, setPreviousConfirmed] = useUndefinedState()
 
 	const toast = useSnackbar()
@@ -65,7 +77,7 @@ export default function NewGradeModal() {
 
 	// set Default values if modal opened in other mode
 	useEffect(() => {
-		if (open && confirmed !== previousConfirmed && gradeModalDefaultsS.isSuccess && gradeModalDefaults !== undefined) {
+		if (confirmed !== previousConfirmed && gradeModalDefaultsS.isSuccess && gradeModalDefaults !== undefined) {
 			setPreviousConfirmed(confirmed)
 			setDefault(gradeModalDefaults)
 		}
@@ -149,7 +161,7 @@ export default function NewGradeModal() {
 		let closeClear = toastMessage("warning", "Cleared create Note window", toast, undo)
 	}
 
-	return <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
+	return <Dialog open={true} disableEscapeKeyDown fullWidth maxWidth="md">
 		<DialogTitle variant="h5">New Grade</DialogTitle>
 		<DialogContent>
 			{grade !== undefined && (
@@ -307,11 +319,15 @@ export default function NewGradeModal() {
 			<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
 					<Button onClick={() => handleClear(gradeModalDefaults)} type="submit" variant="contained" color="warning">Clear</Button>
 			}/>
-			<Button onClick={() => setOpen(false)} type="submit" variant="contained">Close</Button>
-			{grade !== undefined && <Button onClick={() => {
+			<Button component={RLink} to="/">Close</Button>
+			{grade !== undefined && <Button component={RLink} to="/" onClick={() => {
 				create(grade);
-				setOpen(false)
-			}} type="submit" variant="contained" color="success">Create</Button>}
+			}}>Create</Button>}
 		</DialogActions>
 	</Dialog>;
 }
+
+export const newGradeRoute = rootRoute.createRoute<string, "newGrade", {}, NewGradeModalSearch>({
+	path: 'newGrade',
+	component: NewGradeModal
+})

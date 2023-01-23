@@ -19,6 +19,7 @@ type Props<Row extends IRow> = {
 	cols: Cols<Row>
 	delete?: (id: number) => void
 	edit?: (row: Row) => void
+	title?: string // used for testing if rendered
 }
 
 export function CTable<Row extends IRow>(props: Props<Row>) {
@@ -63,7 +64,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 		setOrderBy(newOrderBy)
 	};
 
-	return <TableContainer sx={{overflowY: 'auto'}} component="div">
+	return <TableContainer sx={{overflowY: 'auto'}} component="div" title={props.title}>
 		<Table size="medium">
 			<TableHead>
 				<TableRow>

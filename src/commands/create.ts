@@ -1,6 +1,6 @@
 import {useSnackbar} from "notistack";
 import {Grade} from "../entity";
-import {createMutation} from "../ts/commands";
+import {createMutation} from "./commands";
 import {errorToast, toastMessage} from "../ts/toast";
 import {useQueryClient} from "@tanstack/react-query";
 

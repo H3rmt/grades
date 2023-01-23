@@ -1,5 +1,5 @@
 import {QueryClient} from "@tanstack/react-query";
-import {editMutation, query, UseMutationOpts, UseQueryOpts} from "../ts/commands";
+import {editMutation, query, UseMutationOpts, UseQueryOpts} from "./commands";
 import {Page} from "../entity";
 
 

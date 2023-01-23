@@ -1,18 +1,17 @@
 import {Button, MenuItem, Select, SelectChangeEvent, Stack, Typography, useMediaQuery} from "@mui/material";
 import {useGradeModalDefaults, usePeriods} from "../commands/get";
-import {modalConfirmed, modalOpen, selectedPeriod} from "./atoms";
 import {useAtom} from 'jotai'
-import {useEffect} from "react";
+import React, {forwardRef, useEffect} from "react";
 import ReactQueryData from "../components/ReactQueryData/ReactQueryData";
+import {Link} from "@tanstack/react-router";
+import {NewGradeModalSearch} from "./NewGradeModal/NewGradeModal";
+import {selectedPeriod} from "./atoms";
 
-type Props = {};
 
-export default function OverviewAppBar(props: Props) {
+export function OverviewAppBar() {
 	const oneButton = useMediaQuery('(max-width:700px)');
 	const plusButton = useMediaQuery('(max-width:400px)');
 	const [period, setPeriod] = useAtom(selectedPeriod);
-	const [, setOpen] = useAtom(modalOpen);
-	const [, setConfirmed] = useAtom(modalConfirmed);
 
 	const [periods, , periodsS] = usePeriods();
 
@@ -54,21 +53,21 @@ export default function OverviewAppBar(props: Props) {
 					// 	setOpen(true)
 			// }} title="New Grade"><AddIcon/></IconButton>
 			else if (oneButton)
-				return <Button variant="contained" color="secondary" onClick={() => {
-					setConfirmed(false)
-					setOpen(true)
+				return <Button variant="contained" color="secondary" component={RLink} to="/newGrade" search={(old: NewGradeModalSearch) => {
+					return {...old, confirmed: false}
 				}} title="New Grade">New&nbsp;Grade</Button>
 			else
 				return <>
-					<Button color="secondary" variant="contained" onClick={() => {
-						setConfirmed(false)
-						setOpen(true)
+					<Button color="secondary" variant="contained" component={RLink} to="/newGrade" search={(old: NewGradeModalSearch) => {
+						return {...old, confirmed: false}
 					}} title="New Grade">New&nbsp;WIP&nbsp;Grade</Button>
-					<Button color="secondary" variant="contained" onClick={() => {
-						setConfirmed(true)
-						setOpen(true)
+					<Button color="secondary" variant="contained" component={RLink} to="/newGrade" search={(old: NewGradeModalSearch) => {
+						return {...old, confirmed: true}
 					}} title="New Grade">New&nbsp;Confirmed&nbsp;Grade</Button>
 				</>
 		})()}
 	</Stack>;
 }
+
+const RLink = forwardRef<HTMLAnchorElement, any>((itemProps, ref,) =>
+		<Link role={undefined} ref={ref}  {...itemProps} />)

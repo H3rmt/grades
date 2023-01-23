@@ -4,8 +4,6 @@ import '@fontsource/roboto/latin-400.css';
 import '@fontsource/roboto/latin-500.css';
 import '@fontsource/roboto/latin-700.css';
 
-import App from "./App";
-
 import {createRoot} from "react-dom/client";
 import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
 import {SnackbarProvider} from "notistack";
@@ -14,11 +12,13 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {QueryClient, QueryClientProvider,} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import {StrictMode} from "react";
-import {blue, green, pink} from "@mui/material/colors";
+import {blue, pink} from "@mui/material/colors";
+import {RouterProvider} from "@tanstack/react-router";
+import {router} from "./ts/router";
 
-const theme = createTheme({
+export const theme = createTheme({
 	palette: {
-		mode: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'light',
+		mode: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
 		primary: {
 			main: blue[800],
 		},
@@ -37,7 +37,7 @@ const theme = createTheme({
 	},
 });
 
-const queryClient = new QueryClient({defaultOptions: {queries: {retry: 2, networkMode: 'always', refetchOnWindowFocus: false}}});
+export const queryClient = new QueryClient({defaultOptions: {queries: {retry: 2, networkMode: 'always', refetchOnWindowFocus: false}}});
 
 createRoot(document.getElementById("root") as HTMLElement).render(
 		<StrictMode>
@@ -46,7 +46,7 @@ createRoot(document.getElementById("root") as HTMLElement).render(
 					<QueryClientProvider client={queryClient}>
 						<CssBaseline enableColorScheme/>
 						<SnackbarProvider maxSnack={5}>
-							<App/>
+							<RouterProvider router={router}/>
 						</SnackbarProvider>
 						<ReactQueryDevtools/>
 					</QueryClientProvider>

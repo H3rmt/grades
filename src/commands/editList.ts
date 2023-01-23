@@ -1,7 +1,7 @@
 import {useUndefinedState} from "../ts/utils";
 import {errorToast, toastMessage} from "../ts/toast";
 import {UseMutateFunction, useQueryClient, UseQueryResult} from "@tanstack/react-query";
-import {createMutation, deleteMutation, editMutation, query, resetMutation} from "../ts/commands";
+import {createMutation, deleteMutation, editMutation, query, resetMutation} from "./commands";
 import {Dispatch, SetStateAction} from "react";
 import {Grade, Period, Subject, Type} from "../entity";
 import {useSnackbar} from "notistack";

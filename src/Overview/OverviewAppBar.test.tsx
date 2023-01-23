@@ -2,7 +2,7 @@ import {describe, expect, test} from 'vitest'
 import {Period} from "../entity";
 import {createMatchMedia, getByRole, mockIPC, render, screen} from "../ts/testingUtils";
 import userEvent from "@testing-library/user-event";
-import OverviewAppBar from './OverviewAppBar';
+import {OverviewAppBar} from './OverviewAppBar';
 
 describe('OverviewAppBar', () => {
 	describe('Button', () => {
@@ -63,7 +63,7 @@ describe('OverviewAppBar', () => {
 			await userEvent.click(e)
 			expect(periodSelect?.textContent).to.contain(period.name) // sometimes &nbsp; is added
 
-			console.info(`Grade ${period.id} selected`)
+			console.info(`Period ${period.id} selected`)
 		}
 		console.info('All Periods selected')
 	})

@@ -10,42 +10,18 @@ import {SnackbarProvider} from "notistack";
 import {Grade, Info, Page, Period, Subject, Type} from "../entity";
 import {GradeModalDefaults, NoteRange} from "../entity/config";
 import {Atom, Provider} from "jotai";
+import {blue, pink} from "@mui/material/colors";
+import {createRouteConfig, Outlet, ReactRouter, RouterProvider} from "@tanstack/react-router";
 
-const darkTheme = createTheme({
+
+export const theme = createTheme({
 	palette: {
-		mode: 'dark',
+		mode: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
 		primary: {
-			main: '#383838'
+			main: blue[800],
 		},
 		secondary: {
-			main: '#f50000'
-		},
-		off: {
-			main: '#383838',
-		},
-	},
-	breakpoints: {
-		values: {
-			xs: 0,
-			sm: 700,
-			md: 900,
-			lg: 1150,
-			xl: 1536,
-		},
-	},
-});
-
-const lightTheme = createTheme({
-	palette: {
-		mode: 'light',
-		primary: {
-			main: '#383838'
-		},
-		secondary: {
-			main: '#f50000'
-		},
-		off: {
-			main: '#383838',
+			main: pink[500]
 		},
 	},
 	breakpoints: {
@@ -61,19 +37,29 @@ const lightTheme = createTheme({
 
 type A<T> = [Atom<T>, T]
 
+export const rootRoute = createRouteConfig({
+	component: Outlet
+})
+
 export function AllTheProviders({atoms}: { atoms?: A<any>[] }): ({children}: { children: ReactNode }) => JSX.Element {
+	const queryClient = new QueryClient({
+		defaultOptions: {queries: {retry: 2, networkMode: 'always', refetchOnWindowFocus: false}}
+	});
+
 	return ({children}: { children: ReactNode }) => {
-		const queryClient = new QueryClient({
-			defaultOptions: {queries: {retry: 2, networkMode: 'always', refetchOnWindowFocus: false}}
-		});
+		const testRoute = rootRoute.createRoute({path: '/', component: () => <>{children}</>})
+
+		const routeConfig = rootRoute.addChildren([testRoute])
+
+		const router = new ReactRouter({routeConfig,})
 
 		return <Provider initialValues={atoms}>
-			<ThemeProvider theme={darkTheme}>
+			<ThemeProvider theme={theme}>
 				<LocalizationProvider dateAdapter={AdapterDayjs}>
 					<QueryClientProvider client={queryClient}>
-						_<CssBaseline enableColorScheme/>
+						<CssBaseline enableColorScheme/>
 						<SnackbarProvider maxSnack={5}>
-							{children}
+							<RouterProvider router={router}/>
 						</SnackbarProvider>
 					</QueryClientProvider>
 				</LocalizationProvider>
