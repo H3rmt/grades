@@ -2,16 +2,15 @@ import {describe, expect, test} from 'vitest'
 import {mockIPC, render, screen, sleep, trimAll} from "../../ts/testingUtils";
 import {Grade, Period, Subject, Type} from "../../entity";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
-import NewGradeModal from "./NewGradeModal";
-import {modalConfirmed, modalOpen} from "../atoms";
-import {act, findByRole, queryByDisplayValue,} from "@testing-library/react";
+import {NewGradeModal} from "./NewGradeModal";
+import {act, findByRole, queryByDisplayValue} from "@testing-library/react";
 import dayjs from "dayjs";
 
 describe('NewGradeModal', () => {
 	test('NewGradeModal opens and renders', async () => {
 		mockIPC(mockData)
 
-		render(<NewGradeModal/>, {atoms: [[modalOpen, true]]})
+		render(<NewGradeModal confirmed={false}/>)
 		await act(async () => {
 			await sleep(500)
 		})
@@ -43,30 +42,11 @@ describe('NewGradeModal', () => {
 
 		console.info('All Inputs rendered')
 	})
-	test("NewGradeModal is closed and doesn't render", async () => {
-		mockIPC(mockData)
-
-		render(<NewGradeModal/>, {atoms: [[modalOpen, false]]})
-		await act(async () => {
-			await sleep(500)
-		})
-
-		expect(await screen.queryByText('Subject')).not.to.exist
-		expect(await screen.queryByText('Type')).not.to.exist
-		expect(await screen.queryByText('Period')).not.to.exist
-		expect(await screen.queryByText('Grade')).not.to.exist
-		expect(await screen.queryByText('Date')).not.to.exist
-		expect(await screen.queryByText('Confirmed Date')).not.to.exist
-		expect(await screen.queryByText('Info')).not.to.exist
-		expect(await screen.queryByText('Grade Weight')).not.to.exist
-		expect(await screen.queryByRole('input', {name: 'Grade Weight'})).not.to.exist
-		console.info('No Inputs rendered')
-	})
 	describe('Not confirmed NewGradeModal renders with default values', async () => {
 		test('with default values set', async () => {
 			mockIPC(mockData)
 
-			render(<NewGradeModal/>, {atoms: [[modalOpen, true], [modalConfirmed, false]]})
+			render(<NewGradeModal confirmed={false}/>)
 			await act(async () => {
 				await sleep(500)
 			})
@@ -121,7 +101,7 @@ describe('NewGradeModal', () => {
 		test('with default not values set', async () => {
 			mockIPC(mockData2)
 
-			render(<NewGradeModal/>, {atoms: [[modalOpen, true], [modalConfirmed, false]]})
+			render(<NewGradeModal confirmed={false}/>)
 			await act(async () => {
 				await sleep(500)
 			})
@@ -177,7 +157,7 @@ describe('NewGradeModal', () => {
 		test('with default values set', async () => {
 			mockIPC(mockData)
 
-			render(<NewGradeModal/>, {atoms: [[modalOpen, true], [modalConfirmed, true]]})
+			render(<NewGradeModal confirmed={true}/>)
 			await act(async () => {
 				await sleep(500)
 			})
@@ -230,7 +210,7 @@ describe('NewGradeModal', () => {
 		test('with default not values set', async () => {
 			mockIPC(mockData2)
 
-			render(<NewGradeModal/>, {atoms: [[modalOpen, true], [modalConfirmed, true]]})
+			render(<NewGradeModal confirmed={true}/>)
 			await act(async () => {
 				await sleep(500)
 			})

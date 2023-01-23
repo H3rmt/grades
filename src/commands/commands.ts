@@ -4,7 +4,7 @@ import {QueryClient, useMutation, UseMutationOptions, useQuery} from "@tanstack/
 
 function query<T>(cmd: string, options: UseQueryOpts<T> = {}) {
 	return useQuery<T, Error | string>([cmd], async () => {
-		return await invoke<string>("get_" + cmd + "_js").then((data: string) => {
+		return await invoke<string>("get_" + cmd + "_js").then((data) => {
 			console.debug("get_" + cmd, "success", data)
 			return JSON.parse(data)
 		}).catch((e) => {
@@ -16,9 +16,9 @@ function query<T>(cmd: string, options: UseQueryOpts<T> = {}) {
 
 function editMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<T> = {}, key: string = cmd) {
 	return useMutation([cmd], async (t: T) => {
-				return await invoke("edit_" + cmd + "_js", {json: JSON.stringify(t)}).then(() => {
-					// return entity
+				return await invoke<string>("edit_" + cmd + "_js", {json: JSON.stringify(t)}).then((data) => {
 					console.debug("edit_" + cmd, "success", t)
+					return JSON.parse(data)
 				}).catch((e) => {
 					console.debug("edit_" + cmd, "fail", e, t)
 					throw e as string | Error
@@ -30,13 +30,13 @@ function editMutation<T>(queryClient: QueryClient, cmd: string, options: UseMuta
 			options);
 }
 
-function resetMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<T> = {}, key: string = cmd) {
-	return useMutation([cmd], async (t: T) => {
-				return await invoke("reset_" + cmd + "_js", {json: JSON.stringify(t)}).then(() => {
-					// return entity
-					console.debug("reset_" + cmd, "success", t)
+function resetMutation(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void> = {}, key: string = cmd) {
+	return useMutation([cmd], async () => {
+				return await invoke<string>("reset_" + cmd + "_js").then((data) => {
+					console.debug("reset_" + cmd, "success")
+					return JSON.parse(data)
 				}).catch((e) => {
-					console.debug("reset_" + cmd, "fail", e, t)
+					console.debug("reset_" + cmd, "fail", e)
 					throw e as string | Error
 				}).then(async () => {
 					console.log("Reset" + cmd)
@@ -48,9 +48,9 @@ function resetMutation<T>(queryClient: QueryClient, cmd: string, options: UseMut
 
 function createMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<T> = {}, key: string = cmd) {
 	return useMutation([cmd], async (t: T) => {
-				return await invoke("create_" + cmd + "_js", {json: JSON.stringify(t)}).then(() => {
-					// return id
+				return await invoke<string>("create_" + cmd + "_js", {json: JSON.stringify(t)}).then((data) => {
 					console.debug("create_" + cmd, "success", t)
+					return JSON.parse(data)
 				}).catch((e) => {
 					console.debug("create_" + cmd, "fail", e, t)
 					throw e as string | Error

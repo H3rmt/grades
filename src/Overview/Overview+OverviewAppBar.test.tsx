@@ -1,14 +1,13 @@
 import {describe, expect, test} from 'vitest'
-import Overview from "./Overview";
+import {Overview} from "./Overview";
 import {Grade, Period, Subject, Type} from '../entity';
 import {getByRole, mockIPC, render, screen} from "../ts/testingUtils";
-import OverviewAppBar from "./OverviewAppBar";
 import userEvent from "@testing-library/user-event";
 
 describe('Overview+OverviewAppBar', () => {
 	test('shows only Period Grades', async () => {
 		mockIPC(mockData)
-		render(<><OverviewAppBar/><Overview/></>)
+		render(<Overview/>)
 
 		const periodSelect = await screen.findByTitle('Period Select')
 		expect(periodSelect).to.exist

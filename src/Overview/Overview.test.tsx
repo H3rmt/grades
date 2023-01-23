@@ -1,5 +1,5 @@
 import {describe, expect, test} from 'vitest'
-import Overview from "./Overview";
+import {Component} from "./Overview";
 import {Grade, Period, Subject, Type} from '../entity';
 import {mockIPC, render, rgbStringToHex, screen, sleep} from "../ts/testingUtils";
 import {act} from "@testing-library/react";
@@ -8,7 +8,7 @@ import {selectedPeriod} from "./atoms";
 describe('Overview', () => {
 	test('renders Table Columns', async () => {
 		mockIPC(mockData)
-		render(<Overview/>)
+		render(<Component/>)
 
 		expect(await screen.findByRole('table')).to.exist
 		expect(await screen.findByRole('columnheader', {exact: false, name: 'Grade'})).to.exist
@@ -21,16 +21,33 @@ describe('Overview', () => {
 		// expect(await screen.findByRole('columnheader', {exact: false, name: 'Weight'})).to.exist
 		console.info('Table and all Table columns rendered')
 	})
-	test('Table renders Grades', async () => {
+
+	test('Table renders no Grades', async () => {
 		mockIPC(mockData)
 
-		render(<Overview/>, {atoms: [[selectedPeriod, null]]})
+		render(<Component/>, {atoms: [[selectedPeriod, null]]})
 		await act(async () => {
 			await sleep(500)
 		})
 
 		for (const grade of mockData.grades) {
-			expect(await screen.queryAllByText(grade.id), "GradeID not found on Screen").length.greaterThanOrEqual(1)
+			expect(await screen.queryAllByText(grade.id), "GradeID not found on Screen").to.be.empty
+		}
+
+		console.info('Table and all Table columns rendered')
+	})
+	test('Table renders Grades', async () => {
+		mockIPC(mockData)
+
+		render(<Component/>, {atoms: [[selectedPeriod, "-1"]]})
+		await act(async () => {
+			await sleep(500)
+		})
+
+		expect(await screen.findByTitle('OverviewTable'), "Table not rendered").to.exist
+
+		for (const grade of mockData.grades) {
+			expect(await screen.queryAllByText(grade.id), `GradeID ${grade.id} not found on Screen`).length.greaterThanOrEqual(1)
 
 			expect(await screen.queryAllByText(grade.grade?.toString() ?? ''), "Grade not found on Screen").length.greaterThanOrEqual(1)
 

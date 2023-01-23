@@ -1,9 +1,48 @@
 import {Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar} from "@mui/material";
-import {Page, Pages} from "../../App";
 import {useAtom} from "jotai";
 import {navBarOpen} from "../../atoms";
+import {Link, useNavigate, useRoute, useRouter, useMatches, useMatchRoute, useMatch} from "@tanstack/react-router";
+import React, {ReactElement, useEffect, useState} from "react";
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import QueryStatsIcon from "@mui/icons-material/QueryStats";
+import SettingsIcon from "@mui/icons-material/Settings";
+import {overviewRoute} from "../../Overview/Overview";
 
-export default function Navbar(props: { setPage: (page: Page) => void, pages: Pages, openPageName: string }) {
+export type Pages = {
+	overview: Page
+	analysis: Page
+	settings: Page
+}
+
+export type Page = {
+	name: string
+	description: string
+	path: string
+	icon: ReactElement,
+}
+
+const pages = {
+	overview: {
+		name: "Overview",
+		description: "Overview of all grades",
+		path: '/',
+		icon: <FormatListNumberedIcon/>,
+	},
+	analysis: {
+		name: "Analysis",
+		description: "Analysis of all grades",
+		path: '/analysis',
+		icon: <QueryStatsIcon/>
+	},
+	settings: {
+		name: "Settings",
+		description: "Change types, subjects, etc.",
+		path: '/settings',
+		icon: <SettingsIcon/>
+	}
+} satisfies Pages
+
+export default function Navbar() {
 	const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 	const [openNav, setOpenNav] = useAtom(navBarOpen);
@@ -12,31 +51,35 @@ export default function Navbar(props: { setPage: (page: Page) => void, pages: Pa
 									variant="temporary" disableBackdropTransition={false} disableDiscovery={iOS} swipeAreaWidth={15}>
 		<Toolbar/>
 		<List disablePadding sx={{height: 1}}>
-			{Object.entries(props.pages).filter(([key]) => key != "settings").map(([key, page]) => (
+			{Object.entries(pages).filter(([key]) => key != "settings").map(([key, page]) => (
 					<ListItem key={key} disablePadding>
-						<ListItemButton onClick={() => {
-							props.setPage(page)
-						}}>
+						<ListItemButton component={RLink} to={page.path}>
 							<ListItemIcon>
 								{page.icon}
 							</ListItemIcon>
 							<ListItemText primary={page.name} secondary={page.description}
-											  sx={{textDecoration: page.name == props.openPageName ? "underline" : ""}}/>
+											  sx={{textDecoration: page.name == "TODO current page" ? "underline" : ""}}/>
 						</ListItemButton>
 					</ListItem>
 			))}
 		</List>
 		<Divider/>
 		<ListItem key="Settings" disablePadding>
-			<ListItemButton onClick={() => {
-				props.setPage(props.pages.settings)
-			}}>
+			<ListItemButton component={RLink} to={pages.settings.path}>
 				<ListItemIcon>
-					{props.pages.settings.icon}
+					{pages.settings.icon}
 				</ListItemIcon>
-				<ListItemText primary={props.pages.settings.name} secondary={props.pages.settings.description}
-								  sx={{textDecoration: "Settings" == props.openPageName ? "underline" : ""}}/>
+				<ListItemText primary={pages.settings.name} secondary={pages.settings.description}
+								  sx={{textDecoration: pages.settings.name == "TODO current page" ? "underline" : ""}}/>
+				{/* TODO highlight open path */}
 			</ListItemButton>
 		</ListItem>
 	</SwipeableDrawer>
 };
+
+export const RLink = React.forwardRef<HTMLAnchorElement, any>(function RLink(
+		itemProps,
+		ref,
+) {
+	return <Link role={undefined} ref={ref} {...itemProps} />;
+});

@@ -1,5 +1,5 @@
 import {OptionsObject, SnackbarKey, SnackbarMessage} from "notistack";
-import {Button, IconButton, Paper, Stack} from "@mui/material";
+import {Button, IconButton, Stack} from "@mui/material";
 import {useState} from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import {Info} from "../components/Info/Info";
@@ -23,6 +23,8 @@ export function toastMessage(
 		info?: string,
 		opts?: OptionsObject
 ): () => void {
+	console.debug("toastMessage", variant, message, undo)
+
 	let key = toast.enqueueSnackbar(message,
 			Object.assign({
 						variant: variant,
@@ -54,19 +56,15 @@ function action(
 		let [open, setOpen] = useState(false)
 
 		return <Stack direction="row" spacing={1.5}>
-			{undo && <Paper variant="outlined">
-				<Button color="secondary" onClick={() => {
-					undo(id)
-				}}>Undo
-				</Button>
-			</Paper>}
-			{info && <Paper variant="outlined">
-				<Button color="secondary" onClick={() => {
-					setOpen(true)
-				}}>Info
-				</Button>
-			</Paper>}
-			<IconButton color="primary" onClick={() => {
+			{undo && <Button variant="outlined" onClick={() => {
+				undo(id)
+			}}>Undo
+			</Button>}
+			{info && <Button variant="outlined" onClick={() => {
+				setOpen(true)
+			}}>Info
+			</Button>}
+			<IconButton onClick={() => {
 				close(id)
 			}}><CloseIcon/>
 			</IconButton>

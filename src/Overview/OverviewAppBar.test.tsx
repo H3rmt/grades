@@ -2,7 +2,7 @@ import {describe, expect, test} from 'vitest'
 import {Period} from "../entity";
 import {createMatchMedia, getByRole, mockIPC, render, screen} from "../ts/testingUtils";
 import userEvent from "@testing-library/user-event";
-import OverviewAppBar from './OverviewAppBar';
+import {OverviewAppBar} from './OverviewAppBar';
 
 describe('OverviewAppBar', () => {
 	describe('Button', () => {
@@ -14,6 +14,9 @@ describe('OverviewAppBar', () => {
 
 			expect(await screen.findByText('New Confirmed Grade')).to.exist
 			expect(await screen.findByText('New WIP Grade')).to.exist
+
+
+			expect(await screen.queryByText('New Grade')).not.to.exist
 			console.info('2 Buttons on 1000px rendered')
 		})
 		test('renders 600px Buttons', async () => {
@@ -21,13 +24,18 @@ describe('OverviewAppBar', () => {
 			render(<OverviewAppBar/>)
 
 			expect(await screen.findByText('New Grade')).to.exist
+
+			expect(await screen.queryByText('New Confirmed Grade')).not.to.exist
+			expect(await screen.queryByText('New WIP Grade')).not.to.exist
 			console.info('1 Button on 600px rendered')
 		})
 		test('renders 300px Buttons', async () => {
 			window.matchMedia = createMatchMedia("300px");
 			render(<OverviewAppBar/>)
 
-			expect(await screen.findByTestId('AddIcon')).to.exist
+			expect(await screen.queryByText('New Grade')).not.to.exist
+			expect(await screen.queryByText('New Confirmed Grade')).not.to.exist
+			expect(await screen.queryByText('New WIP Grade')).not.to.exist
 			console.info('1 IconButton on 300px rendered')
 		})
 	})
@@ -55,7 +63,7 @@ describe('OverviewAppBar', () => {
 			await userEvent.click(e)
 			expect(periodSelect?.textContent).to.contain(period.name) // sometimes &nbsp; is added
 
-			console.info(`Grade ${period.id} selected`)
+			console.info(`Period ${period.id} selected`)
 		}
 		console.info('All Periods selected')
 	})

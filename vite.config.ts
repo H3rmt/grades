@@ -17,17 +17,19 @@ export default defineConfig({
 	build: {
 		rollupOptions: {
 			output: {
-				manualChunks: {
-					'react': [
-						'node_modules/react/index.js',
-						'node_modules/react-dom/index.js'
-					],
-					'query': [
-						'node_modules/@tanstack/react-query/build/lib/index.js',
-					],
-					'mui': [
-						'node_modules/@mui/material/index.js',
-					],
+				manualChunks: (id) => {
+					if (id.includes("node_modules")) {
+						if (id.includes("react")) {
+							return "react"
+						} else if (id.includes("query")) {
+							return "query"
+						} else if (id.includes("router")) {
+							return "router"
+						} else if (id.includes("mui")) {
+							return "mui"
+						}
+						return "vendor"
+					}
 				},
 			}
 		}

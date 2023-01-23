@@ -1,8 +1,7 @@
 import {useState} from "react";
-import {invoke} from "@tauri-apps/api";
 
-export function nullableUseState<T>() {
-	return useState<T | null>(null)
+export function useUndefinedState<T>() {
+	return useState<T | undefined>(undefined)
 }
 
 export function capitalizeFirstLetter(str: string) {
@@ -25,33 +24,4 @@ export function nextFree(arr: string[], name: string) {
 
 export function randColor() {
 	return "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
-}
-
-export function edit<T>(cmd: string, args: any): Promise<void> { // change to Promise<T> if entity returned
-	return invoke("edit_" + cmd + "_js", {json: JSON.stringify(args)}).then(() => {
-		// return entity
-		console.debug("edit_" + cmd, "success", args)
-	}).catch((e) => {
-		console.debug("edit_" + cmd, "fail", e, args)
-		throw e
-	})
-}
-
-export function reset<T>(cmd: string): Promise<void> {
-	return invoke("reset_" + cmd + "_js").then(() => {
-		console.debug("reset_" + cmd, "success")
-	}).catch((e) => {
-		console.debug("reset_" + cmd, "fail", e)
-		throw e
-	})
-}
-
-export function get<T>(cmd: string): Promise<T> {
-	return invoke<string>("get_" + cmd + "_js").then((data: string) => {
-		console.debug("get_" + cmd, "success")
-		return JSON.parse(data)
-	}).catch((e) => {
-		console.debug("get_" + cmd, "fail", e)
-		throw e
-	})
 }

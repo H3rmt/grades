@@ -1,10 +1,8 @@
-import {ForwardedRef, forwardRef} from "react";
-import {PageRef as Ref} from "../App";
-
-type Props = {}
+import Topbar from "../components/TopBar/Topbar";
+import {rootRoute} from "../ts/root";
 
 
-const Analysis = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
+export function Component() {
 	return <>
 		<div>
 			Analysis<br/>
@@ -12,6 +10,13 @@ const Analysis = forwardRef(function (props: Props, ref: ForwardedRef<Ref>) {
 			Analysis<br/>
 		</div>
 	</>
-})
+}
 
-export default Analysis;
+export function Analysis() {
+	return <>
+		<Topbar name="Analysis"/>
+		<Component/>
+	</>
+}
+
+export const analysisRoute = rootRoute.createRoute({path: 'analysis', component: Analysis})

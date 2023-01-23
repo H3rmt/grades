@@ -1,10 +1,14 @@
-import {describe, expect, test} from 'vitest'
-import { cleanup, render, screen } from '@testing-library/react'
-import Analysis from "./Analysis";
+import {describe, test} from 'vitest'
+import {act, render} from '@testing-library/react'
+import {Component} from "./Analysis";
+import {sleep} from "../ts/testingUtils";
 
 describe('Analysis', () => {
 	test('A', async () => {
-		render(<Analysis/>)
-		// expect(await screen.findAllByRole("tables")).toBe(true)
+		render(<Component/>)
+
+		await act(async () => {
+			await sleep(500)
+		})
 	})
 })

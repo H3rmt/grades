@@ -14,7 +14,8 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 				sort: true,
 				format: g => <Typography
 						color={`rgb(${map(g.grade as number, noteRange.from, noteRange.to, 230, 40)},${map(g.grade as number, noteRange.from, noteRange.to, 40, 230)},0)`}>{g.grade}</Typography>,
-				edit: (g, update) => <Stack direction="row" spacing={0.5}>
+				extraEdit: true,
+				edit: (g, update) => <Stack direction="row" spacing={1} alignItems="center">
 					<TextField fullWidth value={g.grade ?? ""}
 								  onChange={(i) => g.grade = Math.max(Math.min(Number(i.target.value), noteRange?.to), noteRange?.from)}/>
 					{g.grade !== null && <IconButton color="default" onClick={() => {
@@ -77,7 +78,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 		], [
 			"confirmed", {
 				sort: true,
-				edit: (g, update) => <Stack direction="row" spacing={0.5}>
+				edit: (g, update) => <Stack direction="row" spacing={1} alignItems="center">
 					<DatePicker value={dayjs(g.confirmed, 'DD-MM-YYYY')} onChange={(i) => {
 						g.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY')
 						update()
@@ -92,7 +93,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 						<PickersDay {...DayComponentProps} />
 					</Badge>
 					}/>
-					{g.confirmed && <IconButton color="default" onClick={() => {
+					{g.confirmed && <IconButton onClick={() => {
 						g.confirmed = null
 						update()
 					}}><ClearIcon/>
