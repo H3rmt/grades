@@ -10,8 +10,8 @@ type Props = {
 
 export default function SettingsBox(props: Props) {
 	return <Paper variant="outlined" sx={{borderRadius: 4, padding: 1, borderColor: "primary.main", borderWidth: 3}}>
-		<Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between">
-			<Typography variant="h6" color="inherit" padding={0.3}>
+		<Stack direction="row" alignItems="flex-start" spacing={1} justifyContent="space-between">
+			<Typography variant="h5" color="inherit"  padding={0.5}>
 				{props.title}
 			</Typography>
 			{props.top}

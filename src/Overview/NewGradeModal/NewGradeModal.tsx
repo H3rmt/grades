@@ -315,14 +315,14 @@ export function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used fo
 					</Paper>)
 			}
 		</DialogContent>
-		<DialogActions sx={{gap: 0.7}}>
+		<DialogActions sx={{gap: 1.7}} disableSpacing={true}>
 			<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
 					<Button onClick={() => handleClear(gradeModalDefaults)} type="submit" variant="contained" color="warning">Clear</Button>
 			}/>
-			<Button component={RLink} to="/">Close</Button>
+			<Button component={RLink} to="/" type="submit" variant="contained">Close</Button>
 			{grade !== undefined && <Button component={RLink} to="/" onClick={() => {
 				create(grade);
-			}}>Create</Button>}
+			}} type="submit" variant="contained" color="success">Create</Button>}
 		</DialogActions>
 	</Dialog>;
 }

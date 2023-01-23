@@ -24,6 +24,10 @@ const routeConfig = rootRoute.addChildren([
 
 const router = new ReactRouter({
 	routeConfig,
+	onRouteChange: () => {
+		// console.log("Route changed!")
+
+	},
 })
 
 declare module '@tanstack/router/build/types/index' {
