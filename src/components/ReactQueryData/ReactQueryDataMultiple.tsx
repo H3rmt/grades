@@ -1,0 +1,63 @@
+import {UseQueryResult} from "@tanstack/react-query";
+import {Paper, Typography} from "@mui/material";
+import {loadingSkeleton} from "./loadings";
+
+type Result<T> = { query: UseQueryResult<T, Error | string>, data: T | undefined }
+
+type Props<T extends unknown[]> = {
+	queries: readonly [...Queries<T>]
+	loading?: () => JSX.Element;
+	loadingHeight?: number;
+	error?: (err: Error | string) => JSX.Element;
+	display: (data: [...Returns<T>]) => JSX.Element | JSX.Element[];
+}
+
+type Returns<
+		T extends unknown[],
+		Res extends unknown[] = [],
+		Depth extends ReadonlyArray<number> = [],
+> = T extends [infer Head]
+		? [...Res, NonNullable<Head>]
+		: T extends [infer Head, ...infer Tail]
+				? Returns<[...Tail], [...Res, NonNullable<Head>], [...Depth, 1]>
+				: T
+
+
+type Queries<
+		T extends unknown[],
+		Res extends unknown[] = [],
+		Depth extends ReadonlyArray<number> = [],
+> = T extends [infer Head]
+		? [...Res, Result<Head>]
+		: T extends [infer Head, ...infer Tail]
+				? Queries<[...Tail], [...Res, Result<Head>], [...Depth, 1]>
+				: Result<unknown>[]
+
+
+export default function ReactQueryDataMultiple<T extends unknown[]>(props: Props<T>) {
+	let ret: [...Returns<T>] = [] as unknown as [...Returns<T>]
+
+	for (const [i, q] of props.queries.entries()) {
+		const [query, data] = [q.query, q.data]
+		if (query.isLoading) {
+			return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)();
+		}
+
+		if (query.isError) {
+			return props.error ? props.error(query.error) :
+					<Paper variant="outlined" sx={{borderWidth: 2, padding: 0.5, borderColor: "error.main"}}>
+						<Typography color="error.main" variant="subtitle2">
+							Error: {query.error.toString()}
+						</Typography>
+					</Paper>
+		}
+
+		if (data === undefined) {
+			return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)();
+		}
+
+		ret[i] = data
+	}
+
+	return <>{props.display(ret)}</>
+}
