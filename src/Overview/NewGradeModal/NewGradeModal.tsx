@@ -25,7 +25,7 @@ import {toastMessage} from "../../ts/toast";
 import {Grade} from "../../entity";
 import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../../commands/get";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
-import {useUndefinedState} from '../../ts/utils';
+import {capitalizeFirstLetter, useUndefinedState} from '../../ts/utils';
 import dayjs, {Dayjs} from "dayjs";
 import ClearIcon from "@mui/icons-material/Clear";
 import {DatePicker, PickersDay} from "@mui/x-date-pickers";
@@ -121,6 +121,37 @@ export function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used fo
 		setGrade({...grade, weight: event.target.value})
 	}
 
+	const tryCreate = async () => {
+		const z = await import('zod')
+
+		const createGradeSchema = z.object({
+			id: z.number().negative(),
+			subject: z.number().positive({
+				message: "Subject is required",
+			}),
+			type: z.number().positive({
+				message: "Type is required",
+			}),
+			info: z.string(),
+			grade: z.number().positive().nullable(),
+			period: z.number().positive({
+				message: "Period is required",
+			}),
+			confirmed: z.string().nullable(),
+			date: z.string(),//.nullable(),
+			weight: z.string(),
+		});
+
+		console.log(grade)
+		let parse = createGradeSchema.safeParse(grade)
+		if (parse.success) {
+			create(parse.data)
+		} else {
+			const mess = parse.error.errors.map(err => `${capitalizeFirstLetter(err.path[0].toString())}: ${err.message}`).join(", ")
+			toastMessage("error", `Invalid grade ${mess}`, toast)
+		}
+	}
+
 	const setDefault = (defaults: GradeModalDefaults) => {
 		if (confirmed)
 			setGrade({
@@ -128,9 +159,9 @@ export function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used fo
 				confirmed: dayjs().format("DD-MM-YYYY"),
 				date: dayjs().add(-7, "day").format("DD-MM-YYYY"),
 				grade: defaults.grade_default,
-				subject: defaults.subject_default ?? 0,
-				type: defaults.type_default ?? 0,
-				period: defaults.period_default ?? 0,
+				subject: defaults.subject_default ?? -1,
+				type: defaults.type_default ?? -1,
+				period: defaults.period_default ?? -1,
 				info: '',
 				weight: 'Normal'
 			})
@@ -140,9 +171,9 @@ export function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used fo
 				confirmed: null,
 				date: dayjs().format("DD-MM-YYYY"),
 				grade: null,
-				subject: defaults.subject_default ?? 0,
-				type: defaults.type_default ?? 0,
-				period: defaults.period_default ?? 0,
+				subject: defaults.subject_default ?? -1,
+				type: defaults.type_default ?? -1,
+				period: defaults.period_default ?? -1,
 				info: '',
 				weight: 'Normal'
 			})
@@ -266,40 +297,40 @@ export function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used fo
 						<Stack spacing={2}>
 							<Typography variant="h6" fontWeight="normal">Confirmed Date</Typography>
 							{grade !== undefined &&
-							<Stack direction="row" spacing={1} alignItems="center">
-								<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : null}
-												onChange={d => {
-													handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
-												}} renderInput={(params) => {
-									// @ts-ignore
-									params.inputProps.value = grade.confirmed ? grade.confirmed : "";
-									return <TextField {...params} color="secondary" title="Confirmed Date Picker"/>
-								}} renderDay={(day, value, DayComponentProps) => {
-									if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
-										DayComponentProps.disabled = true
-									return <Badge
-											key={day.toString()}
-											overlap="circular"
-											badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.date ? '✨' : null}>
-										<PickersDay {...DayComponentProps} />
-									</Badge>
-								}
-								}/>
-								{grade.confirmed && <IconButton onClick={() => {
-									setGrade({...grade, confirmed: null})
-								}}><ClearIcon/>
-								</IconButton>}
-							</Stack>}
+									<Stack direction="row" spacing={1} alignItems="center">
+										<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : null}
+														onChange={d => {
+															handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+														}} renderInput={(params) => {
+											// @ts-ignore
+											params.inputProps.value = grade.confirmed ? grade.confirmed : "";
+											return <TextField {...params} color="secondary" title="Confirmed Date Picker"/>
+										}} renderDay={(day, value, DayComponentProps) => {
+											if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
+												DayComponentProps.disabled = true
+											return <Badge
+													key={day.toString()}
+													overlap="circular"
+													badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.date ? '✨' : null}>
+												<PickersDay {...DayComponentProps} />
+											</Badge>
+										}
+										}/>
+										{grade.confirmed && <IconButton onClick={() => {
+											setGrade({...grade, confirmed: null})
+										}}><ClearIcon/>
+										</IconButton>}
+									</Stack>}
 						</Stack>
 					</Grid>
 					<Grid item xs={12} sm={8} lg={9}>
 						<Stack spacing={2} height={1}>
 							<Typography variant="h6" fontWeight="normal">Info</Typography>
 							{grade !== undefined &&
-							<TextField color="secondary" multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
-										  onChange={(event) => handleInfoInputChange(event, grade)}
-										  title="Info Input"
-							/>}
+									<TextField color="secondary" multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
+												  onChange={(event) => handleInfoInputChange(event, grade)}
+												  title="Info Input"
+									/>}
 						</Stack>
 					</Grid>
 					<Grid item xs={12} sm={4} lg={3}>
@@ -326,14 +357,8 @@ export function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used fo
 					<Button onClick={() => handleClear(gradeModalDefaults)} type="submit" variant="contained" color="warning">Clear</Button>
 			}/>
 			<Button component={RLink} to="/" type="submit" variant="contained">Close</Button>
-			{grade !== undefined && <Button component={RLink} to="/" onClick={() => {
-				create(grade);
-			}} type="submit" variant="contained" color="success">Create</Button>}
+			{grade !== undefined &&
+					<Button component={RLink} to="/" onClick={tryCreate} type="submit" variant="contained" color="success">Create</Button>}
 		</DialogActions>
 	</Dialog>;
 }
-
-export const newGradeRoute = rootRoute.createRoute<string, "newGrade", {}, NewGradeModalSearch>({
-	path: 'newGrade',
-	component: NewGradeModal
-})

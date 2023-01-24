@@ -48,14 +48,6 @@ export default function Navbar() {
 
 	const [openNav, setOpenNav] = useAtom(navBarOpen);
 
-	const f = useQueries({queries: [
-		{queryKey: ["overview"], queryFn: () => {}},
-		{queryKey: ["analysis"], queryFn: () => {}},
-		{queryKey: ["settings"], queryFn: () => {}},
-		]})
-
-	// f.
-
 	return <SwipeableDrawer open={openNav} anchor="left" onOpen={() => setOpenNav(true)} onClose={() => setOpenNav(false)}
 									variant="temporary" disableBackdropTransition={false} disableDiscovery={iOS} swipeAreaWidth={15}>
 		<Toolbar/>
