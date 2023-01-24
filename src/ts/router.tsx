@@ -1,8 +1,8 @@
 import {ReactRouter} from '@tanstack/react-router'
-import {overviewRoute} from "../Overview/Overview";
-import {newGradeRoute} from "../Overview/NewGradeModal/NewGradeModal";
-import {analysisRoute} from "../Analysis/Analysis";
-import {settingsRoute} from "../Settings/Settings";
+import {overviewRoute} from "../Overview/route";
+import {newGradeRoute} from "../Overview/NewGradeModal/route";
+import {analysisRoute} from "../Analysis/route";
+import {settingsRoute} from "../Settings/route";
 import {rootRoute} from "./root";
 
 // <Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)} closeText="Continue Edit">

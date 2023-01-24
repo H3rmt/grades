@@ -34,13 +34,13 @@ import ReactQueryData from "../../components/ReactQueryData/ReactQueryData";
 import {useCreateGrade} from "../../commands/create";
 import {RLink} from "../../components/Navbar/Navbar";
 import {useSearch} from "@tanstack/react-router";
-import {rootRoute} from "../../ts/root";
+import {newGradeRoute} from "./route";
 
 export type NewGradeModalSearch = {
 	confirmed: boolean
 }
 
-export function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used for testing*/) {
+export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used for testing*/) {
 	const [grade, setGrade] = useUndefinedState<Grade>()
 
 	let confirmed: boolean
@@ -142,7 +142,6 @@ export function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used fo
 			weight: z.string(),
 		});
 
-		console.log(grade)
 		let parse = createGradeSchema.safeParse(grade)
 		if (parse.success) {
 			create(parse.data)

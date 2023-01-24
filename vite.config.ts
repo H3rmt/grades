@@ -28,7 +28,6 @@ export default defineConfig({
 						} else if (id.includes("mui")) {
 							return "mui"
 						}
-						return "vendor"
 					}
 				},
 			}

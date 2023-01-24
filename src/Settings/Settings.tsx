@@ -28,7 +28,6 @@ import ReactQueryData from "../components/ReactQueryData/ReactQueryData";
 import {useEditGradeModalDefaults, useEditNoteRange} from '../commands/edit';
 import {useEditPeriods, useEditSubjects, useEditTypes} from '../commands/editList';
 import Topbar from "../components/TopBar/Topbar";
-import {rootRoute} from "../ts/root";
 
 
 function Component() {
@@ -338,11 +337,10 @@ function Component() {
 	</>
 }
 
-export function Settings() {
+export default function Settings() {
 	return <>
 		<Topbar name="Settings"/>
 		<Component/>
 	</>
 }
 
-export const settingsRoute = rootRoute.createRoute({path: 'settings', component: Settings})
