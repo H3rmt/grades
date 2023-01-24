@@ -1,5 +1,5 @@
 import {UseQueryResult} from "@tanstack/react-query";
-import {Paper, Typography} from "@mui/material";
+import {Paper, Stack, Typography} from "@mui/material";
 import {loadingSkeleton} from "./loadings";
 
 type Result<T> = { query: UseQueryResult<T, Error | string>, data: T | undefined }
@@ -36,28 +36,34 @@ type Queries<
 
 export default function ReactQueryDataMultiple<T extends unknown[]>(props: Props<T>) {
 	let ret: [...Returns<T>] = [] as unknown as [...Returns<T>]
+	let errors = []
+	let loading = false
 
 	for (const [i, q] of props.queries.entries()) {
 		const [query, data] = [q.query, q.data]
-		if (query.isLoading) {
-			return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)();
-		}
+		if (query.isLoading || data === undefined)
+			loading = true
+
 
 		if (query.isError) {
-			return props.error ? props.error(query.error) :
+			errors.push(props.error ? props.error(query.error) :
 					<Paper variant="outlined" sx={{borderWidth: 2, padding: 0.5, borderColor: "error.main"}}>
 						<Typography color="error.main" variant="subtitle2">
 							Error: {query.error.toString()}
 						</Typography>
-					</Paper>
-		}
-
-		if (data === undefined) {
-			return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)();
+					</Paper>)
 		}
 
 		ret[i] = data
 	}
+
+	console.log(errors)
+
+	if (errors.length > 0)
+		return <Stack spacing={1}>{errors}</Stack>
+
+	if (loading)
+		return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)();
 
 	return <>{props.display(ret)}</>
 }

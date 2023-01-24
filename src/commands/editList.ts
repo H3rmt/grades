@@ -53,7 +53,7 @@ function editList<T>(cmd: string, key: string, name: string): [T[] | undefined, 
 			toastMessage("success", `Undid clear ${name}`, toast)
 			closeClear()
 		}
-		let closeClear = toastMessage("info", `Cleared ${name}`, toast, undo)
+		let closeClear = toastMessage("warning", `Cleared ${name}`, toast, undo)
 	}
 
 	const add = createMutation<T>(queryClient, cmd, {
