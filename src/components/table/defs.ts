@@ -13,7 +13,8 @@ export type Column<Row extends IRow> = {
 
 export type ColumnDef<Row extends IRow> =
 		ColumnDefNoEdit<Row> | ColumnDefEdit<Row> |
-		ColumnDefExtraEdit<Row> | ColumnDefHidden<Row>
+		ColumnDefExtraEdit<Row> | ColumnDefExtraShow<Row> |
+		ColumnDefHidden<Row>
 
 export type ColumnDefDefault<Row extends IRow> = {
 	format?: (row: Row) => ReactNode
@@ -25,27 +26,39 @@ export type ColumnDefDefault<Row extends IRow> = {
 
 export type ColumnDefNoEdit<Row extends IRow> = {
 	edit?: undefined
-	extraEdit?: false
-	hide?: false
+	extraEdit?: undefined | false
+	extraShow?: undefined | false
+	hide?: undefined | false
 } & ColumnDefDefault<Row>
 
 export type ColumnDefEdit<Row extends IRow> = {
 	// function returning elements to be displayed instead of the data, with event listeners to update the row
 	edit: (row: Row, update: () => void) => ReactNode
-	extraEdit?: false
-	hide?: false
+	extraEdit?: undefined | false
+	extraShow?: undefined | false
+	hide?: undefined | false
 } & ColumnDefDefault<Row>
 
 export type ColumnDefExtraEdit<Row extends IRow> = {
 	// function returning elements to be displayed instead of the data, with event listeners to update the row
 	edit: (row: Row, update: () => void) => ReactNode
 	extraEdit: true
-	hide?: true
+	extraShow?: undefined | false
+	hide?: true | false
+} & ColumnDefDefault<Row>
+
+export type ColumnDefExtraShow<Row extends IRow> = {
+	// function returning elements to be displayed instead of the data, with event listeners to update the row
+	edit?: undefined
+	extraEdit?: undefined | false
+	extraShow: true
+	hide: true
 } & ColumnDefDefault<Row>
 
 export type ColumnDefHidden<Row extends IRow> = {
 	edit?: undefined
-	extraEdit?: false
+	extraEdit?: undefined | false
+	extraShow?: undefined | false
 	hide: true
 } & ColumnDefDefault<Row>
 

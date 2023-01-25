@@ -125,7 +125,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 												}}><EditIcon/>
 												</IconButton>
 										}
-										{col.edit && Array.from(props.cols.values()).some((col) => col.extraEdit) && <IconButton
+										{col.edit && Array.from(props.cols.values()).some((col) => col.extraEdit || col.extraShow) && <IconButton
 												color="info"
 												onClick={() => {
 													col.dialogOpen = !col.dialogOpen
@@ -144,6 +144,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 														{Array.from(props.cols.entries()).map(cd => {
 															const [key, colDef] = cd
 															if (colDef.extraEdit) {
+																// TODO update grid values
 																return <Grid key={key as Key} item xs={12} sm={6} lg={6}>
 																	<Stack spacing={2} onChange={forceUpdate}>
 																		<Typography variant="h6"
@@ -151,17 +152,27 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 																		{colDef.edit(col.temp, forceUpdate) as ReactNode}
 																	</Stack>
 																</Grid>
+															} else if (colDef.extraShow) {
+																return <Grid key={key as Key} item xs={12} sm={6} lg={6}>
+																	<Stack spacing={2}>
+																		<Typography variant="h6"
+																						fontWeight="normal">{colDef.name ?? capitalizeFirstLetter(key as string)}</Typography>
+																		{(colDef.format ?? ((d: Row) =>
+																				<Typography>{d[key] as ReactNode}</Typography>))(col.temp)}
+																	</Stack>
+																</Grid>
 															}
 														})}
-													</Grid>
-												</Paper>
-											</DialogContent>
-										</Dialog>
-										}
-									</Stack>
-								</TableCell>
-								}
-								{Array.from(props.cols.entries()).map(cd => {
+							</Grid>
+						</Paper>
+						</DialogContent>
+						</Dialog>
+						}
+						</Stack>
+						</TableCell>
+						}
+							{
+								Array.from(props.cols.entries()).map(cd => {
 									const [key, colDef] = cd
 									if (!colDef.hide) {
 										let format = colDef.format ?? ((d: Row) => <Typography>{d[key] as ReactNode}</Typography>)
@@ -183,8 +194,10 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 											<Typography>{col.data[key] as ReactNode}</Typography>
 										</TableCell>
 									}
-								})}
-							</TableRow>;
+								})
+							}
+						</TableRow>
+							;
 						})}
 			</TableBody>
 		</Table>
@@ -193,6 +206,6 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 
 export type {
 	IRow,
-	ColumnDef,
-	Column
+			ColumnDef,
+			Column
 }
