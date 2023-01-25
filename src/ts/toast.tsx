@@ -34,7 +34,7 @@ export function toastMessage(
 						},
 						action: action(variant, toast.closeSnackbar, undo, info),
 						persist: variant == "error",
-						autoHideDuration: variant == "warning" ? 3500 : (variant == "info" ? 3000 : 1500)
+						autoHideDuration: variant == "warning" ? 4500 : (variant == "info" ? 4000 : 2500)
 					}, opts
 			)
 	)
