@@ -1,5 +1,4 @@
 import Topbar from "../components/TopBar/Topbar";
-import {rootRoute} from "../ts/root";
 
 
 export function Component() {
@@ -12,11 +11,9 @@ export function Component() {
 	</>
 }
 
-export function Analysis() {
+export default function Analysis() {
 	return <>
 		<Topbar name="Analysis"/>
 		<Component/>
 	</>
 }
-
-export const analysisRoute = rootRoute.createRoute({path: 'analysis', component: Analysis})

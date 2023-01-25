@@ -42,7 +42,8 @@ export const queryClient = new QueryClient({defaultOptions: {queries: {retry: 2,
 createRoot(document.getElementById("root") as HTMLElement).render(
 		<StrictMode>
 			<ThemeProvider theme={theme}>
-				<LocalizationProvider dateAdapter={AdapterDayjs}>
+				<LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={"en"}>
+					{/* TODO cant select de as adapterLocale */}
 					<QueryClientProvider client={queryClient}>
 						<CssBaseline enableColorScheme/>
 						<SnackbarProvider maxSnack={5}>

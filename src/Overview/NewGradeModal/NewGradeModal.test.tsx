@@ -2,9 +2,9 @@ import {describe, expect, test} from 'vitest'
 import {mockIPC, render, screen, sleep, trimAll} from "../../ts/testingUtils";
 import {Grade, Period, Subject, Type} from "../../entity";
 import {GradeModalDefaults, NoteRange} from "../../entity/config";
-import {NewGradeModal} from "./NewGradeModal";
 import {act, findByRole, queryByDisplayValue} from "@testing-library/react";
 import dayjs from "dayjs";
+import NewGradeModal from "./NewGradeModal";
 
 describe('NewGradeModal', () => {
 	test('NewGradeModal opens and renders', async () => {

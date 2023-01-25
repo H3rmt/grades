@@ -8,7 +8,6 @@ import {loadingSpinner} from "../components/ReactQueryData/loadings";
 import Topbar from "../components/TopBar/Topbar";
 import {Outlet} from "@tanstack/react-router";
 import {OverviewAppBar} from "./OverviewAppBar";
-import {rootRoute} from "../ts/root";
 import {NoteRange} from "../entity/config";
 import {Grade, Period, Subject, Type, Weight} from "../entity";
 import ReactQueryDataMultiple from "../components/ReactQueryData/ReactQueryDataMultiple";
@@ -58,7 +57,7 @@ export function Component() {
 	</>
 }
 
-export function Overview() {
+export default function Overview() {
 	return <>
 		<Topbar name="Overview">
 			<OverviewAppBar/>
@@ -66,5 +65,3 @@ export function Overview() {
 		<Component/>
 	</>
 }
-
-export const overviewRoute = rootRoute.createRoute({path: '/', component: Overview})

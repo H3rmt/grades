@@ -57,8 +57,6 @@ export default function ReactQueryDataMultiple<T extends unknown[]>(props: Props
 		ret[i] = data
 	}
 
-	console.log(errors)
-
 	if (errors.length > 0)
 		return <Stack spacing={1}>{errors}</Stack>
 

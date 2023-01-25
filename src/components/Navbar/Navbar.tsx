@@ -1,13 +1,11 @@
 import {Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar} from "@mui/material";
 import {useAtom} from "jotai";
 import {navBarOpen} from "../../atoms";
-import {Link, useNavigate, useRoute, useRouter, useMatches, useMatchRoute, useMatch} from "@tanstack/react-router";
-import React, {ReactElement, useEffect, useState} from "react";
+import {Link} from "@tanstack/react-router";
+import React, {ReactElement} from "react";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {overviewRoute} from "../../Overview/Overview";
-import {useQueries} from "@tanstack/react-query";
 
 export type Pages = {
 	overview: Page
@@ -47,14 +45,6 @@ export default function Navbar() {
 	const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 	const [openNav, setOpenNav] = useAtom(navBarOpen);
-
-	const f = useQueries({queries: [
-		{queryKey: ["overview"], queryFn: () => {}},
-		{queryKey: ["analysis"], queryFn: () => {}},
-		{queryKey: ["settings"], queryFn: () => {}},
-		]})
-
-	// f.
 
 	return <SwipeableDrawer open={openNav} anchor="left" onOpen={() => setOpenNav(true)} onClose={() => setOpenNav(false)}
 									variant="temporary" disableBackdropTransition={false} disableDiscovery={iOS} swipeAreaWidth={15}>
