@@ -58,6 +58,7 @@ jobs:
             fi
           else
             echo "new version is not greater than latest release version"
+            exit 1
           fi
 
 
