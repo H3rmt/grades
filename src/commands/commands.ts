@@ -1,6 +1,6 @@
-import {invoke} from "@tauri-apps/api";
-import {UseQueryOptions} from "@tanstack/react-query/src/types";
-import {QueryClient, useMutation, UseMutationOptions, useQuery} from "@tanstack/react-query";
+import {invoke} from "@tauri-apps/api"
+import {UseQueryOptions} from "@tanstack/react-query/src/types"
+import {QueryClient, useMutation, UseMutationOptions, useQuery} from "@tanstack/react-query"
 
 function query<T>(cmd: string, options: UseQueryOpts<T> = {}) {
 	return useQuery<T, Error | string>([cmd], async () => {
@@ -27,7 +27,7 @@ function editMutation<T>(queryClient: QueryClient, cmd: string, options: UseMuta
 					await queryClient.invalidateQueries({queryKey: [key]})
 				})
 			},
-			options);
+			options)
 }
 
 function resetMutation(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void> = {}, key: string = cmd) {
@@ -43,7 +43,7 @@ function resetMutation(queryClient: QueryClient, cmd: string, options: UseMutati
 					await queryClient.invalidateQueries({queryKey: [key]})
 				})
 			},
-			options);
+			options)
 }
 
 function createMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<T> = {}, key: string = cmd) {
@@ -59,7 +59,7 @@ function createMutation<T>(queryClient: QueryClient, cmd: string, options: UseMu
 					await queryClient.invalidateQueries({queryKey: [key]})
 				})
 			},
-			options);
+			options)
 }
 
 function deleteMutation(queryClient: QueryClient, cmd: string, options: UseMutationOpts<number> = {}, key: string = cmd) {
@@ -74,7 +74,7 @@ function deleteMutation(queryClient: QueryClient, cmd: string, options: UseMutat
 					await queryClient.invalidateQueries({queryKey: [key]})
 				})
 			},
-			options);
+			options)
 }
 
 type UseQueryOpts<TData> =

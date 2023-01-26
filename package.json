@@ -11,7 +11,9 @@
 		"build ts entity": "cd src-tauri/entity && cargo test && cd .. && cargo test",
 
 		"test": "vitest",
-		"coverage": "vitest run --coverage"
+		"coverage": "vitest run --coverage",
+
+		"lint": "eslint ."
 	},
 	"dependencies": {
 		"@emotion/react": "^11.10",
@@ -56,6 +58,9 @@
 		"@testing-library/dom": "^8.19",
 		"@testing-library/user-event": "^14.4",
 
-		"vite-bundle-visualizer": "^0.4"
+		"vite-bundle-visualizer": "^0.4",
+		"eslint": "^8.32",
+		"@typescript-eslint/eslint-plugin": "^5.49",
+		"@typescript-eslint/parser": "^5.49"
 	}
 }

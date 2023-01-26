@@ -1,4 +1,4 @@
-import {ReactNode} from "react";
+import {ReactNode} from "react"
 
 export type IRow = {
 	id: number
@@ -19,7 +19,7 @@ export type ColumnDef<Row extends IRow> =
 export type ColumnDefDefault<Row extends IRow> = {
 	format?: (row: Row) => ReactNode
 	// processes the data before it is used for sorting (dates)
-	preSort?: (row: Row) => unknown
+	preSort?: (row: Row) => NonNullable<unknown>
 	name?: string
 	sort?: boolean
 }

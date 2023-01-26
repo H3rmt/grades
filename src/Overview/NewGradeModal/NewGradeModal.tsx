@@ -1,4 +1,4 @@
-import {ChangeEvent, useEffect} from 'react';
+import {ChangeEvent, useEffect} from 'react'
 import {
 	Badge,
 	Button,
@@ -20,28 +20,32 @@ import {
 	Stack,
 	TextField,
 	Typography
-} from "@mui/material";
-import {toastMessage} from "../../ts/toast";
-import {Grade} from "../../entity";
-import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../../commands/get";
-import {GradeModalDefaults, NoteRange} from "../../entity/config";
-import {capitalizeFirstLetter, useUndefinedState} from '../../ts/utils';
-import dayjs, {Dayjs} from "dayjs";
-import ClearIcon from "@mui/icons-material/Clear";
-import {DatePicker, PickersDay} from "@mui/x-date-pickers";
-import {useSnackbar} from "notistack";
-import ReactQueryData from "../../components/ReactQueryData/ReactQueryData";
-import {useCreateGrade} from "../../commands/create";
-import {RLink} from "../../components/Navbar/Navbar";
-import {useSearch} from "@tanstack/react-router";
-import {newGradeRoute} from "./route";
+} from "@mui/material"
+import {toastMessage} from "../../ts/toast"
+import {Grade} from "../../entity"
+import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../../commands/get"
+import {GradeModalDefaults, NoteRange} from "../../entity/config"
+import {capitalizeFirstLetter, useUndefinedState} from '../../ts/utils'
+import dayjs, {Dayjs} from "dayjs"
+import ClearIcon from "@mui/icons-material/Clear"
+import {DatePicker, PickersDay} from "@mui/x-date-pickers"
+import {useSnackbar} from "notistack"
+import ReactQueryData from "../../components/ReactQueryData/ReactQueryData"
+import {useCreateGrade} from "../../commands/create"
+import {RLink} from "../../components/Navbar/Navbar"
+import {useSearch} from "@tanstack/react-router"
+import {newGradeRoute} from "./route"
 
 export type NewGradeModalSearch = {
 	confirmed: boolean
 }
 
+type Nullable<T> = {
+    [P in keyof T]: T[P] | null;
+};
+
 export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used for testing*/) {
-	const [grade, setGrade] = useUndefinedState<Grade>()
+	const [grade, setGrade] = useUndefinedState<Nullable<Grade>>()
 
 	let confirmed: boolean
 	if (props.confirmed === undefined) {
@@ -49,7 +53,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 		const params = useSearch<"newGrade", true, NewGradeModalSearch, NewGradeModalSearch>({from: newGradeRoute.id})
 		confirmed = params.confirmed
 	} else {
-		confirmed = props.confirmed
+		confirmed = props.confirmed ?? false
 	}
 
 	const [previousConfirmed, setPreviousConfirmed] = useUndefinedState()
@@ -85,47 +89,48 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 
 	const [create] = useCreateGrade()
 
-	const handleGradeSliderChange = (value: number | number[], grade: Grade, noteRange: NoteRange) => {
-		setGrade({...grade, grade: Math.max(Math.min(Number(value), noteRange.to), noteRange.from)});
-	};
-
-	const handleGradeDateChange = (date: string, grade: Grade) => {
-		setGrade({...grade, date: date});
+	const handleGradeSliderChange = (value: number | number[], grade: Nullable<Grade>, noteRange: NoteRange) => {
+		setGrade({...grade, grade: Math.max(Math.min(Number(value), noteRange.to), noteRange.from)})
 	}
 
-	const handleGradeConfirmedDateChange = (date: string | null, grade: Grade) => {
-		setGrade({...grade, confirmed: date});
+	const handleGradeDateChange = (date: string, grade: Nullable<Grade>) => {
+		setGrade({...grade, date: date})
 	}
 
-	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Grade, noteRange: NoteRange) => {
-		setGrade({...grade, grade: Math.max(Math.min(Number(event.target.value), noteRange.to), noteRange.from)});
-	};
+	const handleGradeConfirmedDateChange = (date: string | null, grade: Nullable<Grade>) => {
+		setGrade({...grade, confirmed: date})
+	}
 
-	const handleSubjectSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Nullable<Grade>, noteRange: NoteRange) => {
+		setGrade({...grade, grade: Math.max(Math.min(Number(event.target.value), noteRange.to), noteRange.from)})
+	}
+
+	const handleSubjectSelectChange = (event: SelectChangeEvent, grade: Nullable<Grade>) => {
 		setGrade({...grade, subject: Number(event.target.value)})
 	}
 
-	const handleTypeSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+	const handleTypeSelectChange = (event: SelectChangeEvent, grade: Nullable<Grade>) => {
 		setGrade({...grade, type: Number(event.target.value)})
 	}
 
-	const handlePeriodSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+	const handlePeriodSelectChange = (event: SelectChangeEvent, grade: Nullable<Grade>) => {
 		setGrade({...grade, period: Number(event.target.value)})
 	}
 
-	const handleInfoInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Grade) => {
+	const handleInfoInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Nullable<Grade>) => {
 		setGrade({...grade, info: event.target.value})
 	}
 
-	const handleWeightChange = (event: ChangeEvent<HTMLInputElement>, grade: Grade) => {
+	const handleWeightChange = (event: ChangeEvent<HTMLInputElement>, grade: Nullable<Grade>) => {
 		setGrade({...grade, weight: event.target.value})
 	}
 
 	const tryCreate = async () => {
-		const z = await import('zod')
+		const {z} = await import('../../ts/zod')
+		// const {z} = await import('zod')
 
 		const createGradeSchema = z.object({
-			id: z.number().negative(),
+			id: z.literal(-1),
 			subject: z.number().positive({
 				message: "Subject is required",
 			}),
@@ -140,9 +145,9 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 			confirmed: z.string().nullable(),
 			date: z.string(),//.nullable(),
 			weight: z.string(),
-		});
+		}).strict()
 
-		let parse = createGradeSchema.safeParse(grade)
+		const parse = createGradeSchema.safeParse(grade)
 		if (parse.success) {
 			create(parse.data)
 		} else {
@@ -158,9 +163,9 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 				confirmed: dayjs().format("DD-MM-YYYY"),
 				date: dayjs().add(-7, "day").format("DD-MM-YYYY"),
 				grade: defaults.grade_default,
-				subject: defaults.subject_default ?? -1,
-				type: defaults.type_default ?? -1,
-				period: defaults.period_default ?? -1,
+				subject: defaults.subject_default ?? null,
+				type: defaults.type_default ?? null,
+				period: defaults.period_default ?? null,
 				info: '',
 				weight: 'Normal'
 			})
@@ -170,16 +175,16 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 				confirmed: null,
 				date: dayjs().format("DD-MM-YYYY"),
 				grade: null,
-				subject: defaults.subject_default ?? -1,
-				type: defaults.type_default ?? -1,
-				period: defaults.period_default ?? -1,
+				subject: defaults.subject_default ?? null,
+				type: defaults.type_default ?? null,
+				period: defaults.period_default ?? null,
 				info: '',
 				weight: 'Normal'
 			})
 	}
 
 	const handleClear = async (gradeModalDefaults: GradeModalDefaults) => {
-		let oldGrade = Object.assign({}, grade)
+		const oldGrade = Object.assign({}, grade)
 		setDefault(gradeModalDefaults)
 
 		const undo = () => {
@@ -188,7 +193,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 			closeClear()
 		}
 
-		let closeClear = toastMessage("warning", "Cleared create Note window", toast, undo)
+		const closeClear = toastMessage("warning", "Cleared create Note window", toast, undo)
 	}
 
 	return <Dialog open={true} disableEscapeKeyDown fullWidth maxWidth="md">
@@ -281,7 +286,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 														handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
 													}} renderInput={(params) => {
 										// @ts-ignore
-										params.inputProps.value = grade.date;
+										params.inputProps.value = grade.date
 										return <TextField {...params} color="secondary" title="Date Picker"/>
 									}} renderDay={(day, value, DayComponentProps) => <Badge
 											key={day.toString()}
@@ -302,7 +307,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 															handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
 														}} renderInput={(params) => {
 											// @ts-ignore
-											params.inputProps.value = grade.confirmed ? grade.confirmed : "";
+											params.inputProps.value = grade.confirmed ? grade.confirmed : ""
 											return <TextField {...params} color="secondary" title="Confirmed Date Picker"/>
 										}} renderDay={(day, value, DayComponentProps) => {
 											if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
@@ -359,5 +364,5 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 			{grade !== undefined &&
 					<Button component={RLink} to="/" onClick={tryCreate} type="submit" variant="contained" color="success">Create</Button>}
 		</DialogActions>
-	</Dialog>;
+	</Dialog>
 }

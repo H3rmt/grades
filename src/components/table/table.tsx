@@ -1,18 +1,18 @@
-import {Key, ReactNode, useCallback, useState} from "react";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import TableBody from "@mui/material/TableBody";
-import TableContainer from "@mui/material/TableContainer";
-import {getComparator, Order, setSort} from "./sort";
-import {Dialog, DialogContent, DialogTitle, Grid, IconButton, Paper, Stack, Table, TableSortLabel, Typography} from "@mui/material";
-import {capitalizeFirstLetter} from "../../ts/utils";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveButton from '@mui/icons-material/Save';
-import {Cols, Column, ColumnDef, IRow} from "./defs";
-import HandymanIcon from '@mui/icons-material/Handyman';
-import CloseIcon from "@mui/icons-material/Close";
+import {Key, ReactNode, useCallback, useState} from "react"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import TableCell from "@mui/material/TableCell"
+import TableBody from "@mui/material/TableBody"
+import TableContainer from "@mui/material/TableContainer"
+import {getComparator, Order, setSort} from "./sort"
+import {Dialog, DialogContent, DialogTitle, Grid, IconButton, Paper, Stack, Table, TableSortLabel, Typography} from "@mui/material"
+import {capitalizeFirstLetter} from "../../ts/utils"
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import SaveButton from '@mui/icons-material/Save'
+import {Cols, Column, ColumnDef, IRow} from "./defs"
+import HandymanIcon from '@mui/icons-material/Handyman'
+import CloseIcon from "@mui/icons-material/Close"
 
 type Props<Row extends IRow> = {
 	data: Array<Row>
@@ -23,11 +23,11 @@ type Props<Row extends IRow> = {
 }
 
 export function CTable<Row extends IRow>(props: Props<Row>) {
-	const [order, setOrder] = useState<Order>('asc');
-	const [orderBy, setOrderBy] = useState<keyof Row>('id');
+	const [order, setOrder] = useState<Order>('asc')
+	const [orderBy, setOrderBy] = useState<keyof Row>('id')
 
-	const [, updateState] = useState<object>();
-	const forceUpdate = useCallback(() => updateState({}), []);
+	const [, updateState] = useState<object>()
+	const forceUpdate = useCallback(() => updateState({}), [])
 
 	const [data, setData] = useState<Map<number, Column<Row>>>(new Map())
 
@@ -42,13 +42,13 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 	}
 
 	for (const col of props.data) {
-		let co = data.get(col.id)
+		const co = data.get(col.id)
 		// update existing rows
 		if (co) {
 			co.data = col
 		} else {
 			// add new rows
-			data.set(col.id, {data: col, dialogOpen: false, edit: false, temp: {...col}});
+			data.set(col.id, {data: col, dialogOpen: false, edit: false, temp: {...col}})
 			change = true
 		}
 	}
@@ -62,7 +62,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 		const [newOrder, newOrderBy] = setSort(property, order, orderBy)
 		setOrder(newOrder)
 		setOrderBy(newOrderBy)
-	};
+	}
 
 	return <TableContainer sx={{overflowY: 'auto'}} component="div" title={props.title}>
 		<Table size="medium">
@@ -91,21 +91,21 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 			<TableBody>
 				{Array.from(data.entries())
 						.sort(getComparator<Row>(order, orderBy, props.cols.get(orderBy)?.preSort))
-						.map(([_, col]) => {
+						.map(([, col]) => {
 							return <TableRow hover key={col.data.id} data-id={col.data.id} sx={{position: 'relative'}}>
 								{(props.delete ?? props.edit) && <TableCell>
 									<Stack direction="row">
 										{col.edit ?
 												<IconButton color="default" onClick={() => {
 													col.edit = false
-													setData(new Map(data));
+													setData(new Map(data))
 												}}><CloseIcon/>
 												</IconButton>
 												:
 												props.delete && <IconButton color="error" onClick={() => {
 													props.delete && props.delete(col.data.id)
 													data.delete(col.data.id)
-													setData(new Map(data));
+													setData(new Map(data))
 												}}><DeleteIcon/>
 												</IconButton>
 										}
@@ -114,7 +114,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 													col.edit = false
 													col.data = {...col.temp}
 													props.edit && props.edit(col.data)
-													setData(new Map(data));
+													setData(new Map(data))
 												}}><SaveButton/>
 												</IconButton>
 												:
@@ -129,13 +129,13 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 												color="info"
 												onClick={() => {
 													col.dialogOpen = !col.dialogOpen
-													setData(new Map(data));
+													setData(new Map(data))
 												}}><HandymanIcon/>
 										</IconButton>
 										}
 										{col.dialogOpen && <Dialog open={col.dialogOpen} onClose={() => {
 											col.dialogOpen = false
-											setData(new Map(data));
+											setData(new Map(data))
 										}} fullWidth>
 											<DialogTitle variant="h5">Edit Grade</DialogTitle>
 											<DialogContent>
@@ -175,8 +175,8 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 								Array.from(props.cols.entries()).map(cd => {
 									const [key, colDef] = cd
 									if (!colDef.hide) {
-										let format = colDef.format ?? ((d: Row) => <Typography>{d[key] as ReactNode}</Typography>)
-										let edit = (colDef?.edit ?? (() => format(col.data)))
+										const format = colDef.format ?? ((d: Row) => <Typography>{d[key] as ReactNode}</Typography>)
+										const edit = (colDef?.edit ?? (() => format(col.data)))
 
 										return col.edit ? colDef.extraEdit ?
 														<TableCell key={key as Key} data-key={key} data-data={col.data[key]}>
@@ -197,7 +197,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 								})
 							}
 						</TableRow>
-							;
+							
 						})}
 			</TableBody>
 		</Table>

@@ -1,6 +1,6 @@
-import {UseQueryResult} from "@tanstack/react-query";
-import {Paper, Typography} from "@mui/material";
-import {loadingSkeleton} from "./loadings";
+import {UseQueryResult} from "@tanstack/react-query"
+import {Paper, Typography} from "@mui/material"
+import {loadingSkeleton} from "./loadings"
 
 type Props<T> = {
 	query: UseQueryResult<T, string | Error>;
@@ -14,7 +14,7 @@ type Props<T> = {
 
 export default function ReactQueryData<T>(props: Props<T>) {
 	if (props.query.isLoading) {
-		return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)();
+		return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)()
 	}
 
 	if (props.query.isError || props.isError) {
@@ -27,8 +27,8 @@ export default function ReactQueryData<T>(props: Props<T>) {
 	}
 
 	if (props.data === undefined) {
-		return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)();
+		return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)()
 	}
 
-	return <>{props.display(props.data as NonNullable<T>)}</>;
+	return <>{props.display(props.data as NonNullable<T>)}</>
 }

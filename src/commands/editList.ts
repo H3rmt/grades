@@ -1,10 +1,10 @@
-import {useUndefinedState} from "../ts/utils";
-import {errorToast, toastMessage} from "../ts/toast";
-import {UseMutateFunction, useQueryClient, UseQueryResult} from "@tanstack/react-query";
-import {createMutation, deleteMutation, editMutation, query, resetMutation} from "./commands";
-import {Dispatch, SetStateAction} from "react";
-import {Grade, Period, Subject, Type} from "../entity";
-import {useSnackbar} from "notistack";
+import {useUndefinedState} from "../ts/utils"
+import {errorToast, toastMessage} from "../ts/toast"
+import {UseMutateFunction, useQueryClient, UseQueryResult} from "@tanstack/react-query"
+import {createMutation, deleteMutation, editMutation, query, resetMutation} from "./commands"
+import {Dispatch, SetStateAction} from "react"
+import {Grade, Period, Subject, Type} from "../entity"
+import {useSnackbar} from "notistack"
 
 export function useEditGrades() {
 	return editList<Grade>("grade", "grades", "Grades")
@@ -45,7 +45,7 @@ function editList<T>(cmd: string, key: string, name: string): [T[] | undefined, 
 	})
 
 	const clear = () => {
-		let old = Object.assign({}, list)
+		const old = Object.assign({}, list)
 		setList([])
 		resetServer.mutate()
 		const undo = () => {
@@ -53,7 +53,7 @@ function editList<T>(cmd: string, key: string, name: string): [T[] | undefined, 
 			toastMessage("success", `Undid clear ${name}`, toast)
 			closeClear()
 		}
-		let closeClear = toastMessage("warning", `Cleared ${name}`, toast, undo)
+		const closeClear = toastMessage("warning", `Cleared ${name}`, toast, undo)
 	}
 
 	const add = createMutation<T>(queryClient, cmd, {

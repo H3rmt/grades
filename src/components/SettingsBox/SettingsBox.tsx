@@ -1,5 +1,5 @@
-import {Paper, Stack, Typography} from "@mui/material";
-import {ReactNode} from "react";
+import {Paper, Stack, Typography} from "@mui/material"
+import {ReactNode} from "react"
 
 type Props = {
 	children: ReactNode,
@@ -18,4 +18,4 @@ export default function SettingsBox(props: Props) {
 		</Stack>
 		{props.children}
 	</Paper>
-};
+}

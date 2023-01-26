@@ -1,5 +1,5 @@
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@mui/material";
-import {ReactNode} from "react";
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@mui/material"
+import {ReactNode} from "react"
 
 type Props = {
 	info: string
@@ -23,5 +23,5 @@ export function Info(props: Props) {
 			</Button>
 			{props.children}
 		</DialogActions>
-	</Dialog>;
+	</Dialog>
 }

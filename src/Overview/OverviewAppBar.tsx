@@ -1,21 +1,21 @@
-import {Button, MenuItem, Select, SelectChangeEvent, Stack, Typography, useMediaQuery} from "@mui/material";
-import {useGradeModalDefaults, usePeriods} from "../commands/get";
+import {Button, MenuItem, Select, SelectChangeEvent, Stack, Typography, useMediaQuery} from "@mui/material"
+import {useGradeModalDefaults, usePeriods} from "../commands/get"
 import {useAtom} from 'jotai'
-import React, {forwardRef, useEffect} from "react";
-import ReactQueryData from "../components/ReactQueryData/ReactQueryData";
-import {Link} from "@tanstack/react-router";
-import {NewGradeModalSearch} from "./NewGradeModal/NewGradeModal";
-import {selectedPeriod} from "./atoms";
+import {forwardRef, useEffect} from "react"
+import ReactQueryData from "../components/ReactQueryData/ReactQueryData"
+import {Link} from "@tanstack/react-router"
+import {NewGradeModalSearch} from "./NewGradeModal/NewGradeModal"
+import {selectedPeriod} from "./atoms"
 
 
 export function OverviewAppBar() {
-	const oneButton = useMediaQuery('(max-width:700px)');
-	const plusButton = useMediaQuery('(max-width:400px)');
-	const [period, setPeriod] = useAtom(selectedPeriod);
+	const oneButton = useMediaQuery('(max-width:700px)')
+	const plusButton = useMediaQuery('(max-width:400px)')
+	const [period, setPeriod] = useAtom(selectedPeriod)
 
-	const [periods, , periodsS] = usePeriods();
+	const [periods, , periodsS] = usePeriods()
 
-	const [gradeModalDefaults] = useGradeModalDefaults();
+	const [gradeModalDefaults] = useGradeModalDefaults()
 
 	useEffect(() => {
 		if (period === undefined && gradeModalDefaults !== undefined)
@@ -24,7 +24,7 @@ export function OverviewAppBar() {
 
 	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
 		console.log(event.target.value)
-		setPeriod(event.target.value);
+		setPeriod(event.target.value)
 	}
 
 	return <Stack spacing={2} direction="row" alignItems="center">
@@ -66,7 +66,7 @@ export function OverviewAppBar() {
 					}} title="New Grade">New&nbsp;Confirmed&nbsp;Grade</Button>
 				</>
 		})()}
-	</Stack>;
+	</Stack>
 }
 
 const RLink = forwardRef<HTMLAnchorElement, any>((itemProps, ref,) =>

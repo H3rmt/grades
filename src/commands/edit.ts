@@ -1,10 +1,10 @@
-import {useUndefinedState} from "../ts/utils";
-import {errorToast, toastMessage} from "../ts/toast";
-import {useQueryClient, UseQueryResult} from "@tanstack/react-query";
-import {editMutation, query, resetMutation} from "./commands";
-import {Dispatch, SetStateAction} from "react";
-import {GradeModalDefaults, NoteRange} from "../entity/config";
-import {useSnackbar} from "notistack";
+import {useUndefinedState} from "../ts/utils"
+import {errorToast, toastMessage} from "../ts/toast"
+import {useQueryClient, UseQueryResult} from "@tanstack/react-query"
+import {editMutation, query, resetMutation} from "./commands"
+import {Dispatch, SetStateAction} from "react"
+import {GradeModalDefaults, NoteRange} from "../entity/config"
+import {useSnackbar} from "notistack"
 
 
 export function useEditGradeModalDefaults() {
@@ -47,7 +47,7 @@ function edit<T>(key: string, name: string): [T | undefined, Dispatch<SetStateAc
 	})
 
 	const reset = () => {
-		let old = Object.assign({}, edit)
+		const old = Object.assign({}, edit)
 		setEdit(undefined)
 		resetServer.mutate()
 		const undo = () => {
@@ -55,11 +55,11 @@ function edit<T>(key: string, name: string): [T | undefined, Dispatch<SetStateAc
 			toastMessage("success", `Undid reset ${name}`, toast)
 			closeClear()
 		}
-		let closeClear = toastMessage("info", `Reset ${name}`, toast, undo)
+		const closeClear = toastMessage("info", `Reset ${name}`, toast, undo)
 	}
 
 	const reload = () => {
-		let old = Object.assign({}, edit)
+		const old = Object.assign({}, edit)
 
 		setEdit(dataServer.data ?? undefined)
 
@@ -69,7 +69,7 @@ function edit<T>(key: string, name: string): [T | undefined, Dispatch<SetStateAc
 			closeClear()
 		}
 
-		let closeClear = toastMessage("warning", `Reloaded ${name}`, toast, undo)
+		const closeClear = toastMessage("warning", `Reloaded ${name}`, toast, undo)
 	}
 
 	const save = () => {

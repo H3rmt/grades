@@ -1,4 +1,4 @@
-import {CircularProgress, Skeleton, Stack} from "@mui/material";
+import {CircularProgress, Skeleton, Stack} from "@mui/material"
 
 export function loadingSpinner() {
 	return <Stack sx={{padding: 4}} direction="row" justifyContent="center"

@@ -1,7 +1,7 @@
 import {describe, test} from 'vitest'
 import {act, render} from '@testing-library/react'
-import {Component} from "./Analysis";
-import {sleep} from "../ts/testingUtils";
+import {Component} from "./Analysis"
+import {sleep} from "../ts/testingUtils"
 
 describe('Analysis', () => {
 	test('A', async () => {

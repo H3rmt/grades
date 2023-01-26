@@ -1,6 +1,6 @@
-import {UseQueryResult} from "@tanstack/react-query";
-import {Paper, Stack, Typography} from "@mui/material";
-import {loadingSkeleton} from "./loadings";
+import {UseQueryResult} from "@tanstack/react-query"
+import {Paper, Stack, Typography} from "@mui/material"
+import {loadingSkeleton} from "./loadings"
 
 type Result<T> = { query: UseQueryResult<T, Error | string>, data: T | undefined }
 
@@ -35,8 +35,8 @@ type Queries<
 
 
 export default function ReactQueryDataMultiple<T extends unknown[]>(props: Props<T>) {
-	let ret: [...Returns<T>] = [] as unknown as [...Returns<T>]
-	let errors = []
+	const ret: [...Returns<T>] = [] as unknown as [...Returns<T>]
+	const errors = []
 	let loading = false
 
 	for (const [i, q] of props.queries.entries()) {
@@ -61,7 +61,7 @@ export default function ReactQueryDataMultiple<T extends unknown[]>(props: Props
 		return <Stack spacing={1}>{errors}</Stack>
 
 	if (loading)
-		return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)();
+		return props.loading ? props.loading() : loadingSkeleton(props.loadingHeight ?? 0)()
 
 	return <>{props.display(ret)}</>
 }
