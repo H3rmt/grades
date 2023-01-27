@@ -2,7 +2,7 @@ import {Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Swi
 import {useAtom} from "jotai"
 import {navBarOpen} from "../../atoms"
 import {Link} from "@tanstack/react-router"
-import {ReactElement, forwardRef} from "react"
+import {forwardRef, ReactElement} from "react"
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered"
 import QueryStatsIcon from "@mui/icons-material/QueryStats"
 import SettingsIcon from "@mui/icons-material/Settings"

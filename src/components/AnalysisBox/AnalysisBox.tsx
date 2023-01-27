@@ -1,6 +1,6 @@
-import {Fab, Menu, MenuItem, Paper, Typography} from "@mui/material";
-import {ReactNode, useRef, useState} from "react";
-import {KeyboardArrowDown, KeyboardArrowUp} from '@mui/icons-material';
+import {Fab, Menu, MenuItem, Paper, Typography} from "@mui/material"
+import {ReactNode, useRef, useState} from "react"
+import {KeyboardArrowDown, KeyboardArrowUp} from '@mui/icons-material'
 
 type Props = {
 	children: ReactNode,
