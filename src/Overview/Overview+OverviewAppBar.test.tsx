@@ -1,8 +1,8 @@
 import {describe, expect, test} from 'vitest'
-import {Grade, Period, Subject, Type} from '../entity';
-import {getByRole, mockIPC, render, screen} from "../ts/testingUtils";
-import userEvent from "@testing-library/user-event";
-import Overview from "./Overview";
+import {Grade, Period, Subject, Type} from '../entity'
+import {getByRole, mockIPC, render, screen} from "../ts/testingUtils"
+import userEvent from "@testing-library/user-event"
+import Overview from "./Overview"
 
 describe('Overview+OverviewAppBar', () => {
 	test('shows only Period Grades', async () => {

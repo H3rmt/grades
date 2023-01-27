@@ -11,37 +11,37 @@ import {
 	Stack,
 	TextField,
 	Typography
-} from '@mui/material';
-import {ChangeEvent} from 'react';
-import {nextFree, randColor} from "../ts/utils";
-import {CTable} from "../components/table/table";
-import {Period, Subject, Type} from "../entity";
-import {getPeriodCols, getSubjectCols, getTypeCols} from "./table";
-import {GradeModalDefaults, NoteRange} from "../entity/config";
-import SaveButton from "@mui/icons-material/Save";
-import {useInfo} from "../commands/get";
-import dayjs from "dayjs";
-import SettingsBox from "../components/SettingsBox/SettingsBox";
-import RestoreIcon from '@mui/icons-material/Restore';
-import CloseIcon from "@mui/icons-material/Close";
-import ReactQueryData from "../components/ReactQueryData/ReactQueryData";
-import {useEditGradeModalDefaults, useEditNoteRange} from '../commands/edit';
-import {useEditPeriods, useEditSubjects, useEditTypes} from '../commands/editList';
-import Topbar from "../components/TopBar/Topbar";
+} from '@mui/material'
+import {ChangeEvent} from 'react'
+import {nextFree, randColor} from "../ts/utils"
+import {CTable} from "../components/table/table"
+import {Period, Subject, Type} from "../entity"
+import {getPeriodCols, getSubjectCols, getTypeCols} from "./table"
+import {GradeModalDefaults, NoteRange} from "../entity/config"
+import SaveButton from "@mui/icons-material/Save"
+import {useInfo} from "../commands/get"
+import dayjs from "dayjs"
+import SettingsBox from "../components/SettingsBox/SettingsBox"
+import RestoreIcon from '@mui/icons-material/Restore'
+import CloseIcon from "@mui/icons-material/Close"
+import ReactQueryData from "../components/ReactQueryData/ReactQueryData"
+import {useEditGradeModalDefaults, useEditNoteRange} from '../commands/edit'
+import {useEditPeriods, useEditSubjects, useEditTypes} from '../commands/editList'
+import Topbar from "../components/TopBar/Topbar"
 
 
 function Component() {
-	const [noteRange, setNoteRange, noteRangeS, noteRangeEdited, resetNoteRange, reloadNoteRange, saveNoteRange] = useEditNoteRange();
+	const [noteRange, setNoteRange, noteRangeS, noteRangeEdited, resetNoteRange, reloadNoteRange, saveNoteRange] = useEditNoteRange()
 
-	const [gradeModalDefaults, setGradeModalDefaults, gradeModalDefaultsS, gradeModalDefaultsEdited, resetGradeModalDefaults, reloadGradeModalDefaults, saveGradeModalDefaults] = useEditGradeModalDefaults();
+	const [gradeModalDefaults, setGradeModalDefaults, gradeModalDefaultsS, gradeModalDefaultsEdited, resetGradeModalDefaults, reloadGradeModalDefaults, saveGradeModalDefaults] = useEditGradeModalDefaults()
 
-	const [periods, , periodsS, , addPeriod, editPeriod, removePeriod] = useEditPeriods();
+	const [periods, , periodsS, , addPeriod, editPeriod, removePeriod] = useEditPeriods()
 
-	const [subjects, , subjectsS, , addSubject, editSubject, removeSubject] = useEditSubjects();
+	const [subjects, , subjectsS, , addSubject, editSubject, removeSubject] = useEditSubjects()
 
-	const [types, , typesS, , addType, editType, removeType] = useEditTypes();
+	const [types, , typesS, , addType, editType, removeType] = useEditTypes()
 
-	const [info, , infoS] = useInfo();
+	const [info, , infoS] = useInfo()
 
 
 	const handleCreateType = async (types: Type[]) => {
@@ -115,7 +115,7 @@ function Component() {
 
 	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, gradeModalDefaults: GradeModalDefaults) => {
 		setGradeModalDefaults({...gradeModalDefaults, grade_default: Number(event.target.value)})
-	};
+	}
 
 	// useImperativeHandle(ref, () => ({
 	// 	changed() {

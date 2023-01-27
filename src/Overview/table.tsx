@@ -1,11 +1,11 @@
-import {Grade, Period, Subject, Type, Weight} from "../entity";
-import {Cols, ColumnDef} from "../components/table/defs";
-import {Badge, IconButton, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
-import {map} from "../ts/utils";
-import {NoteRange} from "../entity/config";
-import {DatePicker, PickersDay} from "@mui/x-date-pickers";
-import dayjs, {Dayjs} from "dayjs";
-import ClearIcon from '@mui/icons-material/Clear';
+import {Grade, Period, Subject, Type, Weight} from "../entity"
+import {Cols, ColumnDef} from "../components/table/defs"
+import {Badge, IconButton, MenuItem, Select, Stack, TextField, Typography} from "@mui/material"
+import {map} from "../ts/utils"
+import {NoteRange} from "../entity/config"
+import {DatePicker, PickersDay} from "@mui/x-date-pickers"
+import dayjs, {Dayjs} from "dayjs"
+import ClearIcon from '@mui/icons-material/Clear'
 
 
 export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[]) => Cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[]) => new Map<keyof Grade, ColumnDef<Grade>>(
@@ -30,7 +30,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 				sort: true,
 				format: g => <Typography
 						sx={{color: subjects.find(sub => sub.id === g.subject)?.color ?? 'white'}}>{subjects.find(sub => sub.id === g.subject)?.name ?? (() => {
-					console.error('subject:', g.subject);
+					console.error('subject:', g.subject)
 					return '--notfound--'
 				})()}</Typography>,
 				extraEdit: true,
@@ -46,7 +46,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 				sort: true,
 				format: g => <Typography
 						sx={{color: types.find(typ => typ.id === g.type)?.color ?? 'white'}}>{types.find(typ => typ.id === g.type)?.name ?? (() => {
-					console.error('type:', g.type);
+					console.error('type:', g.type)
 					return '--notfound--'
 				})()}</Typography>,
 				extraEdit: true,
@@ -64,7 +64,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 					g.date = (d as unknown as Dayjs)?.format('DD-MM-YYYY')
 				}} renderInput={(props) => {
 					// @ts-ignore
-					props.inputProps.value = g.date;
+					props.inputProps.value = g.date
 					return <TextField {...props} />
 				}} renderDay={(day, value, DayComponentProps) => <Badge
 						key={day.toString()}
@@ -84,7 +84,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 						update()
 					}} renderInput={(props) => {
 						// @ts-ignore
-						props.inputProps.value = g.confirmed ?? "-";
+						props.inputProps.value = g.confirmed ?? "-"
 						return <TextField {...props} />
 					}} renderDay={(day, value, DayComponentProps) => <Badge
 							key={day.toString()}
@@ -104,7 +104,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 		], [
 			"period", {
 				edit: (g, update) => <Select value={g.period} onChange={(i) => {
-					g.period = Number(i.target.value);
+					g.period = Number(i.target.value)
 					update()
 				}}>
 					{periods.map((period) => <MenuItem key={period.id} value={period.id}>
@@ -121,7 +121,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 		], [
 			"weight", {
 				edit: (g, update) => <Select value={g.weight} onChange={(i) => {
-					g.weight = i.target.value;
+					g.weight = i.target.value
 					update()
 				}}>
 					{weights.map((weight) => <MenuItem key={weight.name} value={weight.name}>{weight.name}</MenuItem>)}

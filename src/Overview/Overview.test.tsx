@@ -1,9 +1,9 @@
 import {describe, expect, test} from 'vitest'
-import {Component} from "./Overview";
-import {Grade, Period, Subject, Type} from '../entity';
-import {mockIPC, render, rgbStringToHex, screen, sleep} from "../ts/testingUtils";
-import {act} from "@testing-library/react";
-import {selectedPeriod} from "./atoms";
+import {Component} from "./Overview"
+import {Grade, Period, Subject, Type} from '../entity'
+import {mockIPC, render, rgbStringToHex, screen, sleep} from "../ts/testingUtils"
+import {act} from "@testing-library/react"
+import {selectedPeriod} from "./atoms"
 
 describe('Overview', () => {
 	test('renders Table Columns', async () => {

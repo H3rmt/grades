@@ -1,8 +1,8 @@
-import {CartesianGrid, Legend, Line, LineChart, ReferenceArea, Tooltip, XAxis, YAxis} from "recharts";
-import {ReactNode, useState} from "react";
-import {Fab, Paper, useTheme} from "@mui/material";
-import {CategoricalChartState} from "recharts/src/chart/generateCategoricalChart";
-import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
+import {CartesianGrid, Legend, Line, LineChart, ReferenceArea, Tooltip, XAxis, YAxis} from "recharts"
+import {ReactNode, useState} from "react"
+import {Fab, Paper, useTheme} from "@mui/material"
+import {CategoricalChartState} from "recharts/src/chart/generateCategoricalChart"
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
 
 type Data = { [key: string]: number }
 
@@ -17,20 +17,20 @@ type Props = {
 	extra?: ReactNode
 };
 
-const getAxisYDomain = (data: Data[], from: number, to: number, refs: string[], offset: number = 0.05) => {
-	const refData = data.slice(from - 1, to);
+const getAxisYDomain = (data: Data[], from: number, to: number, refs: string[], offset = 0.05) => {
+	const refData = data.slice(from - 1, to)
 
-	let [bottom, top] = [Infinity, -Infinity];
+	let [bottom, top] = [Infinity, -Infinity]
 
 	refs.forEach(ref => {
 		refData.map(d => d[ref]).forEach((d: number) => {
-			if (d > top) top = d;
-			if (d < bottom) bottom = d;
+			if (d > top) top = d
+			if (d < bottom) bottom = d
 		})
 	})
 
-	return [Math.round(bottom - ((top - bottom) * offset)), Math.round(top + ((top - bottom) * offset))];
-};
+	return [Math.round(bottom - ((top - bottom) * offset)), Math.round(top + ((top - bottom) * offset))]
+}
 
 type State = {
 	zoomingAreaStart: number | undefined
@@ -51,11 +51,11 @@ const initialState = {
 }
 
 export function Chart(props: Props) {
-	const [state, setState] = useState<State>(initialState);
-	const theme = useTheme();
+	const [state, setState] = useState<State>(initialState)
+	const theme = useTheme()
 
 	const zoom = () => {
-		let {zoomingAreaStart, zoomingAreaEnd} = state;
+		let {zoomingAreaStart, zoomingAreaEnd} = state
 
 		if (zoomingAreaEnd === undefined || zoomingAreaStart === undefined || zoomingAreaStart === zoomingAreaEnd) {
 			setState({
@@ -71,7 +71,7 @@ export function Chart(props: Props) {
 			[zoomingAreaEnd, zoomingAreaStart] = [zoomingAreaStart, zoomingAreaEnd]
 		}
 
-		const [bottom, top] = getAxisYDomain(props.data, Number(zoomingAreaStart), Number(zoomingAreaEnd), ['uv', 'pv']);
+		const [bottom, top] = getAxisYDomain(props.data, Number(zoomingAreaStart), Number(zoomingAreaEnd), ['uv', 'pv'])
 
 		setState({
 			zoomingAreaStart: undefined,
@@ -90,7 +90,7 @@ export function Chart(props: Props) {
 			setState({...state, zoomingAreaStart: Number(nextState.activeLabel) || undefined})
 	}
 
-	const {zoomLeft, zoomRight, zoomingAreaStart, zoomingAreaEnd, zoomTop, zoomBottom} = state;
+	const {zoomLeft, zoomRight, zoomingAreaStart, zoomingAreaEnd, zoomTop, zoomBottom} = state
 
 	return <Paper sx={{userSelect: 'none', overflow: "auto", padding: 1, position: 'relative'}} variant="outlined">
 		{zoomLeft !== 'dataMin' && zoomRight !== 'dataMax' && <Fab size="small" color="primary" sx={{position: 'absolute', top: 35, left: 20}}

@@ -1,8 +1,8 @@
-import {OptionsObject, SnackbarKey, SnackbarMessage} from "notistack";
-import {Button, IconButton, Stack} from "@mui/material";
-import {useState} from "react";
-import CloseIcon from '@mui/icons-material/Close';
-import {Info} from "../components/Info/Info";
+import {OptionsObject, SnackbarKey, SnackbarMessage} from "notistack"
+import {Button, IconButton, Stack} from "@mui/material"
+import {useState} from "react"
+import CloseIcon from '@mui/icons-material/Close'
+import {Info} from "../components/Info/Info"
 
 type variant = "error" | "success" | "warning" | "info"
 
@@ -25,7 +25,7 @@ export function toastMessage(
 ): () => void {
 	console.debug("toastMessage", variant, message, undo)
 
-	let key = toast.enqueueSnackbar(message,
+	const key = toast.enqueueSnackbar(message,
 			Object.assign({
 						variant: variant,
 						anchorOrigin: {
@@ -53,7 +53,7 @@ function action(
 		info?: string,
 ): (id: SnackbarKey) => JSX.Element {
 	return (id: SnackbarKey) => {
-		let [open, setOpen] = useState(false)
+		const [open, setOpen] = useState(false)
 
 		return <Stack direction="row" spacing={1.5}>
 			{undo && <Button variant="outlined" onClick={() => {

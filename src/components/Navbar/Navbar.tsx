@@ -1,11 +1,11 @@
-import {Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar} from "@mui/material";
-import {useAtom} from "jotai";
-import {navBarOpen} from "../../atoms";
-import {Link} from "@tanstack/react-router";
-import React, {ReactElement} from "react";
-import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
-import QueryStatsIcon from "@mui/icons-material/QueryStats";
-import SettingsIcon from "@mui/icons-material/Settings";
+import {Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar} from "@mui/material"
+import {useAtom} from "jotai"
+import {navBarOpen} from "../../atoms"
+import {Link} from "@tanstack/react-router"
+import {forwardRef, ReactElement} from "react"
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered"
+import QueryStatsIcon from "@mui/icons-material/QueryStats"
+import SettingsIcon from "@mui/icons-material/Settings"
 
 export type Pages = {
 	overview: Page
@@ -42,9 +42,9 @@ const pages = {
 } satisfies Pages
 
 export default function Navbar() {
-	const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+	const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
-	const [openNav, setOpenNav] = useAtom(navBarOpen);
+	const [openNav, setOpenNav] = useAtom(navBarOpen)
 
 	return <SwipeableDrawer open={openNav} anchor="left" onOpen={() => setOpenNav(true)} onClose={() => setOpenNav(false)}
 									variant="temporary" disableBackdropTransition={false} disableDiscovery={iOS} swipeAreaWidth={15}>
@@ -74,11 +74,11 @@ export default function Navbar() {
 			</ListItemButton>
 		</ListItem>
 	</SwipeableDrawer>
-};
+}
 
-export const RLink = React.forwardRef<HTMLAnchorElement, any>(function RLink(
+export const RLink = forwardRef<HTMLAnchorElement, any>(function RLink(
 		itemProps,
 		ref,
 ) {
-	return <Link role={undefined} ref={ref} {...itemProps} />;
-});
+	return <Link role={undefined} ref={ref} {...itemProps} />
+})

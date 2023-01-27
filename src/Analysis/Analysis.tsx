@@ -1,8 +1,8 @@
-import {Grid, Typography} from "@mui/material";
-import {AnalysisBox} from "../components/AnalysisBox/AnalysisBox";
-import {Chart} from "../components/Chart/Chart";
-import {ReferenceLine} from "recharts";
-import Topbar from "../components/TopBar/Topbar";
+import {Grid, Typography} from "@mui/material"
+import {AnalysisBox} from "../components/AnalysisBox/AnalysisBox"
+import {Chart} from "../components/Chart/Chart"
+import {ReferenceLine} from "recharts"
+import Topbar from "../components/TopBar/Topbar"
 
 type Props = {}
 
@@ -43,7 +43,7 @@ const data = [
 		uv: 3490,
 		pv: 4300,
 	},
-];
+]
 
 export function Component(props: Props) {
 	return (<Grid container spacing={2} padding={2}>

@@ -1,9 +1,9 @@
-import {AppBar, IconButton, Toolbar, Typography} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import React, {useState} from "react";
-import {useAtom} from "jotai";
-import {navBarOpen} from "../../atoms";
-import {useMatch} from "@tanstack/react-router";
+import {AppBar, IconButton, Toolbar, Typography} from "@mui/material"
+import MenuIcon from "@mui/icons-material/Menu"
+import {useState} from "react"
+import {useAtom} from "jotai"
+import {navBarOpen} from "../../atoms"
+import {useMatch} from "@tanstack/react-router"
 
 type Props = {
 	name: string,
@@ -11,7 +11,7 @@ type Props = {
 }
 
 export default function Topbar(props: Props) {
-	const [openNav, setOpenNav] = useAtom(navBarOpen);
+	const [openNav, setOpenNav] = useAtom(navBarOpen)
 
 	const [prevMatch, setPrevMatch] = useState("")
 
