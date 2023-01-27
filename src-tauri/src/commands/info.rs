@@ -16,7 +16,7 @@ pub async fn get_info_js() -> Result<String, String> {
 		build_on: built_info::CI_PLATFORM.unwrap_or("local").to_string(),
 		build_time: built_info::BUILT_TIME_UTC.to_string(),
 		repository: built_info::PKG_REPOSITORY.to_string(),
-		commit_hash_short: built_info::GIT_COMMIT_HASH.unwrap_or("GIT_COMMIT_HASH MISSING").to_string(),
+		commit_hash_short: built_info::GIT_COMMIT_HASH_SHORT.unwrap_or("GIT_COMMIT_HASH_SHORT MISSING").to_string(),
 	};
 	
 	// config.lock().await.set(|c| c.analysis = vec![AnalysisBox { test: vec![AnalysisBoxPoint { x: 12, y: 1 }], test2: None }, AnalysisBox { test: vec![AnalysisBoxPoint { x: 1, y: 24 }, AnalysisBoxPoint { x: 12, y: 1 }], test2: Some(AnalysisBoxPoint { x: 14, y: 6 }) }]).unwrap();
