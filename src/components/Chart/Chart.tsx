@@ -1,8 +1,8 @@
 import {CartesianGrid, Legend, Line, LineChart, ReferenceArea, Tooltip, XAxis, YAxis} from "recharts"
 import {ReactNode, useState} from "react"
 import {Fab, Paper, useTheme} from "@mui/material"
-import {CategoricalChartState} from "recharts/src/chart/generateCategoricalChart"
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
+import {CategoricalChartState} from "recharts/types/chart/generateCategoricalChart"
 
 type Data = { [key: string]: number }
 

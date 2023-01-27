@@ -1,6 +1,6 @@
 [package]
 name = "grades"
-version = "0.2.1"
+version = "0.3.0"
 description = "tauri app to manage grades in school"
 authors = ["H3rmt"]
 edition = "2021"
@@ -9,7 +9,8 @@ repository = "https://github.com/H3rmt/grades/"
 
 [build-dependencies]
 tauri-build = { version = "1.2.1", features = [] }
-built = { version = "^0.5.2", features = ["git2", "chrono"] }
+#built = { version = "^0.5.2", features = ["git2", "chrono"] }
+built = { git = "https://github.com/lukaslueg/built", branch = "master", features = ["git2", "chrono"] }
 
 [workspace]
 members = [".", "entity", "migrations"]
@@ -22,7 +23,7 @@ dirs = "^4.0.0"
 tokio = { version = "^1.23", features = ["full"] }
 sea-orm = { version = "0.10.5", features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"] }
 ts-rs = "^6.2"
-toml = "^0.5"
+toml = "^0.6"
 error-stack = { version = "0.2.4", features = ["std"], default-features = false }
 log = "^0.4"
 flexi_logger = { version = "^0.24", features = ["async", "default", "compress"] }
