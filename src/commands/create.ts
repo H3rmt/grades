@@ -1,26 +1,22 @@
-import {QueryClient} from "@tanstack/react-query";
-import {createMutation, UseMutationOpts} from "../ts/commands";
-import {Grade, Period, Subject, Type} from "../entity";
+import {useSnackbar} from "notistack"
+import {Grade} from "../entity"
+import {createMutation} from "./commands"
+import {errorToast, toastMessage} from "../ts/toast"
+import {useQueryClient} from "@tanstack/react-query"
 
-function useCreateGrade(queryClient: QueryClient, options: UseMutationOpts<void, Grade> = {}) {
-	return createMutation(queryClient, "grade", options, "grades")
-}
 
-function useCreateType(queryClient: QueryClient, options: UseMutationOpts<void, Type> = {}) {
-	return createMutation(queryClient, "type", options, "types")
-}
+export function useCreateGrade() {
+	const toast = useSnackbar()
+	const queryClient = useQueryClient()
 
-function useCreateSubject(queryClient: QueryClient, options: UseMutationOpts<void, Subject> = {}) {
-	return createMutation(queryClient, "subject", options, "subjects")
-}
+	const add = createMutation<Grade>(queryClient, "grade", {
+		onSuccess: () => {
+			toastMessage("success", `Created Grade`, toast)
+		},
+		onError: (error) => {
+			errorToast(`Error creating Grade`, toast, error)
+		}
+	}, "grades")
 
-function useCreatePeriod(queryClient: QueryClient, options: UseMutationOpts<void, Period> = {}) {
-	return createMutation(queryClient, "period", options, "periods")
-}
-
-export {
-	useCreateGrade,
-	useCreateType,
-	useCreatePeriod,
-	useCreateSubject
+	return [add.mutate]
 }

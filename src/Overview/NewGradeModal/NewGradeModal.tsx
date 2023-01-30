@@ -1,4 +1,4 @@
-import {ChangeEvent, useEffect} from 'react';
+import {ChangeEvent, useEffect} from 'react'
 import {
 	Badge,
 	Button,
@@ -20,119 +20,140 @@ import {
 	Stack,
 	TextField,
 	Typography
-} from "@mui/material";
-import {errorToast, toastMessage} from "../../ts/toast";
-import {Grade} from "../../entity";
-import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../../commands/get";
-import {useCreateGrade} from "../../commands/create";
-import {GradeModalDefaults, NoteRange} from "../../entity/config";
-import {nullableUseState} from '../../ts/utils';
-import dayjs, {Dayjs} from "dayjs";
-import {useQueryClient} from "@tanstack/react-query";
-import ClearIcon from "@mui/icons-material/Clear";
-import {DatePicker, PickersDay} from "@mui/x-date-pickers";
-import {useAtom} from 'jotai'
-import {modalConfirmed, modalOpen} from "../atoms";
-import {useSnackbar} from "notistack";
+} from "@mui/material"
+import {toastMessage} from "../../ts/toast"
+import {Grade} from "../../entity"
+import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../../commands/get"
+import {GradeModalDefaults, NoteRange} from "../../entity/config"
+import {capitalizeFirstLetter, useUndefinedState} from '../../ts/utils'
+import dayjs, {Dayjs} from "dayjs"
+import ClearIcon from "@mui/icons-material/Clear"
+import {DatePicker, PickersDay} from "@mui/x-date-pickers"
+import {useSnackbar} from "notistack"
+import ReactQueryData from "../../components/ReactQueryData/ReactQueryData"
+import {useCreateGrade} from "../../commands/create"
+import {RLink} from "../../components/Navbar/Navbar"
+import {useSearch} from "@tanstack/react-router"
+import {newGradeRoute} from "./route"
 
-export default function NewGradeModal() {
-	const [grade, setGrade] = nullableUseState<Grade>()
+export type NewGradeModalSearch = {
+	confirmed: boolean
+}
 
-	const [open, setOpen] = useAtom(modalOpen);
-	const [confirmed] = useAtom(modalConfirmed);
+type Nullable<T> = {
+    [P in keyof T]: T[P] | null;
+};
+
+export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used for testing*/) {
+	const [grade, setGrade] = useUndefinedState<Nullable<Grade>>()
+
+	let confirmed: boolean
+	if (props.confirmed === undefined) {
+		// @ts-ignore
+		const params = useSearch<"newGrade", true, NewGradeModalSearch, NewGradeModalSearch>({from: newGradeRoute.id})
+		confirmed = params.confirmed
+	} else {
+		confirmed = props.confirmed ?? false
+	}
+
+	const [previousConfirmed, setPreviousConfirmed] = useUndefinedState()
 
 	const toast = useSnackbar()
-	const queryClient = useQueryClient()
 
-	const periods = usePeriods({
-		onError: (error) => {
-			errorToast("Error loading Periods", toast, error)
-		}
-	});
+	const [periods, , periodsS] = usePeriods()
 
-	const types = useTypes({
-		onError: (error) => {
-			errorToast("Error loading Types", toast, error)
-		}
-	});
+	const [subjects, , subjectsS] = useSubjects()
 
-	const subjects = useSubjects({
-		onError: (error) => {
-			errorToast("Error loading Subjects", toast, error)
-		}
-	});
+	const [types, , typesS] = useTypes()
 
-	const weights = useWeights({
-		onError: (error) => {
-			errorToast("Error loading Weights", toast, error)
-		}
-	});
+	const [weights, , weightsS] = useWeights()
 
-	const noteRange = useNoteRange({
-		onError: (error) => {
-			errorToast("Error loading noteRange", toast, error)
-		}
-	});
+	const [noteRange, , noteRangeS] = useNoteRange()
 
-	const gradeModalDefaults = useGradeModalDefaults({
-		onSuccess: (data) => {
-			if (grade === null)
-				setDefault(data)
-		},
-		onError: (error) => {
-			errorToast("Error loading gradeModalDefaults", toast, error)
-		}
-	});
+	const [gradeModalDefaults, , gradeModalDefaultsS] = useGradeModalDefaults()
 
-	const createGrade = useCreateGrade(queryClient, {
-		onSuccess: () => {
-			toastMessage("success", "Created Grade", toast)
-		},
-		onError: (error) => {
-			errorToast("Error creating Grade", toast, error)
-		}
-	})
-
+	// set Default values if default values are loaded and grade has not been set to default values yet
 	useEffect(() => {
-		if (open && gradeModalDefaults.isSuccess) {
-			setDefault(gradeModalDefaults.data)
+		if (grade === undefined && gradeModalDefaultsS.isSuccess && gradeModalDefaults !== undefined)
+			setDefault(gradeModalDefaults)
+	}, [gradeModalDefaults])
+
+
+	// set Default values if modal opened in other mode
+	useEffect(() => {
+		if (confirmed !== previousConfirmed && gradeModalDefaultsS.isSuccess && gradeModalDefaults !== undefined) {
+			setPreviousConfirmed(confirmed)
+			setDefault(gradeModalDefaults)
 		}
 	}, [open])
 
-	const handleGradeSliderChange = (value: number | number[], grade: Grade, noteRange: NoteRange) => {
-		setGrade({...grade, grade: Math.max(Math.min(Number(value), noteRange.to), noteRange.from)});
-	};
+	const [create] = useCreateGrade()
 
-	const handleGradeDateChange = (date: string, grade: Grade) => {
-		setGrade({...grade, date: date});
+	const handleGradeSliderChange = (value: number | number[], grade: Nullable<Grade>, noteRange: NoteRange) => {
+		setGrade({...grade, grade: Math.max(Math.min(Number(value), noteRange.to), noteRange.from)})
 	}
 
-	const handleGradeConfirmedDateChange = (date: string | null, grade: Grade) => {
-		setGrade({...grade, confirmed: date});
+	const handleGradeDateChange = (date: string, grade: Nullable<Grade>) => {
+		setGrade({...grade, date: date})
 	}
 
-	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Grade, noteRange: NoteRange) => {
-		setGrade({...grade, grade: Math.max(Math.min(Number(event.target.value), noteRange.to), noteRange.from)});
-	};
+	const handleGradeConfirmedDateChange = (date: string | null, grade: Nullable<Grade>) => {
+		setGrade({...grade, confirmed: date})
+	}
 
-	const handleSubjectSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+	const handleGradeInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Nullable<Grade>, noteRange: NoteRange) => {
+		setGrade({...grade, grade: Math.max(Math.min(Number(event.target.value), noteRange.to), noteRange.from)})
+	}
+
+	const handleSubjectSelectChange = (event: SelectChangeEvent, grade: Nullable<Grade>) => {
 		setGrade({...grade, subject: Number(event.target.value)})
 	}
 
-	const handleTypeSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+	const handleTypeSelectChange = (event: SelectChangeEvent, grade: Nullable<Grade>) => {
 		setGrade({...grade, type: Number(event.target.value)})
 	}
 
-	const handlePeriodSelectChange = (event: SelectChangeEvent, grade: Grade) => {
+	const handlePeriodSelectChange = (event: SelectChangeEvent, grade: Nullable<Grade>) => {
 		setGrade({...grade, period: Number(event.target.value)})
 	}
 
-	const handleInfoInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Grade) => {
+	const handleInfoInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, grade: Nullable<Grade>) => {
 		setGrade({...grade, info: event.target.value})
 	}
 
-	const handleWeightChange = (event: ChangeEvent<HTMLInputElement>, grade: Grade) => {
+	const handleWeightChange = (event: ChangeEvent<HTMLInputElement>, grade: Nullable<Grade>) => {
 		setGrade({...grade, weight: event.target.value})
+	}
+
+	const tryCreate = async () => {
+		const {z} = await import('../../ts/zod')
+		// const {z} = await import('zod')
+
+		const createGradeSchema = z.object({
+			id: z.literal(-1),
+			subject: z.number().positive({
+				message: "Subject is required",
+			}),
+			type: z.number().positive({
+				message: "Type is required",
+			}),
+			info: z.string(),
+			grade: z.number().positive().nullable(),
+			period: z.number().positive({
+				message: "Period is required",
+			}),
+			confirmed: z.string().nullable(),
+			date: z.string(),//.nullable(),
+			weight: z.string(),
+		}).strict()
+
+		const parse = createGradeSchema.safeParse(grade)
+		if (parse.success) {
+			create(parse.data)
+		} else {
+			const mess = parse.error.errors.map(err => `${capitalizeFirstLetter(err.path[0].toString())}: ${err.message}`).join(", ")
+			toastMessage("error", `Invalid grade ${mess}`, toast)
+		}
 	}
 
 	const setDefault = (defaults: GradeModalDefaults) => {
@@ -142,9 +163,9 @@ export default function NewGradeModal() {
 				confirmed: dayjs().format("DD-MM-YYYY"),
 				date: dayjs().add(-7, "day").format("DD-MM-YYYY"),
 				grade: defaults.grade_default,
-				subject: defaults.subject_default ?? 0,
-				type: defaults.type_default ?? 0,
-				period: defaults.period_default ?? 0,
+				subject: defaults.subject_default ?? null,
+				type: defaults.type_default ?? null,
+				period: defaults.period_default ?? null,
 				info: '',
 				weight: 'Normal'
 			})
@@ -154,16 +175,16 @@ export default function NewGradeModal() {
 				confirmed: null,
 				date: dayjs().format("DD-MM-YYYY"),
 				grade: null,
-				subject: defaults.subject_default ?? 0,
-				type: defaults.type_default ?? 0,
-				period: defaults.period_default ?? 0,
+				subject: defaults.subject_default ?? null,
+				type: defaults.type_default ?? null,
+				period: defaults.period_default ?? null,
 				info: '',
 				weight: 'Normal'
 			})
 	}
 
 	const handleClear = async (gradeModalDefaults: GradeModalDefaults) => {
-		let oldGrade = Object.assign({}, grade)
+		const oldGrade = Object.assign({}, grade)
 		setDefault(gradeModalDefaults)
 
 		const undo = () => {
@@ -172,46 +193,54 @@ export default function NewGradeModal() {
 			closeClear()
 		}
 
-		let closeClear = toastMessage("warning", "Cleared create Note window", toast, undo)
+		const closeClear = toastMessage("warning", "Cleared create Note window", toast, undo)
 	}
 
-	return <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
+	return <Dialog open={true} disableEscapeKeyDown fullWidth maxWidth="md">
 		<DialogTitle variant="h5">New Grade</DialogTitle>
 		<DialogContent>
-			{grade !== null && (
-					<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
-						<Grid container spacing={4} padding={2}>
-							<Grid item xs={12} sm={6} lg={4}>
-								<Stack spacing={2}>
-									<Typography variant="h6" fontWeight="normal">Subject</Typography>
-									{subjects.isSuccess && <Select value={(grade.subject || '').toString()} margin="none" fullWidth
-																			 onChange={(event) => handleSubjectSelectChange(event, grade)}
-																			 title="Subject Select">
-										{subjects.data.map((subject) => {
-											return <MenuItem value={subject.id} key={subject.id} sx={{color: subject.color}}>{subject.name}</MenuItem>
+			<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
+				<Grid container spacing={4} padding={2}>
+					<Grid item xs={12} sm={6} lg={4}>
+						<Stack spacing={2}>
+							<Typography variant="h6" fontWeight="normal">Subject</Typography>
+							<ReactQueryData isError={grade === undefined} query={subjectsS} data={subjects} display={(subjects) =>
+									grade !== undefined &&
+									<Select color="secondary" value={(grade?.subject || '').toString()} margin="none" fullWidth
+											  onChange={(event) => handleSubjectSelectChange(event, grade)}
+											  title="Subject Select">
+										{subjects.map((subject) => {
+											return <MenuItem value={subject.id} key={subject.id}
+																  sx={{color: subject.color}}>{subject.name}</MenuItem>
 										})}
-									</Select>}
-								</Stack>
-							</Grid>
-							<Grid item xs={12} sm={6} lg={4}>
-								<Stack spacing={2}>
-									<Typography variant="h6" fontWeight="normal">Type</Typography>
-									{types.isSuccess && <Select value={(grade.type || '').toString()} margin="none" fullWidth
-																		 onChange={(event) => handleTypeSelectChange(event, grade)}
-																		 title="Type Select">
-										{types.data.map((type) => {
+									</Select>
+							}/>
+						</Stack>
+					</Grid>
+					<Grid item xs={12} sm={6} lg={4}>
+						<Stack spacing={2}>
+							<Typography variant="h6" fontWeight="normal">Type</Typography>
+							<ReactQueryData isError={grade === undefined} query={typesS} data={types} display={(types) =>
+									grade !== undefined &&
+									<Select color="secondary" value={(grade.type || '').toString()} margin="none" fullWidth
+											  onChange={(event) => handleTypeSelectChange(event, grade)}
+											  title="Type Select">
+										{types.map((type) => {
 											return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
 										})}
-									</Select>}
-								</Stack>
-							</Grid>
-							<Grid item xs={12} sm={6} lg={4}>
-								<Stack spacing={2}>
-									<Typography variant="h6" fontWeight="normal">Period</Typography>
-									{periods.isSuccess && <Select value={(grade.period || '').toString()} margin="none" fullWidth
-																			onChange={(event) => handlePeriodSelectChange(event, grade)}
-																			title="Period Select">
-										{periods.data.map((period) => {
+									</Select>
+							}/>
+						</Stack>
+					</Grid>
+					<Grid item xs={12} sm={6} lg={4}>
+						<Stack spacing={2}>
+							<Typography variant="h6" fontWeight="normal">Period</Typography>
+							<ReactQueryData isError={grade === undefined} query={periodsS} data={periods} display={(periods) =>
+									grade !== undefined &&
+									<Select color="secondary" value={(grade.period || '').toString()} margin="none" fullWidth
+											  onChange={(event) => handlePeriodSelectChange(event, grade)}
+											  title="Period Select">
+										{periods.map((period) => {
 											return <MenuItem value={period.id} key={period.id}>
 												<Stack>
 													{period.name}
@@ -221,61 +250,65 @@ export default function NewGradeModal() {
 											</MenuItem>
 										})}
 									</Select>
-									}
-								</Stack>
-							</Grid>
-							<Grid item xs={12} sm={6} lg={4}>
-								<Stack spacing={2}>
-									<Typography variant="h6" fontWeight="normal">Grade</Typography>
-									{noteRange.isSuccess && <>
-										<Stack spacing={2} direction="row">
-											<TextField value={grade.grade ?? ""} type="number" fullWidth margin="none"
-														  onChange={(event) => handleGradeInputChange(event, grade, noteRange.data)}
+							}/>
+						</Stack>
+					</Grid>
+					<Grid item xs={12} sm={6} lg={4}>
+						<Stack spacing={2}>
+							<Typography variant="h6" fontWeight="normal">Grade</Typography>
+							<ReactQueryData isError={grade === undefined} query={noteRangeS} data={noteRange} display={(noteRange) =>
+									grade !== undefined &&
+									<>
+										<Stack spacing={1} direction="row" alignItems="center">
+											<TextField color="secondary" value={grade.grade ?? ""} type="number" fullWidth margin="none"
+														  onChange={(event) => handleGradeInputChange(event, grade, noteRange)}
 														  title="Grade Input"/>
-											{grade.grade !== null && <IconButton color="default" onClick={() => {
+											{grade.grade !== null && <IconButton onClick={() => {
 												setGrade({...grade, grade: null})
 											}}><ClearIcon/>
-											</IconButton>
-											}
+											</IconButton>}
 										</Stack>
-										<Slider value={grade.grade ?? noteRange.data.from} color="secondary"
-												  min={noteRange.data.from}
-												  max={noteRange.data.to}
-												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange.data)}
+										<Slider color="secondary" value={grade.grade ?? noteRange.from}
+												  min={noteRange.from}
+												  max={noteRange.to}
+												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange)}
 												  title="Grade Slider"/>
-									</>}
-								</Stack>
-							</Grid>
-							<Grid item xs={12} sm={6} lg={4}>
-								<Stack spacing={2}>
-									<Typography variant="h6" fontWeight="normal">Date</Typography>
+									</>
+							}/>
+						</Stack>
+					</Grid>
+					<Grid item xs={12} sm={6} lg={4}>
+						<Stack spacing={2}>
+							<Typography variant="h6" fontWeight="normal">Date</Typography>
+							{grade !== undefined &&
 									<DatePicker value={dayjs(grade.date, 'DD-MM-YYYY')}
 													onChange={d => {
 														handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
 													}} renderInput={(params) => {
 										// @ts-ignore
-										params.inputProps.value = grade.date;
-										return <TextField {...params} title="Date Picker"/>
+										params.inputProps.value = grade.date
+										return <TextField {...params} color="secondary" title="Date Picker"/>
 									}} renderDay={(day, value, DayComponentProps) => <Badge
 											key={day.toString()}
 											overlap="circular"
 											badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.confirmed ? '✨' : null}>
 										<PickersDay {...DayComponentProps} />
 									</Badge>
-									}/>
-								</Stack>
-							</Grid>
-							<Grid item xs={12} sm={6} lg={4}>
-								<Stack spacing={2}>
-									<Typography variant="h6" fontWeight="normal">Confirmed Date</Typography>
-									<Stack direction="row" spacing={0.5}>
+									}/>}
+						</Stack>
+					</Grid>
+					<Grid item xs={12} sm={6} lg={4}>
+						<Stack spacing={2}>
+							<Typography variant="h6" fontWeight="normal">Confirmed Date</Typography>
+							{grade !== undefined &&
+									<Stack direction="row" spacing={1} alignItems="center">
 										<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : null}
 														onChange={d => {
 															handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
 														}} renderInput={(params) => {
 											// @ts-ignore
-											params.inputProps.value = grade.confirmed ? grade.confirmed : "";
-											return <TextField {...params} title="Confirmed Date Picker"/>
+											params.inputProps.value = grade.confirmed ? grade.confirmed : ""
+											return <TextField {...params} color="secondary" title="Confirmed Date Picker"/>
 										}} renderDay={(day, value, DayComponentProps) => {
 											if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
 												DayComponentProps.disabled = true
@@ -287,52 +320,49 @@ export default function NewGradeModal() {
 											</Badge>
 										}
 										}/>
-										{grade.confirmed && <IconButton color="default" onClick={() => {
+										{grade.confirmed && <IconButton onClick={() => {
 											setGrade({...grade, confirmed: null})
 										}}><ClearIcon/>
 										</IconButton>}
-									</Stack>
-								</Stack>
-							</Grid>
-							<Grid item xs={12} sm={8} lg={9}>
-								<Stack spacing={2} height={1}>
-									<Typography variant="h6" fontWeight="normal">Info</Typography>
-									<TextField multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
+									</Stack>}
+						</Stack>
+					</Grid>
+					<Grid item xs={12} sm={8} lg={9}>
+						<Stack spacing={2} height={1}>
+							<Typography variant="h6" fontWeight="normal">Info</Typography>
+							{grade !== undefined &&
+									<TextField color="secondary" multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
 												  onChange={(event) => handleInfoInputChange(event, grade)}
 												  title="Info Input"
-									/>
-								</Stack>
-							</Grid>
-							<Grid item xs={12} sm={4} lg={3}>
-								<Stack spacing={1.5} height={1}>
-									<Typography variant="h6" fontWeight="normal">Grade Weight</Typography>
+									/>}
+						</Stack>
+					</Grid>
+					<Grid item xs={12} sm={4} lg={3}>
+						<Stack spacing={1.5} height={1}>
+							<Typography variant="h6" fontWeight="normal">Grade Weight</Typography>
+							<ReactQueryData isError={grade === undefined} query={weightsS} data={weights} display={(weights) =>
+									grade !== undefined &&
 									<FormGroup>
-										<RadioGroup defaultValue="Normal" value={grade.weight} title="Grade Weight Select"
+										<RadioGroup color="secondary" defaultValue="Normal" value={grade.weight} title="Grade Weight Select"
 														onChange={(event) => handleWeightChange(event, grade)}>
-											{weights.isSuccess && weights.data.map((weight) => <FormControlLabel control={
+											{weights.map((weight) => <FormControlLabel control={
 												<Radio color="secondary"/>
 											} label={weight.name} value={weight.name} key={weight.name}/>)}
 										</RadioGroup>
 									</FormGroup>
-								</Stack>
-							</Grid>
-						</Grid>
-					</Paper>)
-			}
+							}/>
+						</Stack>
+					</Grid>
+				</Grid>
+			</Paper>
 		</DialogContent>
-		<DialogActions sx={{gap: 0.7}}>
-			{gradeModalDefaults.isSuccess &&
-					<Button onClick={() => handleClear(gradeModalDefaults.data)} type="submit" variant="outlined"
-							  color="secondary">Clear</Button>
-			}
-			<Button onClick={() => setOpen(false)} type="submit" variant="outlined"
-					  color="secondary">Close</Button>
-			{grade !== null &&
-					<Button onClick={() => {
-						createGrade.mutate(grade);
-						setOpen(false)
-					}} type="submit" variant="outlined" color="success">Create</Button>
-			}
+		<DialogActions sx={{gap: 1.7}} disableSpacing={true}>
+			<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
+					<Button onClick={() => handleClear(gradeModalDefaults)} type="submit" variant="contained" color="warning">Clear</Button>
+			}/>
+			<Button component={RLink} to="/" type="submit" variant="contained">Close</Button>
+			{grade !== undefined &&
+					<Button component={RLink} to="/" onClick={tryCreate} type="submit" variant="contained" color="success">Create</Button>}
 		</DialogActions>
-	</Dialog>;
+	</Dialog>
 }

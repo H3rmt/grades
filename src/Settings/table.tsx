@@ -1,13 +1,15 @@
-import {Cols, ColumnDef} from "../components/table/defs";
-import {Period, Subject, Type} from "../entity";
-import {Badge, Input, TextField, Typography} from "@mui/material";
-import dayjs, {Dayjs} from "dayjs";
-import {DatePicker, PickersDay} from "@mui/x-date-pickers";
+import {Cols, ColumnDef} from "../components/table/defs"
+import {Period, Subject, Type} from "../entity"
+import {Badge, Input, TextField, Typography} from "@mui/material"
+import dayjs, {Dayjs} from "dayjs"
+import {DatePicker, PickersDay} from "@mui/x-date-pickers"
+
 
 export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDef<Type>>(
 		[[
 			"name", {
 				sort: true,
+				extraEdit: true,
 				edit: (t) => <TextField fullWidth value={t.name} onChange={(i) => t.name = i.target.value}/>
 			}
 		], [
@@ -18,8 +20,8 @@ export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDef
 			}
 		], [
 			"id", {
-				sort: true,
-				hide: true
+				hide: true,
+				extraShow: true
 			}
 		]]
 )
@@ -28,6 +30,7 @@ export const getSubjectCols: () => Cols<Subject> = () => new Map<keyof Subject, 
 		[[
 			"name", {
 				sort: true,
+				extraEdit: true,
 				edit: s => <TextField fullWidth value={s.name} onChange={(i) => s.name = i.target.value}/>
 			}
 		], [
@@ -38,8 +41,8 @@ export const getSubjectCols: () => Cols<Subject> = () => new Map<keyof Subject, 
 			}
 		], [
 			"id", {
-				sort: true,
-				hide: true
+				hide: true,
+				extraShow: true
 			}
 		]]
 )
@@ -48,6 +51,7 @@ export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, Col
 		[[
 			"name", {
 				sort: true,
+				extraEdit: true,
 				edit: p => <TextField fullWidth value={p.name} onChange={(i) => p.name = i.target.value}/>
 			}
 		], [
@@ -57,7 +61,7 @@ export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, Col
 					p.from = (d as unknown as Dayjs)?.format('DD-MM-YYYY')
 				}} renderInput={(props) => {
 					// @ts-ignore
-					props.inputProps.value = p.from;
+					props.inputProps.value = p.from
 					return <TextField {...props} />
 				}} renderDay={(day, value, DayComponentProps) => <Badge
 						key={day.toString()}
@@ -75,7 +79,7 @@ export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, Col
 					p.to = (d as unknown as Dayjs)?.format('DD-MM-YYYY')
 				}} renderInput={(props) => {
 					// @ts-ignore
-					props.inputProps.value = p.to;
+					props.inputProps.value = p.to
 					return <TextField {...props} />
 				}} renderDay={(day, value, DayComponentProps) => <Badge
 						key={day.toString()}
@@ -88,10 +92,8 @@ export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, Col
 			}
 		], [
 			"id", {
-				sort: true,
-				hide: true
+				hide: true,
+				extraShow: true
 			}
 		]]
 )
-
-// TODO show id in extra window

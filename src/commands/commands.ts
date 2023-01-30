@@ -1,10 +1,10 @@
-import {invoke} from "@tauri-apps/api";
-import {UseQueryOptions} from "@tanstack/react-query/src/types";
-import {QueryClient, useMutation, UseMutationOptions, useQuery} from "@tanstack/react-query";
+import {invoke} from "@tauri-apps/api"
+import {UseQueryOptions} from "@tanstack/react-query/src/types"
+import {QueryClient, useMutation, UseMutationOptions, useQuery} from "@tanstack/react-query"
 
 function query<T>(cmd: string, options: UseQueryOpts<T> = {}) {
 	return useQuery<T, Error | string>([cmd], async () => {
-		return await invoke<string>("get_" + cmd + "_js").then((data: string) => {
+		return await invoke<string>("get_" + cmd + "_js").then((data) => {
 			console.debug("get_" + cmd, "success", data)
 			return JSON.parse(data)
 		}).catch((e) => {
@@ -14,11 +14,11 @@ function query<T>(cmd: string, options: UseQueryOpts<T> = {}) {
 	}, options)
 }
 
-function editMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void, T> = {}, key: string = cmd) {
+function editMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<T> = {}, key: string = cmd) {
 	return useMutation([cmd], async (t: T) => {
-				return await invoke("edit_" + cmd + "_js", {json: JSON.stringify(t)}).then(() => {
-					// return entity
+				return await invoke<string>("edit_" + cmd + "_js", {json: JSON.stringify(t)}).then((data) => {
 					console.debug("edit_" + cmd, "success", t)
+					return JSON.parse(data)
 				}).catch((e) => {
 					console.debug("edit_" + cmd, "fail", e, t)
 					throw e as string | Error
@@ -27,14 +27,30 @@ function editMutation<T>(queryClient: QueryClient, cmd: string, options: UseMuta
 					await queryClient.invalidateQueries({queryKey: [key]})
 				})
 			},
-			options);
+			options)
 }
 
-function createMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void, T> = {}, key: string = cmd) {
+function resetMutation(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void> = {}, key: string = cmd) {
+	return useMutation([cmd], async () => {
+				return await invoke<string>("reset_" + cmd + "_js").then((data) => {
+					console.debug("reset_" + cmd, "success")
+					return JSON.parse(data)
+				}).catch((e) => {
+					console.debug("reset_" + cmd, "fail", e)
+					throw e as string | Error
+				}).then(async () => {
+					console.log("Reset" + cmd)
+					await queryClient.invalidateQueries({queryKey: [key]})
+				})
+			},
+			options)
+}
+
+function createMutation<T>(queryClient: QueryClient, cmd: string, options: UseMutationOpts<T> = {}, key: string = cmd) {
 	return useMutation([cmd], async (t: T) => {
-				return await invoke("create_" + cmd + "_js", {json: JSON.stringify(t)}).then(() => {
-					// return id
+				return await invoke<string>("create_" + cmd + "_js", {json: JSON.stringify(t)}).then((data) => {
 					console.debug("create_" + cmd, "success", t)
+					return JSON.parse(data)
 				}).catch((e) => {
 					console.debug("create_" + cmd, "fail", e, t)
 					throw e as string | Error
@@ -43,10 +59,10 @@ function createMutation<T>(queryClient: QueryClient, cmd: string, options: UseMu
 					await queryClient.invalidateQueries({queryKey: [key]})
 				})
 			},
-			options);
+			options)
 }
 
-function deleteMutation(queryClient: QueryClient, cmd: string, options: UseMutationOpts<void, number> = {}, key: string = cmd) {
+function deleteMutation(queryClient: QueryClient, cmd: string, options: UseMutationOpts<number> = {}, key: string = cmd) {
 	return useMutation([cmd], async (t: number) => {
 				return await invoke("delete_" + cmd + "_js", {json: JSON.stringify({id: t})}).then(() => {
 					console.debug("delete_" + cmd, "success", t)
@@ -58,21 +74,22 @@ function deleteMutation(queryClient: QueryClient, cmd: string, options: UseMutat
 					await queryClient.invalidateQueries({queryKey: [key]})
 				})
 			},
-			options);
+			options)
 }
 
 type UseQueryOpts<TData> =
 		Omit<UseQueryOptions<TData, Error | string, TData>, 'queryKey' | 'initialData'>
 		& { initialData?: TData | (() => TData) }
 
-type UseMutationOpts<TData, TVariables> = Omit<
-		UseMutationOptions<TData, Error | string, TVariables>, 'mutationFn' | 'mutationKey'>
+type UseMutationOpts<TVariables> = Omit<
+		UseMutationOptions<void, Error | string, TVariables>, 'mutationFn' | 'mutationKey'>
 
 export {
 	query,
 	editMutation,
 	createMutation,
-	deleteMutation
+	deleteMutation,
+	resetMutation
 }
 
 export type {

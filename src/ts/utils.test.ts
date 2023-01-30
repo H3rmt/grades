@@ -1,5 +1,5 @@
 import {expect, test} from 'vitest'
-import {capitalizeFirstLetter, map, nextFree, randColor} from "./utils";
+import {capitalizeFirstLetter, map, nextFree, randColor} from "./utils"
 
 test('capitalizeFirstLetter', () => {
 	expect(capitalizeFirstLetter("test")).to.equal("Test")

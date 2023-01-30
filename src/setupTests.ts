@@ -12,4 +12,4 @@ global.console = {
 	// info: () => {},
 	// warn: () => {},
 	// error: () => {},
-};
+}

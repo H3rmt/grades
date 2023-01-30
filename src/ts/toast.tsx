@@ -1,7 +1,8 @@
-import {OptionsObject, SnackbarKey, SnackbarMessage} from "notistack";
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Paper, Stack} from "@mui/material";
-import {useState} from "react";
-import CloseIcon from '@mui/icons-material/Close';
+import {OptionsObject, SnackbarKey, SnackbarMessage} from "notistack"
+import {Button, IconButton, Stack} from "@mui/material"
+import {useState} from "react"
+import CloseIcon from '@mui/icons-material/Close'
+import {Info} from "../components/Info/Info"
 
 type variant = "error" | "success" | "warning" | "info"
 
@@ -22,7 +23,9 @@ export function toastMessage(
 		info?: string,
 		opts?: OptionsObject
 ): () => void {
-	let key = toast.enqueueSnackbar(message,
+	console.debug("toastMessage", variant, message, undo)
+
+	const key = toast.enqueueSnackbar(message,
 			Object.assign({
 						variant: variant,
 						anchorOrigin: {
@@ -31,7 +34,7 @@ export function toastMessage(
 						},
 						action: action(variant, toast.closeSnackbar, undo, info),
 						persist: variant == "error",
-						autoHideDuration: variant == "warning" ? 3500 : 1500
+						autoHideDuration: variant == "warning" ? 4500 : (variant == "info" ? 4000 : 2500)
 					}, opts
 			)
 	)
@@ -50,38 +53,22 @@ function action(
 		info?: string,
 ): (id: SnackbarKey) => JSX.Element {
 	return (id: SnackbarKey) => {
-		let [open, setOpen] = useState(false)
+		const [open, setOpen] = useState(false)
 
 		return <Stack direction="row" spacing={1.5}>
-			{undo && <Paper variant="outlined">
-				<Button color="secondary" onClick={() => {
-					undo(id)
-				}}>Undo
-				</Button>
-			</Paper>}
-			{info && <Paper variant="outlined">
-				<Button color="secondary" onClick={() => {
-					setOpen(true)
-				}}>Info
-				</Button>
-			</Paper>}
-			<IconButton color="primary" onClick={() => {
+			{undo && <Button variant="outlined" onClick={() => {
+				undo(id)
+			}}>Undo
+			</Button>}
+			{info && <Button variant="outlined" onClick={() => {
+				setOpen(true)
+			}}>Info
+			</Button>}
+			<IconButton onClick={() => {
 				close(id)
 			}}><CloseIcon/>
 			</IconButton>
-			{open && <Dialog open={true}>
-				<DialogTitle>Info</DialogTitle>
-				<DialogContent>
-					<DialogContentText>
-						{info}
-					</DialogContentText>
-				</DialogContent>
-				<DialogActions>
-					<Button color="secondary" variant="outlined" onClick={() => setOpen(false)}>
-						Close
-					</Button>
-				</DialogActions>
-			</Dialog>}
+			{info && <Info open={open} info={info} setOpen={setOpen}/>}
 		</Stack>
 	}
 }

@@ -7,6 +7,9 @@
 	"tauri": {
 		"allowlist": {
 			"all": false,
+			"shell": {
+				"open": "^https://github.com/"
+			},
 			"fs": {
 				"writeFile": true,
 				"scope": [

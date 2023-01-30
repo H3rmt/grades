@@ -80,9 +80,6 @@ jobs:
 
   publish-release:
     runs-on: ubuntu-latest
-    outputs:
-      tag-name: ${{ steps.publish-release.outputs.result }}
-
     needs: [ tauri, create-release ]
 
     steps:
@@ -102,7 +99,7 @@ jobs:
           retries: 3
           script: |
             const script = require('./workflows/src/publish-publish-release.js')
-            return await script.default({github, context, core, release_id: ${{ needs.create-release.outputs.release-id }}, commit_head_message: `${{ github.event.head_commit.message }}`, version: '${{ needs.create-release.outputs.version }}'})
+            await script.default({github, context, core, release_id: ${{ needs.create-release.outputs.release-id }}, commit_head_message: `${{ github.event.head_commit.message }}`, version: '${{ needs.create-release.outputs.version }}'})
 
   update-update-json:
     runs-on: ubuntu-latest
@@ -118,7 +115,7 @@ jobs:
           version: ${{ needs.create-release.outputs.version }}
           gistId: 9f0a67b7ad425e9fb74b32f6afcab111
           releaseNotes: ${{ github.event.head_commit.message }}
-          releaseTagName: ${{ needs.publish-release.outputs.tag-name }}
+          releaseTagName: ${{ format('{}-v{}',github.event.repository.name,needs.create-release.outputs.version) }}
 
           winsig: ${{ needs.tauri.outputs.winsig }}
           macsig: ${{ needs.tauri.outputs.macsig }}
