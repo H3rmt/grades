@@ -34,7 +34,7 @@ jobs:
         with:
           retries: 3
           script: |
-            const script = require('./workflows/src/check-version-release-check-latest-release-version.js')
+            const script = require('./workflows/dist/check-version-release-check-latest-release-version.js')
             return await script.default({github, context, core})
 
       - name: check new version is greater that older

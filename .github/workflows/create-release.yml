@@ -1,4 +1,4 @@
-name: "publish release"
+name: "create release"
 
 on:
   push:
@@ -34,8 +34,8 @@ jobs:
         with:
           retries: 3
           script: |
-            const script = require('./workflows/src/publish-create-release.js')
-            return await script.default({github, context, core, version: '${{ steps.get-version.outputs.value }}', commit_head_message: `${{ github.event.head_commit.message }}`})
+            const script = require('./workflows/dist/create-release-create-release.js')
+            return await script.default({github, context, core, version: '${{ steps.get-version.outputs.value }}', commit_head_message: `${{ github.event.head_commit.message }}`, branch: '${{ github.event.ref }}'})
 
   tauri:
     name: build tauri
@@ -78,7 +78,7 @@ jobs:
           version: ${{ needs.create-release.outputs.version }}
           name: ${{ github.event.repository.name }}
 
-  publish-release:
+  update-release:
     runs-on: ubuntu-latest
     needs: [ tauri, create-release ]
 
@@ -98,10 +98,10 @@ jobs:
         with:
           retries: 3
           script: |
-            const script = require('./workflows/src/publish-publish-release.js')
+            const script = require('./workflows/dist/create-release-update-release.js')
             await script.default({github, context, core, release_id: ${{ needs.create-release.outputs.release-id }}, commit_head_message: `${{ github.event.head_commit.message }}`, version: '${{ needs.create-release.outputs.version }}'})
 
-  update-update-json:
+  update-json:
     runs-on: ubuntu-latest
     needs: [ publish-release, tauri, create-release ]
 
@@ -113,9 +113,9 @@ jobs:
         with:
           releaseId: ${{ needs.create-release.outputs.release-id }}
           version: ${{ needs.create-release.outputs.version }}
-          gistId: 9f0a67b7ad425e9fb74b32f6afcab111
+          fileName: update.json
           releaseNotes: ${{ github.event.head_commit.message }}
-          releaseTagName: ${{ format('{}-v{}',github.event.repository.name,needs.create-release.outputs.version) }}
+          releaseTagName: ${{ format('{}-v{}','github.event.repository.name', 'needs.create-release.outputs.version') }}
 
           winsig: ${{ needs.tauri.outputs.winsig }}
           macsig: ${{ needs.tauri.outputs.macsig }}
