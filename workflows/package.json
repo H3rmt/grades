@@ -7,7 +7,7 @@
 	"license": "MIT",
 	"private": true,
 	"scripts": {
-		"dist": "esbuild src/check-version-release-check-latest-release-version.ts src/publish-create-release.ts src/publish-publish-release.ts --bundle --outdir=src --platform=node",
+		"dist": "swc src -d dist",
 		"check": "tsc"
 	},
 	"dependencies": {
@@ -16,6 +16,6 @@
 	},
 	"devDependencies": {
 		"typescript": "^4.9.4",
-		"esbuild": "^0.16.15"
+		"swc": "^1.0.11"
 	}
 }
