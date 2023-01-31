@@ -103,7 +103,7 @@ jobs:
 
   update-json:
     runs-on: ubuntu-latest
-    needs: [ publish-release, tauri, create-release ]
+    needs: [ update-release, tauri, create-release ]
 
     steps:
       - name: update-update-json
