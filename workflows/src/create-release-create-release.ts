@@ -1,8 +1,8 @@
 import {Context, Core, Github} from "./type"
 // noinspection JSUnusedGlobalSymbols
-export default async ({github, context, core, version, commit_head_message}: {
+export default async ({github, context, core, version, commit_head_message, branch}: {
 	github: Github, context: Context, core: Core,
-	version: string, commit_head_message: string
+	version: string, commit_head_message: string, branch: string
 }) => {
 	const owner = context.repo.owner
 	const repo = context.repo.repo
@@ -15,7 +15,7 @@ export default async ({github, context, core, version, commit_head_message}: {
 		body: `**_---Draft---_**\n\n### Changes:\n${commit_head_message}\n\nAssets getting generated...`,
 		draft: true,
 		prerelease: false,
-		target_commitish: context.ref_name
+		target_commitish: branch
 	})
 
 	core.info(`created release: ${repo} v${version}`)
