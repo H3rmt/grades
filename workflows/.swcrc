@@ -9,5 +9,8 @@
       "mangle": true
     },
     "target": "es2022"
+  },
+  "module": {
+    "type": "commonjs"
   }
 }

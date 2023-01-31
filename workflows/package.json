@@ -8,7 +8,7 @@
 	"private": true,
 	"scripts": {
 		"dist": "swc src -d dist",
-		"check": "tsc"
+		"check": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@actions/core": "^1.10.0",
