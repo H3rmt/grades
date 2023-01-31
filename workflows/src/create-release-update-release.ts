@@ -1,13 +1,14 @@
-import {Core, Github} from "./type";
-import {Context} from "@actions/github/lib/context";
-
+import {Core, Github} from "./type"
+import {Context} from "@actions/github/lib/context"
+// noinspection JSUnusedGlobalSymbols
 export default async ({github, context, core, release_id, commit_head_message, version}: {
-	github: Github, context: Context, core: Core, release_id: number, commit_head_message: string, version: string
+	github: Github, context: Context, core: Core,
+	release_id: number, commit_head_message: string, version: string
 }) => {
 	const owner = context.repo.owner
 	const repo = context.repo.repo
 
-	const {data} = await github.request('GET /repos/{owner}/{repo}/releases/latest', {
+	const {data} = await github.rest.repos.getLatestRelease({
 		owner: owner,
 		repo: repo,
 	})
@@ -22,8 +23,5 @@ export default async ({github, context, core, release_id, commit_head_message, v
 		make_latest: false
 	})
 
-	core.notice(`published release: ${repo} v${version}`)
+	core.info(`published release: ${repo} v${version}`)
 }
-
-
-// ${{ needs.create-release.outputs.release-id }}, ${{ github.event.head_commit.message }}, {{ needs.create-release.outputs.version }}
