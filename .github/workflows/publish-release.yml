@@ -1,0 +1,28 @@
+name: "publish release"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          cache-dependency-path: ./workflows/yarn.lock
+          node-version: 16
+          cache: 'yarn'
+      - run: yarn --cwd ./workflows install --frozen-lockfile
+      - run: yarn --cwd ./workflows run dist
+      - name: publish release
+        id: publish-release
+        uses: actions/github-script@v6
+        with:
+          retries: 3
+          script: |
+            const script = require('./workflows/dist/publish-release-publish-release.js')
+            await script.default({github, context, core, gistId: '9f0a67b7ad425e9fb74b32f6afcab111', fileName: 'update.json'})
+
