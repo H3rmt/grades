@@ -22,6 +22,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           retries: 3
+          github-token: ${{ secrets.PAT }}
           script: |
             const script = require('./workflows/dist/publish-release-publish-release.js')
             await script.default({github, context, core, gistId: '9f0a67b7ad425e9fb74b32f6afcab111', fileName: 'update.json'})
