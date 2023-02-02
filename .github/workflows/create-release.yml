@@ -115,7 +115,7 @@ jobs:
           version: ${{ needs.create-release.outputs.version }}
           fileName: update.json
           releaseNotes: ${{ github.event.head_commit.message }}
-          releaseTagName: ${{ format('{0}-v{1}','github.event.repository.name', 'needs.create-release.outputs.version') }}
+          releaseTagName: ${{ format('{0}-v{1}',github.event.repository.name, needs.create-release.outputs.version) }}
 
           winsig: ${{ needs.tauri.outputs.winsig }}
           macsig: ${{ needs.tauri.outputs.macsig }}
