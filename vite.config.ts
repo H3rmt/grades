@@ -1,5 +1,5 @@
-import {defineConfig} from 'vitest/config';
-import react from "@vitejs/plugin-react-swc";
+import {defineConfig} from 'vitest/config'
+import react from "@vitejs/plugin-react-swc"
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,25 +13,6 @@ export default defineConfig({
 	server: {
 		port: 1420,
 		strictPort: true,
-	},
-	build: {
-		rollupOptions: {
-			output: {
-				manualChunks: (id) => {
-					if (id.includes("node_modules")) {
-						if (id.includes("react")) {
-							return "react"
-						} else if (id.includes("query")) {
-							return "query"
-						} else if (id.includes("router")) {
-							return "router"
-						} else if (id.includes("mui")) {
-							return "mui"
-						}
-					}
-				},
-			}
-		}
 	},
 	test: {
 		environment: 'jsdom',
