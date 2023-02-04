@@ -20,7 +20,7 @@ serde_json = "^1.0"
 serde = { version = "^1.0", features = ["derive"] }
 tauri = { version = "1.2.3", features = ["devtools", "fs-write-file", "path-all", "shell-open", "updater"] }
 dirs = "^4.0.0"
-tokio = { version = "^1.23", features = ["full"] }
+tokio = { version = "^1.24", features = ["full"] }
 sea-orm = { version = "0.10.5", features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros", "debug-print"] }
 ts-rs = "^6.2"
 toml = "^0.6"
