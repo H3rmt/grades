@@ -50,9 +50,9 @@ export default async ({github, context, core, gistId, fileName}: {
 		},
 	})
 
-	core.info("response DATA")
+	core.debug("response DATA")
 	const json = new TextDecoder().decode(response.data)
-	core.info(json)
+	core.debug(json)
 
 	core.info(
 			`updating ${fileName} in gist with id: ${gistId} for tauri updater`,
