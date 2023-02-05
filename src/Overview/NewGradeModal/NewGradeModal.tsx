@@ -206,7 +206,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 							<Typography variant="h6" fontWeight="normal">Subject</Typography>
 							<ReactQueryData isError={grade === undefined} query={subjectsS} data={subjects} display={(subjects) =>
 									grade !== undefined &&
-									<Select color="secondary" value={(grade?.subject || '').toString()} margin="none" fullWidth
+									<Select color="primary" value={(grade?.subject || '').toString()} margin="none" fullWidth
 											  onChange={(event) => handleSubjectSelectChange(event, grade)}
 											  title="Subject Select">
 										{subjects.map((subject) => {
@@ -222,7 +222,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 							<Typography variant="h6" fontWeight="normal">Type</Typography>
 							<ReactQueryData isError={grade === undefined} query={typesS} data={types} display={(types) =>
 									grade !== undefined &&
-									<Select color="secondary" value={(grade.type || '').toString()} margin="none" fullWidth
+									<Select color="primary" value={(grade.type || '').toString()} margin="none" fullWidth
 											  onChange={(event) => handleTypeSelectChange(event, grade)}
 											  title="Type Select">
 										{types.map((type) => {
@@ -237,7 +237,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 							<Typography variant="h6" fontWeight="normal">Period</Typography>
 							<ReactQueryData isError={grade === undefined} query={periodsS} data={periods} display={(periods) =>
 									grade !== undefined &&
-									<Select color="secondary" value={(grade.period || '').toString()} margin="none" fullWidth
+									<Select color="primary" value={(grade.period || '').toString()} margin="none" fullWidth
 											  onChange={(event) => handlePeriodSelectChange(event, grade)}
 											  title="Period Select">
 										{periods.map((period) => {
@@ -260,7 +260,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 									grade !== undefined &&
 									<>
 										<Stack spacing={1} direction="row" alignItems="center">
-											<TextField color="secondary" value={grade.grade ?? ""} type="number" fullWidth margin="none"
+											<TextField color="primary" value={grade.grade ?? ""} type="number" fullWidth margin="none"
 														  onChange={(event) => handleGradeInputChange(event, grade, noteRange)}
 														  title="Grade Input"/>
 											{grade.grade !== null && <IconButton onClick={() => {
@@ -268,7 +268,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 											}}><ClearIcon/>
 											</IconButton>}
 										</Stack>
-										<Slider color="secondary" value={grade.grade ?? noteRange.from}
+										<Slider color="primary" value={grade.grade ?? noteRange.from}
 												  min={noteRange.from}
 												  max={noteRange.to}
 												  onChange={(event, value) => handleGradeSliderChange(value, grade, noteRange)}
@@ -287,7 +287,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 													}} renderInput={(params) => {
 										// @ts-ignore
 										params.inputProps.value = grade.date
-										return <TextField {...params} color="secondary" title="Date Picker"/>
+										return <TextField {...params} color="primary" title="Date Picker"/>
 									}} renderDay={(day, value, DayComponentProps) => <Badge
 											key={day.toString()}
 											overlap="circular"
@@ -308,7 +308,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 														}} renderInput={(params) => {
 											// @ts-ignore
 											params.inputProps.value = grade.confirmed ? grade.confirmed : ""
-											return <TextField {...params} color="secondary" title="Confirmed Date Picker"/>
+											return <TextField {...params} color="primary" title="Confirmed Date Picker"/>
 										}} renderDay={(day, value, DayComponentProps) => {
 											if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
 												DayComponentProps.disabled = true
@@ -331,7 +331,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 						<Stack spacing={2} height={1}>
 							<Typography variant="h6" fontWeight="normal">Info</Typography>
 							{grade !== undefined &&
-									<TextField color="secondary" multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
+									<TextField color="primary" multiline minRows={2} value={grade.info} type="text" fullWidth margin="none"
 												  onChange={(event) => handleInfoInputChange(event, grade)}
 												  title="Info Input"
 									/>}
@@ -343,10 +343,10 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 							<ReactQueryData isError={grade === undefined} query={weightsS} data={weights} display={(weights) =>
 									grade !== undefined &&
 									<FormGroup>
-										<RadioGroup color="secondary" defaultValue="Normal" value={grade.weight} title="Grade Weight Select"
+										<RadioGroup defaultValue="Normal" value={grade.weight} title="Grade Weight Select"
 														onChange={(event) => handleWeightChange(event, grade)}>
 											{weights.map((weight) => <FormControlLabel control={
-												<Radio color="secondary"/>
+												<Radio color="primary"/>
 											} label={weight.name} value={weight.name} key={weight.name}/>)}
 										</RadioGroup>
 									</FormGroup>
