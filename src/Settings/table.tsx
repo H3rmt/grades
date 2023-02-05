@@ -1,9 +1,10 @@
 import {Cols, ColumnDefs} from "../components/table/defs"
 import {Period, Subject, Type} from "../entity"
-import {Badge, Input, TextField, Typography} from "@mui/material"
+import {Badge, IconButton, Input, Paper, Stack, TextField, Typography} from "@mui/material"
 import dayjs, {Dayjs} from "dayjs"
 import {DatePicker, PickersDay} from "@mui/x-date-pickers"
-
+import {randColor} from "../ts/utils"
+import {Autorenew} from "@mui/icons-material"
 
 export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDefs<Type>>(
 		[[
@@ -15,7 +16,18 @@ export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDef
 			"color", {
 				sort: false,
 				format: t => <Typography sx={{color: t.color}}>{t.color}</Typography>,
-				edit: t => <Input fullWidth type="color" value={t.color} onChange={(i) => t.color = i.target.value}/>
+				edit: t => <Input fullWidth type="color" value={t.color} onChange={(i) => t.color = i.target.value}/>,
+				extraEdit: (t, update) => <Paper variant="outlined" sx={{padding: 1, backgroundColor: "transparent"}}>
+					<Stack direction="row" spacing={1} alignItems="center">
+						<Input fullWidth type="color" value={t.color} onChange={(i) => t.color = i.target.value}/>
+						<IconButton onClick={() => {
+							t.color = randColor()
+							update()
+						}}>
+							<Autorenew/>
+						</IconButton>
+					</Stack>
+				</Paper>
 			}
 		], [
 			"id", {
@@ -35,7 +47,18 @@ export const getSubjectCols: () => Cols<Subject> = () => new Map<keyof Subject, 
 			"color", {
 				sort: false,
 				format: s => <Typography sx={{color: s.color}}>{s.color}</Typography>,
-				edit: s => <Input fullWidth type="color" value={s.color} onChange={(i) => s.color = i.target.value}/>
+				edit: s => <Input fullWidth type="color" value={s.color} onChange={(i) => s.color = i.target.value}/>,
+				extraEdit: (s, update) => <Paper variant="outlined" sx={{padding: 1, backgroundColor: "transparent"}}>
+					<Stack direction="row" spacing={1} alignItems="center">
+						<Input fullWidth type="color" value={s.color} onChange={(i) => s.color = i.target.value}/>
+						<IconButton onClick={() => {
+							s.color = randColor()
+							update()
+						}}>
+							<Autorenew/>
+						</IconButton>
+					</Stack>
+				</Paper>
 			}
 		], [
 			"id", {
