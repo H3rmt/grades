@@ -1,16 +1,15 @@
-import {Cols, ColumnDef} from "../components/table/defs"
+import {Cols, ColumnDefs} from "../components/table/defs"
 import {Period, Subject, Type} from "../entity"
 import {Badge, Input, TextField, Typography} from "@mui/material"
 import dayjs, {Dayjs} from "dayjs"
 import {DatePicker, PickersDay} from "@mui/x-date-pickers"
 
 
-export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDef<Type>>(
+export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDefs<Type>>(
 		[[
 			"name", {
 				sort: true,
-				extraEdit: true,
-				edit: (t) => <TextField fullWidth value={t.name} onChange={(i) => t.name = i.target.value}/>
+				extraEdit: (t) => <TextField fullWidth value={t.name} onChange={(i) => t.name = i.target.value}/>
 			}
 		], [
 			"color", {
@@ -26,12 +25,11 @@ export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDef
 		]]
 )
 
-export const getSubjectCols: () => Cols<Subject> = () => new Map<keyof Subject, ColumnDef<Subject>>(
+export const getSubjectCols: () => Cols<Subject> = () => new Map<keyof Subject, ColumnDefs<Subject>>(
 		[[
 			"name", {
 				sort: true,
-				extraEdit: true,
-				edit: s => <TextField fullWidth value={s.name} onChange={(i) => s.name = i.target.value}/>
+				extraEdit: s => <TextField fullWidth value={s.name} onChange={(i) => s.name = i.target.value}/>
 			}
 		], [
 			"color", {
@@ -47,12 +45,11 @@ export const getSubjectCols: () => Cols<Subject> = () => new Map<keyof Subject, 
 		]]
 )
 
-export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, ColumnDef<Period>>(
+export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, ColumnDefs<Period>>(
 		[[
 			"name", {
 				sort: true,
-				extraEdit: true,
-				edit: p => <TextField fullWidth value={p.name} onChange={(i) => p.name = i.target.value}/>
+				extraEdit: p => <TextField fullWidth value={p.name} onChange={(i) => p.name = i.target.value}/>
 			}
 		], [
 			"from", {
