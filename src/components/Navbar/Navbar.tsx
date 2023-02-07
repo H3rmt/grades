@@ -51,7 +51,7 @@ export default function Navbar() {
 		<Toolbar/>
 		<List disablePadding sx={{height: 1}}>
 			{Object.entries(pages).filter(([key]) => key != "settings").map(([key, page]) => (
-					<ListItem key={key} disablePadding>
+					<ListItem key={key} disablePadding onClick={() => setOpenNav(false)}>
 						<ListItemButton component={RLink} to={page.path}>
 							<ListItemIcon>
 								{page.icon}
@@ -63,7 +63,7 @@ export default function Navbar() {
 			))}
 		</List>
 		<Divider/>
-		<ListItem key="Settings" disablePadding>
+		<ListItem key="Settings" disablePadding  onClick={() => setOpenNav(false)}>
 			<ListItemButton component={RLink} to={pages.settings.path}>
 				<ListItemIcon>
 					{pages.settings.icon}

@@ -13,15 +13,6 @@ type Props = {
 export default function Topbar(props: Props) {
 	const [openNav, setOpenNav] = useAtom(navBarOpen)
 
-	const [prevMatch, setPrevMatch] = useState("")
-
-	// the weirdest way to close nav on route change
-	const matchRoute = useMatch()
-	if (prevMatch != matchRoute.id) {
-		setPrevMatch(matchRoute.id)
-		setOpenNav(false)
-	}
-
 	return <AppBar component="nav" position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
 		<Toolbar>
 			<IconButton color="inherit" aria-label="open drawer" edge="start" onClick={() => {
