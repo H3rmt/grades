@@ -33,7 +33,7 @@ import {useSnackbar} from "notistack"
 import ReactQueryData from "../../components/ReactQueryData/ReactQueryData"
 import {useCreateGrade} from "../../commands/create"
 import {RLink} from "../../components/Navbar/Navbar"
-import {useSearch} from "@tanstack/react-router"
+import {useSearch, useNavigate} from "@tanstack/react-router"
 import {newGradeRoute} from "./route"
 
 export type NewGradeModalSearch = {
@@ -50,7 +50,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 	let confirmed: boolean
 	if (props.confirmed === undefined) {
 		// @ts-ignore
-		const params = useSearch<"newGrade", true, NewGradeModalSearch, NewGradeModalSearch>({from: newGradeRoute.id})
+		const params = useSearch<"/overview/newGrade", true, NewGradeModalSearch, NewGradeModalSearch>({from: newGradeRoute.id})
 		confirmed = params.confirmed
 	} else {
 		confirmed = props.confirmed ?? false
@@ -71,6 +71,8 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 	const [noteRange, , noteRangeS] = useNoteRange()
 
 	const [gradeModalDefaults, , gradeModalDefaultsS] = useGradeModalDefaults()
+
+	const navigate = useNavigate({ from: '/overview/newGrade' })
 
 	// set Default values if default values are loaded and grade has not been set to default values yet
 	useEffect(() => {
@@ -196,7 +198,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 		const closeClear = toastMessage("warning", "Cleared create Note window", toast, undo)
 	}
 
-	return <Dialog open={true} disableEscapeKeyDown fullWidth maxWidth="md">
+	return <Dialog open={true} fullWidth maxWidth="md" onClose={() => navigate({ to: '/overview' })}>
 		<DialogTitle variant="h5">New Grade</DialogTitle>
 		<DialogContent>
 			<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
