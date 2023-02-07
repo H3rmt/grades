@@ -45,7 +45,7 @@ const data = [
 	},
 ]
 
-export function Component(props: Props) {
+export default function Component(props: Props) {
 	return (<Grid container spacing={2} padding={2}>
 				{/*
 				<Grid item xs={12} sm={12} md={6} xl={6}>
@@ -92,11 +92,4 @@ export function Component(props: Props) {
 				</Grid>
 			</Grid>
 	)
-}
-
-export default function Analysis() {
-	return <>
-		<Topbar name="Analysis"/>
-		<Component/>
-	</>
 }

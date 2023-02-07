@@ -30,7 +30,7 @@ import {useEditPeriods, useEditSubjects, useEditTypes} from '../commands/editLis
 import Topbar from "../components/TopBar/Topbar"
 
 
-function Component() {
+export default function Component() {
 	const [noteRange, setNoteRange, noteRangeS, noteRangeEdited, resetNoteRange, reloadNoteRange, saveNoteRange] = useEditNoteRange()
 
 	const [gradeModalDefaults, setGradeModalDefaults, gradeModalDefaultsS, gradeModalDefaultsEdited, resetGradeModalDefaults, reloadGradeModalDefaults, saveGradeModalDefaults] = useEditGradeModalDefaults()
@@ -336,11 +336,3 @@ function Component() {
 		</Grid>
 	</>
 }
-
-export default function Settings() {
-	return <>
-		<Topbar name="Settings"/>
-		<Component/>
-	</>
-}
-

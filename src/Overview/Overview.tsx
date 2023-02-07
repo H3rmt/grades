@@ -12,7 +12,7 @@ import {NoteRange} from "../entity/config"
 import {Grade, Period, Subject, Type, Weight} from "../entity"
 import ReactQueryDataMultiple from "../components/ReactQueryData/ReactQueryDataMultiple"
 
-export function Component() {
+export default function Component() {
 	const [period] = useAtom(selectedPeriod)
 
 	const [grades, , gradesS, , , editGrade, removeGrade] = useEditGrades()
@@ -54,14 +54,5 @@ export function Component() {
 				}}
 				loading={loadingSpinner}/>
 		<Outlet/>
-	</>
-}
-
-export default function Overview() {
-	return <>
-		<Topbar name="Overview">
-			<OverviewAppBar/>
-		</Topbar>
-		<Component/>
 	</>
 }

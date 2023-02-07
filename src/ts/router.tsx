@@ -16,7 +16,7 @@ import { Navigate, Route } from '@tanstack/react-router'
 // 			</Button>
 // 		</Info>
 
-
+// navigate to cached route
 let indexRoute = new Route({
 	getParentRoute: () => rootRoute,
 	path: "/",
@@ -35,8 +35,10 @@ const routeTree = rootRoute.addChildren([
 
 const router = new ReactRouter({
 	routeTree,
-	defaultPreload: 'intent',
-  })
+	onRouteChange: () => {
+
+	}
+})
 
 declare module '@tanstack/react-router' {
 	interface Register {
