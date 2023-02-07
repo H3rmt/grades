@@ -1,10 +1,11 @@
-import {rootRoute} from "../ts/root"
-import {lazy, Suspense} from "react"
+import { rootRoute } from "../ts/root"
+import { lazy, Suspense } from "react"
+import { Route } from "@tanstack/react-router"
 
 const Analysis = lazy(() => import('./Analysis'))
 
-
-export const analysisRoute = rootRoute.createRoute({
-	path: 'analysis',
-	component: () => <Suspense><Analysis/></Suspense>,
+export const analysisRoute = new Route({
+	getParentRoute: () => rootRoute,
+	path: '/analysis',
+	component: () => <Suspense><Analysis /></Suspense>,
 })

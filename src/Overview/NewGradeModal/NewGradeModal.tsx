@@ -360,9 +360,9 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 			<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
 					<Button onClick={() => handleClear(gradeModalDefaults)} type="submit" variant="contained" color="warning">Clear</Button>
 			}/>
-			<Button component={RLink} to="/" type="submit" variant="contained">Close</Button>
+			<Button component={RLink} to="/overview" type="submit" variant="contained">Close</Button>
 			{grade !== undefined &&
-					<Button component={RLink} to="/" onClick={tryCreate} type="submit" variant="contained" color="success">Create</Button>}
+					<Button component={RLink} to="/overview" onClick={tryCreate} type="submit" variant="contained" color="success">Create</Button>}
 		</DialogActions>
 	</Dialog>
 }

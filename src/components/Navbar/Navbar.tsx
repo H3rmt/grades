@@ -24,7 +24,7 @@ const pages = {
 	overview: {
 		name: "Overview",
 		description: "Overview of all grades",
-		path: '/',
+		path: '/overview',
 		icon: <FormatListNumberedIcon/>,
 	},
 	analysis: {
