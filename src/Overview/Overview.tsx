@@ -5,12 +5,11 @@ import {selectedPeriod} from "./atoms"
 import {getCols} from "./table"
 import {useEditGrades} from "../commands/editList"
 import {loadingSpinner} from "../components/ReactQueryData/loadings"
-import Topbar from "../components/TopBar/Topbar"
 import {Outlet} from "@tanstack/react-router"
-import {OverviewAppBar} from "./OverviewAppBar"
 import {NoteRange} from "../entity/config"
 import {Grade, Period, Subject, Type, Weight} from "../entity"
 import ReactQueryDataMultiple from "../components/ReactQueryData/ReactQueryDataMultiple"
+import {useSnackbar} from "notistack"
 
 export default function Component() {
 	const [period] = useAtom(selectedPeriod)
@@ -26,6 +25,8 @@ export default function Component() {
 	const [noteRange, , noteRangeS] = useNoteRange()
 
 	const [periods, , periodsS] = usePeriods()
+
+	const toast = useSnackbar()
 
 	return <>
 		<ReactQueryDataMultiple<[Grade[], NoteRange, Subject[], Type[], Weight[], Period[]]>
@@ -46,7 +47,7 @@ export default function Component() {
 					const periods = data[5]
 					return <CTable
 							data={grades.filter(grade => grade.period === Number(period) || period === "-1" && period !== null)}
-							cols={getCols(noteRange, subjects, types, weights, periods)}
+							cols={getCols(noteRange, subjects, types, weights, periods, toast)}
 							delete={removeGrade}
 							edit={editGrade}
 							title="OverviewTable"

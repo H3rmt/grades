@@ -6,9 +6,10 @@ import {NoteRange} from "../entity/config"
 import {DatePicker, PickersDay} from "@mui/x-date-pickers"
 import dayjs, {Dayjs} from "dayjs"
 import ClearIcon from '@mui/icons-material/Clear'
+import {Toast, toastMessage} from "../ts/toast"
 
 
-export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[]) => Cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[]) => new Map<keyof Grade, ColumnDefs<Grade>>(
+export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[], toast: Toast) => Cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[], toast: Toast) => new Map<keyof Grade, ColumnDefs<Grade>>(
 		[[
 			"grade", {
 				sort: true,
@@ -72,12 +73,47 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 					<PickersDay {...DayComponentProps} />
 				</Badge>
 				}/>,
+				extraEdit: (g, update) => <Stack direction="row" spacing={1} alignItems="center">
+					<DatePicker value={dayjs(g.date, 'DD-MM-YYYY')} onChange={d => {
+						g.date = (d as unknown as Dayjs)?.format('DD-MM-YYYY')
+					}} renderInput={(props) => {
+						// @ts-ignore
+						props.inputProps.value = g.date
+						return <TextField {...props} />
+					}} renderDay={(day, value, DayComponentProps) => <Badge
+							key={day.toString()}
+							overlap="circular"
+							badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == g.confirmed ? '✨' : null}>
+						<PickersDay {...DayComponentProps} />
+					</Badge>
+					}/>
+					{g.date && <IconButton onClick={() => {
+						// g.date = null
+						toastMessage('error', 'Not implemented yet', toast)
+						update()
+					}}><ClearIcon/>
+					</IconButton>}
+				</Stack>,
 				preSort: (g) => dayjs(g.date, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"confirmed", {
 				sort: true,
-				edit: (g, update) => <Stack direction="row" spacing={1} alignItems="center">
+				edit: (g, update) => <DatePicker value={dayjs(g.confirmed, 'DD-MM-YYYY')} onChange={(i) => {
+					g.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY')
+					update()
+				}} renderInput={(props) => {
+					// @ts-ignore
+					props.inputProps.value = g.confirmed ?? "-"
+					return <TextField {...props} />
+				}} renderDay={(day, value, DayComponentProps) => <Badge
+						key={day.toString()}
+						overlap="circular"
+						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == g.date ? '✨' : null}>
+					<PickersDay {...DayComponentProps} />
+				</Badge>
+				}/>,
+				extraEdit: (g, update) => <Stack direction="row" spacing={1} alignItems="center">
 					<DatePicker value={dayjs(g.confirmed, 'DD-MM-YYYY')} onChange={(i) => {
 						g.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY')
 						update()
