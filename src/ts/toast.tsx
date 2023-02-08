@@ -8,7 +8,7 @@ type variant = "error" | "success" | "warning" | "info"
 
 export function errorToast(
 		message: string,
-		toast: toast,
+		toast: Toast,
 		error: string | Error,
 		opts?: OptionsObject
 ): () => void {
@@ -18,7 +18,7 @@ export function errorToast(
 export function toastMessage(
 		variant: variant,
 		message: string,
-		toast: toast,
+		toast: Toast,
 		undo?: (id: SnackbarKey) => void,
 		info?: string,
 		opts?: OptionsObject
@@ -41,7 +41,7 @@ export function toastMessage(
 	return () => toast.closeSnackbar(key)
 }
 
-export type toast = {
+export type Toast = {
 	enqueueSnackbar: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey
 	closeSnackbar: (key?: SnackbarKey) => void
 }

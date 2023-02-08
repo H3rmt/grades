@@ -1,21 +1,23 @@
 import {Grade, Period, Subject, Type, Weight} from "../entity"
-import {Cols, ColumnDef} from "../components/table/defs"
+import {Cols, ColumnDefs} from "../components/Table/defs"
 import {Badge, IconButton, MenuItem, Select, Stack, TextField, Typography} from "@mui/material"
 import {map} from "../ts/utils"
 import {NoteRange} from "../entity/config"
 import {DatePicker, PickersDay} from "@mui/x-date-pickers"
 import dayjs, {Dayjs} from "dayjs"
 import ClearIcon from '@mui/icons-material/Clear'
+import {Toast, toastMessage} from "../ts/toast"
 
 
-export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[]) => Cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[]) => new Map<keyof Grade, ColumnDef<Grade>>(
+export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[], toast: Toast) => Cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[], toast: Toast) => new Map<keyof Grade, ColumnDefs<Grade>>(
 		[[
 			"grade", {
 				sort: true,
 				format: g => <Typography
 						color={`rgb(${map(g.grade as number, noteRange.from, noteRange.to, 230, 40)},${map(g.grade as number, noteRange.from, noteRange.to, 40, 230)},0)`}>{g.grade}</Typography>,
-				extraEdit: true,
-				edit: (g, update) => <Stack direction="row" spacing={1} alignItems="center">
+				edit: (g, update) => <TextField fullWidth value={g.grade ?? ""}
+														  onChange={(i) => g.grade = Math.max(Math.min(Number(i.target.value), noteRange?.to), noteRange?.from)}/>,
+				extraEdit: (g, update) => <Stack direction="row" spacing={1} alignItems="center">
 					<TextField fullWidth value={g.grade ?? ""}
 								  onChange={(i) => g.grade = Math.max(Math.min(Number(i.target.value), noteRange?.to), noteRange?.from)}/>
 					{g.grade !== null && <IconButton color="default" onClick={() => {
@@ -33,8 +35,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 					console.error('subject:', g.subject)
 					return '--notfound--'
 				})()}</Typography>,
-				extraEdit: true,
-				edit: (g, update) => <Select fullWidth value={g.subject ?? ""} onChange={(i) => {
+				extraEdit: (g, update) => <Select fullWidth value={g.subject ?? ""} onChange={(i) => {
 					g.subject = Number(i.target.value)
 					update()
 				}}>
@@ -49,8 +50,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 					console.error('type:', g.type)
 					return '--notfound--'
 				})()}</Typography>,
-				extraEdit: true,
-				edit: (g, update) => <Select fullWidth value={g.type ?? ""} onChange={(i) => {
+				extraEdit: (g, update) => <Select fullWidth value={g.type ?? ""} onChange={(i) => {
 					g.type = Number(i.target.value)
 					update()
 				}}>
@@ -73,12 +73,47 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 					<PickersDay {...DayComponentProps} />
 				</Badge>
 				}/>,
+				extraEdit: (g, update) => <Stack direction="row" spacing={1} alignItems="center">
+					<DatePicker value={dayjs(g.date, 'DD-MM-YYYY')} onChange={d => {
+						g.date = (d as unknown as Dayjs)?.format('DD-MM-YYYY')
+					}} renderInput={(props) => {
+						// @ts-ignore
+						props.inputProps.value = g.date
+						return <TextField {...props} />
+					}} renderDay={(day, value, DayComponentProps) => <Badge
+							key={day.toString()}
+							overlap="circular"
+							badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == g.confirmed ? '✨' : null}>
+						<PickersDay {...DayComponentProps} />
+					</Badge>
+					}/>
+					{g.date && <IconButton onClick={() => {
+						// g.date = null
+						toastMessage('error', 'Not implemented yet', toast)
+						update()
+					}}><ClearIcon/>
+					</IconButton>}
+				</Stack>,
 				preSort: (g) => dayjs(g.date, 'DD-MM-YYYY').unix()
 			}
 		], [
 			"confirmed", {
 				sort: true,
-				edit: (g, update) => <Stack direction="row" spacing={1} alignItems="center">
+				edit: (g, update) => <DatePicker value={dayjs(g.confirmed, 'DD-MM-YYYY')} onChange={(i) => {
+					g.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY')
+					update()
+				}} renderInput={(props) => {
+					// @ts-ignore
+					props.inputProps.value = g.confirmed ?? "-"
+					return <TextField {...props} />
+				}} renderDay={(day, value, DayComponentProps) => <Badge
+						key={day.toString()}
+						overlap="circular"
+						badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == g.date ? '✨' : null}>
+					<PickersDay {...DayComponentProps} />
+				</Badge>
+				}/>,
+				extraEdit: (g, update) => <Stack direction="row" spacing={1} alignItems="center">
 					<DatePicker value={dayjs(g.confirmed, 'DD-MM-YYYY')} onChange={(i) => {
 						g.confirmed = (i as unknown as Dayjs)?.format('DD-MM-YYYY')
 						update()
@@ -103,7 +138,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 			}
 		], [
 			"period", {
-				edit: (g, update) => <Select value={g.period} onChange={(i) => {
+				extraEdit: (g, update) => <Select value={g.period} onChange={(i) => {
 					g.period = Number(i.target.value)
 					update()
 				}}>
@@ -115,26 +150,23 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 						</Stack>
 					</MenuItem>)}
 				</Select>,
-				extraEdit: true,
 				hide: true,
 			}
 		], [
 			"weight", {
-				edit: (g, update) => <Select value={g.weight} onChange={(i) => {
+				extraEdit: (g, update) => <Select value={g.weight} onChange={(i) => {
 					g.weight = i.target.value
 					update()
 				}}>
 					{weights.map((weight) => <MenuItem key={weight.name} value={weight.name}>{weight.name}</MenuItem>)}
 				</Select>,
-				extraEdit: true,
 				hide: true
 			}
 		], [
 			"info", {
 				sort: false,
 				format: g => <>{g.info.split('\n').map(s => <Typography key={s}>{s}</Typography>)}</>,
-				edit: (g) => <TextField multiline minRows={2} fullWidth value={g.info} onChange={(i) => g.info = i.target.value}/>,
-				extraEdit: true
+				extraEdit: (g) => <TextField multiline minRows={2} fullWidth value={g.info} onChange={(i) => g.info = i.target.value}/>
 			}
 		], [
 			"id", {
