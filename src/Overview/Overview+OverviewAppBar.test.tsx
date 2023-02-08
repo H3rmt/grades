@@ -3,11 +3,12 @@ import {Grade, Period, Subject, Type} from '../entity'
 import {getByRole, mockIPC, render, screen} from "../ts/testingUtils"
 import userEvent from "@testing-library/user-event"
 import Overview from "./Overview"
+import {OverviewAppBar} from "./OverviewAppBar"
 
 describe('Overview+OverviewAppBar', () => {
 	test('shows only Period Grades', async () => {
 		mockIPC(mockData)
-		render(<Overview/>)
+		render(<><OverviewAppBar/><Overview/></>)
 
 		const periodSelect = await screen.findByTitle('Period Select')
 		expect(periodSelect).to.exist

@@ -1,4 +1,4 @@
-import {IRow, Column} from "./defs"
+import {Column, IRow} from "./defs"
 
 function comp<Type>(a: Type, b: Type, orderFn: (d: Type) => NonNullable<unknown>) {
 	if (orderFn(b) < orderFn(a)) {

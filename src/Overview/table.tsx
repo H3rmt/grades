@@ -1,5 +1,5 @@
 import {Grade, Period, Subject, Type, Weight} from "../entity"
-import {Cols, ColumnDefs} from "../components/table/defs"
+import {Cols, ColumnDefs} from "../components/Table/defs"
 import {Badge, IconButton, MenuItem, Select, Stack, TextField, Typography} from "@mui/material"
 import {map} from "../ts/utils"
 import {NoteRange} from "../entity/config"

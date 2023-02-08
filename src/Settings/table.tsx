@@ -1,10 +1,10 @@
-import {Cols, ColumnDefs} from "../components/table/defs"
+import {Cols, ColumnDefs} from "../components/Table/defs"
 import {Period, Subject, Type} from "../entity"
 import {Badge, IconButton, Input, Paper, Stack, TextField, Typography} from "@mui/material"
 import dayjs, {Dayjs} from "dayjs"
 import {DatePicker, PickersDay} from "@mui/x-date-pickers"
 import {randColor} from "../ts/utils"
-import {Autorenew} from "@mui/icons-material"
+import Autorenew from "@mui/icons-material/Autorenew"
 
 export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDefs<Type>>(
 		[[
@@ -32,7 +32,10 @@ export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDef
 		], [
 			"id", {
 				hide: true,
-				extraShow: true
+				extraShow: true,
+				format: t => <Paper variant="outlined" sx={{padding: 1, backgroundColor: "transparent"}}>
+					<Typography padding={1}>{t.id}</Typography>
+				</Paper>
 			}
 		]]
 )
@@ -63,7 +66,10 @@ export const getSubjectCols: () => Cols<Subject> = () => new Map<keyof Subject, 
 		], [
 			"id", {
 				hide: true,
-				extraShow: true
+				extraShow: true,
+				format: t => <Paper variant="outlined" sx={{padding: 1, backgroundColor: "transparent"}}>
+					<Typography padding={1}>{t.id}</Typography>
+				</Paper>
 			}
 		]]
 )
@@ -113,7 +119,10 @@ export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, Col
 		], [
 			"id", {
 				hide: true,
-				extraShow: true
+				extraShow: true,
+				format: t => <Paper variant="outlined" sx={{padding: 1, backgroundColor: "transparent"}}>
+					<Typography padding={1}>{t.id}</Typography>
+				</Paper>
 			}
 		]]
 )
