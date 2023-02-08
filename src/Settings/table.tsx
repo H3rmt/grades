@@ -1,58 +1,84 @@
-import {Cols, ColumnDef} from "../components/table/defs"
+import {Cols, ColumnDefs} from "../components/Table/defs"
 import {Period, Subject, Type} from "../entity"
-import {Badge, Input, TextField, Typography} from "@mui/material"
+import {Badge, IconButton, Input, Paper, Stack, TextField, Typography} from "@mui/material"
 import dayjs, {Dayjs} from "dayjs"
 import {DatePicker, PickersDay} from "@mui/x-date-pickers"
+import {randColor} from "../ts/utils"
+import Autorenew from "@mui/icons-material/Autorenew"
 
-
-export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDef<Type>>(
+export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDefs<Type>>(
 		[[
 			"name", {
 				sort: true,
-				extraEdit: true,
-				edit: (t) => <TextField fullWidth value={t.name} onChange={(i) => t.name = i.target.value}/>
+				extraEdit: (t) => <TextField fullWidth value={t.name} onChange={(i) => t.name = i.target.value}/>
 			}
 		], [
 			"color", {
 				sort: false,
 				format: t => <Typography sx={{color: t.color}}>{t.color}</Typography>,
-				edit: t => <Input fullWidth type="color" value={t.color} onChange={(i) => t.color = i.target.value}/>
+				edit: t => <Input fullWidth type="color" value={t.color} onChange={(i) => t.color = i.target.value}/>,
+				extraEdit: (t, update) => <Paper variant="outlined" sx={{padding: 1, backgroundColor: "transparent"}}>
+					<Stack direction="row" spacing={1} alignItems="center">
+						<Input fullWidth type="color" value={t.color} onChange={(i) => t.color = i.target.value}/>
+						<IconButton onClick={() => {
+							t.color = randColor()
+							update()
+						}}>
+							<Autorenew/>
+						</IconButton>
+					</Stack>
+				</Paper>
 			}
 		], [
 			"id", {
 				hide: true,
-				extraShow: true
+				extraShow: true,
+				format: t => <Paper variant="outlined" sx={{padding: 1, backgroundColor: "transparent"}}>
+					<Typography padding={1}>{t.id}</Typography>
+				</Paper>
 			}
 		]]
 )
 
-export const getSubjectCols: () => Cols<Subject> = () => new Map<keyof Subject, ColumnDef<Subject>>(
+export const getSubjectCols: () => Cols<Subject> = () => new Map<keyof Subject, ColumnDefs<Subject>>(
 		[[
 			"name", {
 				sort: true,
-				extraEdit: true,
-				edit: s => <TextField fullWidth value={s.name} onChange={(i) => s.name = i.target.value}/>
+				extraEdit: s => <TextField fullWidth value={s.name} onChange={(i) => s.name = i.target.value}/>
 			}
 		], [
 			"color", {
 				sort: false,
 				format: s => <Typography sx={{color: s.color}}>{s.color}</Typography>,
-				edit: s => <Input fullWidth type="color" value={s.color} onChange={(i) => s.color = i.target.value}/>
+				edit: s => <Input fullWidth type="color" value={s.color} onChange={(i) => s.color = i.target.value}/>,
+				extraEdit: (s, update) => <Paper variant="outlined" sx={{padding: 1, backgroundColor: "transparent"}}>
+					<Stack direction="row" spacing={1} alignItems="center">
+						<Input fullWidth type="color" value={s.color} onChange={(i) => s.color = i.target.value}/>
+						<IconButton onClick={() => {
+							s.color = randColor()
+							update()
+						}}>
+							<Autorenew/>
+						</IconButton>
+					</Stack>
+				</Paper>
 			}
 		], [
 			"id", {
 				hide: true,
-				extraShow: true
+				extraShow: true,
+				format: t => <Paper variant="outlined" sx={{padding: 1, backgroundColor: "transparent"}}>
+					<Typography padding={1}>{t.id}</Typography>
+				</Paper>
 			}
 		]]
 )
 
-export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, ColumnDef<Period>>(
+export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, ColumnDefs<Period>>(
 		[[
 			"name", {
 				sort: true,
-				extraEdit: true,
-				edit: p => <TextField fullWidth value={p.name} onChange={(i) => p.name = i.target.value}/>
+				extraEdit: p => <TextField fullWidth value={p.name} onChange={(i) => p.name = i.target.value}/>
 			}
 		], [
 			"from", {
@@ -93,7 +119,10 @@ export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, Col
 		], [
 			"id", {
 				hide: true,
-				extraShow: true
+				extraShow: true,
+				format: t => <Paper variant="outlined" sx={{padding: 1, backgroundColor: "transparent"}}>
+					<Typography padding={1}>{t.id}</Typography>
+				</Paper>
 			}
 		]]
 )

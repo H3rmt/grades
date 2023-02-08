@@ -14,7 +14,7 @@ import {
 } from '@mui/material'
 import {ChangeEvent} from 'react'
 import {nextFree, randColor} from "../ts/utils"
-import {CTable} from "../components/table/table"
+import {CTable} from "../components/Table/Table"
 import {Period, Subject, Type} from "../entity"
 import {getPeriodCols, getSubjectCols, getTypeCols} from "./table"
 import {GradeModalDefaults, NoteRange} from "../entity/config"
@@ -27,10 +27,9 @@ import CloseIcon from "@mui/icons-material/Close"
 import ReactQueryData from "../components/ReactQueryData/ReactQueryData"
 import {useEditGradeModalDefaults, useEditNoteRange} from '../commands/edit'
 import {useEditPeriods, useEditSubjects, useEditTypes} from '../commands/editList'
-import Topbar from "../components/TopBar/Topbar"
 
 
-function Component() {
+export default function Component() {
 	const [noteRange, setNoteRange, noteRangeS, noteRangeEdited, resetNoteRange, reloadNoteRange, saveNoteRange] = useEditNoteRange()
 
 	const [gradeModalDefaults, setGradeModalDefaults, gradeModalDefaultsS, gradeModalDefaultsEdited, resetGradeModalDefaults, reloadGradeModalDefaults, saveGradeModalDefaults] = useEditGradeModalDefaults()
@@ -336,11 +335,3 @@ function Component() {
 		</Grid>
 	</>
 }
-
-export default function Settings() {
-	return <>
-		<Topbar name="Settings"/>
-		<Component/>
-	</>
-}
-

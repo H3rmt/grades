@@ -1,9 +1,22 @@
-import {rootRoute} from "../ts/root"
-import {lazy, Suspense} from "react"
+import { rootRoute } from "../ts/root"
+import { lazy, Suspense } from "react"
+import {Route} from "@tanstack/react-router"
+import Topbar from "../components/TopBar/Topbar"
 
-const Settings = lazy(() => import('./Settings'))
+function Settings() {
+	const Component = lazy(() => import('./Settings'))
 
-export const settingsRoute = rootRoute.createRoute({
-	path: 'settings',
-	component: () => <Suspense><Settings/> </Suspense>,
+	return <>
+		<Topbar name="Settings"/>
+		<Suspense>
+			<Component />
+		</Suspense>
+	</>
+}
+
+
+export const settingsRoute = new Route({
+	getParentRoute: () => rootRoute,
+	path: '/settings',
+	component: Settings,
 })

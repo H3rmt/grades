@@ -53,15 +53,15 @@ export function OverviewAppBar() {
 					// 	setOpen(true)
 			// }} title="New Grade"><AddIcon/></IconButton>
 			else if (oneButton)
-				return <Button variant="contained" color="secondary" component={RLink} to="/newGrade" search={(old: NewGradeModalSearch) => {
+				return <Button variant="contained" color="primary" component={RLink} to="/overview/newGrade" search={(old: NewGradeModalSearch) => {
 					return {...old, confirmed: false}
 				}} title="New Grade">New&nbsp;Grade</Button>
 			else
 				return <>
-					<Button color="secondary" variant="contained" component={RLink} to="/newGrade" search={(old: NewGradeModalSearch) => {
+					<Button color="primary" variant="contained" component={RLink} to="/overview/newGrade" search={(old: NewGradeModalSearch) => {
 						return {...old, confirmed: false}
 					}} title="New Grade">New&nbsp;WIP&nbsp;Grade</Button>
-					<Button color="secondary" variant="contained" component={RLink} to="/newGrade" search={(old: NewGradeModalSearch) => {
+					<Button color="primary" variant="contained" component={RLink} to="/overview/newGrade" search={(old: NewGradeModalSearch) => {
 						return {...old, confirmed: true}
 					}} title="New Grade">New&nbsp;Confirmed&nbsp;Grade</Button>
 				</>

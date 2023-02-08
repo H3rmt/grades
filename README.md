@@ -9,12 +9,14 @@ Frontend is written in Typescript, React with MUI and react-quer, using vite
 UI-Tests with vitest and testing-library
 
 ### Overview: 
-![img](img/img_2.png)
+<img src="./img/overview.png">
+<div style="display: flex;gap:10px">
+<img src="./img/overview_edit.png" style="width:calc(50% - 5px)">
+<img src="./img/edit.png" style="width:calc(50% - 5px)">
+</div>
 
 ### New Grade Dialog
-![img2](img/img_1.png)
+<img src="./img/new.png">
 
 ### Settings
-![img3](img/img.png)
-
-![img4](img/img_4.png)
+<img src="./img/settings.png">
