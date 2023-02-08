@@ -1,17 +1,17 @@
-import { createTheme, CssBaseline, ThemeProvider } from "@mui/material"
-import { LocalizationProvider } from "@mui/x-date-pickers"
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { ReactElement, ReactNode } from "react"
-import { render, RenderOptions } from "@testing-library/react"
+import {createTheme, CssBaseline, ThemeProvider} from "@mui/material"
+import {LocalizationProvider} from "@mui/x-date-pickers"
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs"
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
+import {ReactElement, ReactNode} from "react"
+import {render, RenderOptions} from "@testing-library/react"
 // @ts-ignore
 import * as mediaQuery from 'css-mediaquery'
-import { SnackbarProvider } from "notistack"
-import { Grade, Info, Page, Period, Subject, Type } from "../entity"
-import { GradeModalDefaults, NoteRange } from "../entity/config"
-import { Atom, Provider } from "jotai"
-import { blue, pink } from "@mui/material/colors"
-import { Outlet, ReactRouter, RouterProvider, RootRoute, Route } from "@tanstack/react-router"
+import {SnackbarProvider} from "notistack"
+import {Grade, Info, Page, Period, Subject, Type} from "../entity"
+import {GradeModalDefaults, NoteRange} from "../entity/config"
+import {Atom, Provider} from "jotai"
+import {blue, pink} from "@mui/material/colors"
+import {Outlet, ReactRouter, RootRoute, Route, RouterProvider} from "@tanstack/react-router"
 
 
 export const theme = createTheme({
@@ -54,9 +54,9 @@ export function AllTheProviders({ atoms }: { atoms?: A<any>[] }): ({ children }:
 			component: () => <>{children}</>,
 		})
 
-		const routeConfig = rootRoute.addChildren([testRoute])
+		const routeTree = rootRoute.addChildren([testRoute])
 
-		const router = new ReactRouter({ routeConfig })
+		const router = new ReactRouter({routeTree})
 
 		return <Provider initialValues={atoms}>
 			<ThemeProvider theme={theme}>

@@ -1,5 +1,5 @@
 import {useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../commands/get"
-import {CTable} from "../components/table/table"
+import {CTable} from "../components/Table/Table"
 import {useAtom} from 'jotai'
 import {selectedPeriod} from "./atoms"
 import {getCols} from "./table"
