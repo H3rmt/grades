@@ -14,8 +14,8 @@ import {ReactQueryDevtools} from "@tanstack/react-query-devtools"
 import {StrictMode} from "react"
 import {blue, pink, red} from "@mui/material/colors"
 import {RouterProvider} from "@tanstack/react-router"
-import {router} from "./ts/router"
 import 'dayjs/locale/de.js'
+import {router} from "./router"
 
 export const theme = createTheme({
 	palette: {

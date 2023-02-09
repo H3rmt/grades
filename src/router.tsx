@@ -1,10 +1,10 @@
 import {createBrowserHistory, Navigate, ReactRouter, Route} from '@tanstack/react-router'
-import {overviewRoute} from "../Overview/route"
-import {newGradeRoute} from "../Overview/NewGradeModal/route"
-import {analysisRoute} from "../Analysis/route"
-import {settingsRoute} from "../Settings/route"
-import {rootRoute} from "./root"
-import {navBarOpen} from "../atoms"
+import {overviewRoute} from "./Overview/route"
+import {newGradeRoute} from "./Overview/NewGradeModal/route"
+import {analysisRoute} from "./Analysis/route"
+import {settingsRoute} from "./Settings/route"
+import {navBarOpen} from "./atoms"
+import {rootRoute} from "./ts/root"
 
 // <Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)} closeText="Continue Edit">
 // 			<Button variant="contained" onClick={() => {

@@ -21,7 +21,7 @@ import {
 	TextField,
 	Typography
 } from "@mui/material"
-import {toastMessage} from "../../ts/toast"
+import {toastMessage} from "../../components/Toast/toast"
 import {Grade} from "../../entity"
 import {useGradeModalDefaults, useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../../commands/get"
 import {GradeModalDefaults, NoteRange} from "../../entity/config"

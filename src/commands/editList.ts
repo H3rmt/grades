@@ -1,5 +1,5 @@
 import {useUndefinedState} from "../ts/utils"
-import {errorToast, toastMessage} from "../ts/toast"
+import {errorToast, toastMessage} from "../components/Toast/toast"
 import {UseMutateFunction, useQueryClient, UseQueryResult} from "@tanstack/react-query"
 import {createMutation, deleteMutation, editMutation, query, resetMutation} from "./commands"
 import {Dispatch, SetStateAction} from "react"

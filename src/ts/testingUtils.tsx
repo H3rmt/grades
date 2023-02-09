@@ -13,7 +13,7 @@ import {blue, pink} from "@mui/material/colors"
 import {Outlet, ReactRouter, RootRoute, Route, RouterProvider} from "@tanstack/react-router"
 
 
-export const theme = createTheme({
+const theme = createTheme({
 	palette: {
 		mode: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
 		primary: {
@@ -34,12 +34,12 @@ export const theme = createTheme({
 	},
 })
 
-export const rootRoute = new RootRoute({
+const rootRoute = new RootRoute({
 	component: Outlet
 })
 
 
-export function AllTheProviders(): ({children}: { children: ReactNode }) => JSX.Element {
+function AllTheProviders(): ({children}: { children: ReactNode }) => JSX.Element {
 	const queryClient = new QueryClient({
 		defaultOptions: {queries: {retry: 2, networkMode: 'always', refetchOnWindowFocus: false}}
 	})
@@ -69,7 +69,7 @@ export function AllTheProviders(): ({children}: { children: ReactNode }) => JSX.
 	}
 }
 
-export function customRender(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
+function customRender(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
 	return render(ui, {wrapper: AllTheProviders(), ...options})
 }
 
