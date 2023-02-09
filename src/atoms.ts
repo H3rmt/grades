@@ -1,5 +1,11 @@
-import {atom} from 'jotai'
+import {create} from "zustand"
 
-export const navBarOpen = atom(false)
+interface NavBarOpenState {
+	open: boolean
+	set: (by: boolean) => void
+}
 
-export const contentChanged = atom("")
+export const navBarOpen = create<NavBarOpenState>(set => ({
+	open: false,
+	set: (by: boolean) => set({open: by})
+}))

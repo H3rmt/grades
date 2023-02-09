@@ -1,5 +1,4 @@
 import {Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Toolbar} from "@mui/material"
-import {useAtom} from "jotai"
 import {navBarOpen} from "../../atoms"
 import {Link} from "@tanstack/react-router"
 import {forwardRef, ReactElement} from "react"
@@ -44,14 +43,15 @@ const pages = {
 export default function Navbar() {
 	const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
-	const [openNav, setOpenNav] = useAtom(navBarOpen)
+	const openNav = navBarOpen((state) => state.open)
+	const setOpenNav = navBarOpen((state) => state.set)
 
 	return <SwipeableDrawer open={openNav} anchor="left" onOpen={() => setOpenNav(true)} onClose={() => setOpenNav(false)}
 									variant="temporary" disableBackdropTransition={false} disableDiscovery={iOS} swipeAreaWidth={15}>
 		<Toolbar/>
 		<List disablePadding sx={{height: 1}}>
 			{Object.entries(pages).filter(([key]) => key != "settings").map(([key, page]) => (
-					<ListItem key={key} disablePadding onClick={() => setOpenNav(false)}>
+					<ListItem key={key} disablePadding>
 						<ListItemButton component={RLink} to={page.path}>
 							<ListItemIcon>
 								{page.icon}
@@ -63,7 +63,7 @@ export default function Navbar() {
 			))}
 		</List>
 		<Divider/>
-		<ListItem key="Settings" disablePadding  onClick={() => setOpenNav(false)}>
+		<ListItem key="Settings" disablePadding>
 			<ListItemButton component={RLink} to={pages.settings.path}>
 				<ListItemIcon>
 					{pages.settings.icon}

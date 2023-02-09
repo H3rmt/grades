@@ -2,14 +2,13 @@ import {createTheme, CssBaseline, ThemeProvider} from "@mui/material"
 import {LocalizationProvider} from "@mui/x-date-pickers"
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs"
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
-import {ReactElement, ReactNode} from "react"
+import {ReactElement, ReactNode, StrictMode} from "react"
 import {render, RenderOptions} from "@testing-library/react"
 // @ts-ignore
 import * as mediaQuery from 'css-mediaquery'
 import {SnackbarProvider} from "notistack"
 import {Grade, Info, Page, Period, Subject, Type} from "../entity"
 import {GradeModalDefaults, NoteRange} from "../entity/config"
-import {Atom, Provider} from "jotai"
 import {blue, pink} from "@mui/material/colors"
 import {Outlet, ReactRouter, RootRoute, Route, RouterProvider} from "@tanstack/react-router"
 
@@ -35,19 +34,17 @@ export const theme = createTheme({
 	},
 })
 
-type A<T> = [Atom<T>, T]
-
 export const rootRoute = new RootRoute({
 	component: Outlet
 })
 
 
-export function AllTheProviders({ atoms }: { atoms?: A<any>[] }): ({ children }: { children: ReactNode }) => JSX.Element {
+export function AllTheProviders(): ({children}: { children: ReactNode }) => JSX.Element {
 	const queryClient = new QueryClient({
-		defaultOptions: { queries: { retry: 2, networkMode: 'always', refetchOnWindowFocus: false } }
+		defaultOptions: {queries: {retry: 2, networkMode: 'always', refetchOnWindowFocus: false}}
 	})
 
-	return ({ children }: { children: ReactNode }) => {
+	return ({children}: { children: ReactNode }) => {
 		const testRoute = new Route({
 			getParentRoute: () => rootRoute,
 			path: '/',
@@ -58,28 +55,27 @@ export function AllTheProviders({ atoms }: { atoms?: A<any>[] }): ({ children }:
 
 		const router = new ReactRouter({routeTree})
 
-		return <Provider initialValues={atoms}>
+		return <StrictMode>
 			<ThemeProvider theme={theme}>
 				<LocalizationProvider dateAdapter={AdapterDayjs}>
 					<QueryClientProvider client={queryClient}>
-						<CssBaseline enableColorScheme />
+						<CssBaseline enableColorScheme/>
 						<SnackbarProvider maxSnack={5}>
-							<RouterProvider router={router} />
+							<RouterProvider router={router}/>
 						</SnackbarProvider>
 					</QueryClientProvider>
 				</LocalizationProvider>
-			</ThemeProvider>
-		</Provider>
+			</ThemeProvider></StrictMode>
 	}
 }
 
-export function customRender(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'> & { atoms?: A<any>[] }) {
-	return render(ui, { wrapper: AllTheProviders({ atoms: options?.atoms ?? [] }), ...options })
+export function customRender(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
+	return render(ui, {wrapper: AllTheProviders(), ...options})
 }
 
 export function createMatchMedia(width: string): (query: string) => MediaQueryList {
 	return (query: string) => ({
-		matches: mediaQuery.match(query, { width }),
+		matches: mediaQuery.match(query, {width}),
 		addListener: () => {
 		},
 		removeListener: () => {
@@ -129,10 +125,10 @@ export function mockIPC(args: { periods?: Period[], types?: Type[], subjects?: S
 			case "get_weights_js":
 				// @ts-ignore
 				return window[`_${g.callback}`](JSON.stringify([
-					{ "name": "Normal", "value": "{}*1" },
-					{ "name": "Double", "value": "{}*2" },
-					{ "name": "Half", "value": "{}/2" },
-					{ "name": "Ignore", "value": "{}*0" }]))
+					{"name": "Normal", "value": "{}*1"},
+					{"name": "Double", "value": "{}*2"},
+					{"name": "Half", "value": "{}/2"},
+					{"name": "Ignore", "value": "{}*0"}]))
 			default:
 				// @ts-ignore
 				window[`_${g.error}`]("Unknown command: " + g.cmd)
@@ -149,4 +145,4 @@ export function sleep(ms: number) {
 }
 
 export * from '@testing-library/react'
-export { customRender as render }
+export {customRender as render}

@@ -1,6 +1,5 @@
 import {useNoteRange, usePeriods, useSubjects, useTypes, useWeights} from "../commands/get"
 import {CTable} from "../components/Table/Table"
-import {useAtom} from 'jotai'
 import {selectedPeriod} from "./atoms"
 import {getCols} from "./table"
 import {useEditGrades} from "../commands/editList"
@@ -11,7 +10,7 @@ import {Grade, Period, Subject, Type, Weight} from "../entity"
 import ReactQueryDataMultiple from "../components/ReactQueryData/ReactQueryDataMultiple"
 
 export default function Component() {
-	const [period] = useAtom(selectedPeriod)
+	const period = selectedPeriod((state) => state.period)
 
 	const [grades, , gradesS, , , editGrade, removeGrade] = useEditGrades()
 

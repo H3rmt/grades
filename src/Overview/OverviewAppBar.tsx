@@ -1,6 +1,5 @@
 import {Button, MenuItem, Select, SelectChangeEvent, Stack, Typography, useMediaQuery} from "@mui/material"
 import {useGradeModalDefaults, usePeriods} from "../commands/get"
-import {useAtom} from 'jotai'
 import {forwardRef, useEffect} from "react"
 import ReactQueryData from "../components/ReactQueryData/ReactQueryData"
 import {Link} from "@tanstack/react-router"
@@ -11,7 +10,8 @@ import {selectedPeriod} from "./atoms"
 export function OverviewAppBar() {
 	const oneButton = useMediaQuery('(max-width:700px)')
 	const plusButton = useMediaQuery('(max-width:400px)')
-	const [period, setPeriod] = useAtom(selectedPeriod)
+	const period = selectedPeriod((state) => state.period)
+	const setPeriod = selectedPeriod((state) => state.set)
 
 	const [periods, , periodsS] = usePeriods()
 
@@ -23,7 +23,6 @@ export function OverviewAppBar() {
 	}, [gradeModalDefaults])
 
 	const handlePeriodSelectChange = (event: SelectChangeEvent) => {
-		console.log(event.target.value)
 		setPeriod(event.target.value)
 	}
 
