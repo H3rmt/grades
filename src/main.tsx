@@ -12,9 +12,10 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 import {QueryClient, QueryClientProvider,} from "@tanstack/react-query"
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools"
 import {StrictMode} from "react"
-import {blue, pink} from "@mui/material/colors"
+import {blue, pink, red} from "@mui/material/colors"
 import {RouterProvider} from "@tanstack/react-router"
 import {router} from "./ts/router"
+import 'dayjs/locale/de.js'
 
 export const theme = createTheme({
 	palette: {
@@ -25,6 +26,9 @@ export const theme = createTheme({
 		secondary: {
 			main: pink[500]
 		},
+		error: {
+			main: red[800]
+		}
 	},
 	breakpoints: {
 		values: {
@@ -42,8 +46,7 @@ export const queryClient = new QueryClient({defaultOptions: {queries: {retry: 2,
 createRoot(document.getElementById("root") as HTMLElement).render(
 		<StrictMode>
 			<ThemeProvider theme={theme}>
-				<LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={"en"}>
-					{/* TODO cant select de as adapterLocale */}
+				<LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
 					<QueryClientProvider client={queryClient}>
 						<CssBaseline enableColorScheme/>
 						<SnackbarProvider maxSnack={5}>

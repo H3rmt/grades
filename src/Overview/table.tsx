@@ -6,17 +6,16 @@ import {NoteRange} from "../entity/config"
 import {DatePicker, PickersDay} from "@mui/x-date-pickers"
 import dayjs, {Dayjs} from "dayjs"
 import ClearIcon from '@mui/icons-material/Clear'
-import {Toast, toastMessage} from "../ts/toast"
 
 
-export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[], toast: Toast) => Cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[], toast: Toast) => new Map<keyof Grade, ColumnDefs<Grade>>(
+export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[]) => Cols<Grade> = (noteRange: NoteRange, subjects: Subject[], types: Type[], weights: Weight[], periods: Period[]) => new Map<keyof Grade, ColumnDefs<Grade>>(
 		[[
 			"grade", {
 				sort: true,
 				format: g => <Typography
 						color={`rgb(${map(g.grade as number, noteRange.from, noteRange.to, 230, 40)},${map(g.grade as number, noteRange.from, noteRange.to, 40, 230)},0)`}>{g.grade}</Typography>,
-				edit: (g, update) => <TextField fullWidth value={g.grade ?? ""}
-														  onChange={(i) => g.grade = Math.max(Math.min(Number(i.target.value), noteRange?.to), noteRange?.from)}/>,
+				edit: g => <TextField fullWidth value={g.grade ?? ""}
+											 onChange={(i) => g.grade = Math.max(Math.min(Number(i.target.value), noteRange?.to), noteRange?.from)}/>,
 				extraEdit: (g, update) => <Stack direction="row" spacing={1} alignItems="center">
 					<TextField fullWidth value={g.grade ?? ""}
 								  onChange={(i) => g.grade = Math.max(Math.min(Number(i.target.value), noteRange?.to), noteRange?.from)}/>
@@ -88,8 +87,7 @@ export const getCols: (noteRange: NoteRange, subjects: Subject[], types: Type[],
 					</Badge>
 					}/>
 					{g.date && <IconButton onClick={() => {
-						// g.date = null
-						toastMessage('error', 'Not implemented yet', toast)
+						g.date = null
 						update()
 					}}><ClearIcon/>
 					</IconButton>}

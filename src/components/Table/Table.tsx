@@ -96,13 +96,13 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 						{(props.delete ?? props.edit) && <TableCell>
 							<Stack direction="row">
 								{col.edit ?
-										<IconButton color="warning" onClick={() => {
+										<IconButton color="warning" title="Abort Edit" onClick={() => {
 											col.edit = false
 											setData(new Map(data))
 										}}><CloseIcon/>
 										</IconButton>
 										:
-										props.delete && <IconButton color="error" onClick={() => {
+										props.delete && <IconButton color="error" title="Delete Entry" onClick={() => {
 											props.delete && props.delete(col.data.id)
 											data.delete(col.data.id)
 											setData(new Map(data))
@@ -110,7 +110,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 										</IconButton>
 								}
 								{col.edit ?
-										<IconButton color="success" onClick={() => {
+										<IconButton color="success" title="Save Entry" onClick={() => {
 											col.edit = false
 											col.data = {...col.temp}
 											props.edit && props.edit(col.data)
@@ -118,7 +118,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 										}}><SaveButton/>
 										</IconButton>
 										:
-										props.edit && <IconButton color="default" onClick={() => {
+										props.edit && <IconButton color="default" title="Edit Entry" onClick={() => {
 											col.edit = true
 											col.temp = {...col.data}
 											setData(new Map(data))
@@ -126,7 +126,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 										</IconButton>
 								}
 								{col.edit && Array.from(props.cols.values()).some((col) => col.extraEdit || col.extraShow) && <IconButton
-										color="info"
+										color="info" title="Open Extra Edit Option"
 										onClick={() => {
 											col.dialogOpen = !col.dialogOpen
 											setData(new Map(data))

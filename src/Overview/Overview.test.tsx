@@ -67,7 +67,7 @@ describe('Overview', () => {
 			// @ts-ignore - type list > 0 (line above)
 			expect(rgbStringToHex(getComputedStyle(typeScreen.at(0)).color), "Type color not found on Screen").to.equal(type.color)
 
-			const dateScreen = await screen.findAllByText(grade.date)
+			const dateScreen = await screen.findAllByText(grade.date ?? '')
 			expect(dateScreen, "Date not found on Screen").length.greaterThanOrEqual(1)
 
 			const confirmedScreen = await screen.findAllByText(grade.confirmed ?? '')
@@ -116,7 +116,7 @@ const mockData: {
 		grade: 14,
 		subject: 1,
 		type: 1,
-		date: "01-01-2021",
+		date: null,
 		confirmed: null,
 		info: '',
 		period: 1,

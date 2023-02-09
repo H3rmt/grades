@@ -29,7 +29,7 @@ export function OverviewAppBar() {
 
 	return <Stack spacing={2} direction="row" alignItems="center">
 		<ReactQueryData query={periodsS} data={periods} display={(periods) =>
-				<Select color="secondary" autoWidth variant="outlined" sx={{maxWidth: [120, 150, 300, 500, 600]}}
+				<Select color="primary" autoWidth variant="outlined" sx={{maxWidth: [120, 150, 300, 500, 600]}}
 						  value={period ?? "-1"} size="small" onChange={handlePeriodSelectChange} title="Period Select"
 						  renderValue={(i: string) => (periods.find(p => p.id === Number(i))?.name ?? "All Periods")}>
 					<MenuItem key="-1" value="-1">

@@ -33,7 +33,7 @@ import {useSnackbar} from "notistack"
 import ReactQueryData from "../../components/ReactQueryData/ReactQueryData"
 import {useCreateGrade} from "../../commands/create"
 import {RLink} from "../../components/Navbar/Navbar"
-import {useSearch, useNavigate} from "@tanstack/react-router"
+import {useNavigate, useSearch} from "@tanstack/react-router"
 import {newGradeRoute} from "./route"
 
 export type NewGradeModalSearch = {
@@ -41,7 +41,7 @@ export type NewGradeModalSearch = {
 }
 
 type Nullable<T> = {
-    [P in keyof T]: T[P] | null;
+	[P in keyof T]: T[P] | null;
 };
 
 export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only used for testing*/) {
@@ -72,7 +72,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 
 	const [gradeModalDefaults, , gradeModalDefaultsS] = useGradeModalDefaults()
 
-	const navigate = useNavigate({ from: '/overview/newGrade' })
+	const navigate = useNavigate({from: '/overview/newGrade'})
 
 	// set Default values if default values are loaded and grade has not been set to default values yet
 	useEffect(() => {
@@ -198,7 +198,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 		const closeClear = toastMessage("warning", "Cleared create Note window", toast, undo)
 	}
 
-	return <Dialog open={true} fullWidth maxWidth="md" onClose={() => navigate({ to: '/overview' })}>
+	return <Dialog open={true} fullWidth maxWidth="md" onClose={() => navigate({to: '/overview'})}>
 		<DialogTitle variant="h5">New Grade</DialogTitle>
 		<DialogContent>
 			<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
@@ -283,20 +283,26 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 						<Stack spacing={2}>
 							<Typography variant="h6" fontWeight="normal">Date</Typography>
 							{grade !== undefined &&
-									<DatePicker value={dayjs(grade.date, 'DD-MM-YYYY')}
-													onChange={d => {
-														handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
-													}} renderInput={(params) => {
-										// @ts-ignore
-										params.inputProps.value = grade.date
-										return <TextField {...params} color="primary" title="Date Picker"/>
-									}} renderDay={(day, value, DayComponentProps) => <Badge
-											key={day.toString()}
-											overlap="circular"
-											badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.confirmed ? '✨' : null}>
-										<PickersDay {...DayComponentProps} />
-									</Badge>
-									}/>}
+									<Stack direction="row" spacing={1} alignItems="center">
+										<DatePicker value={dayjs(grade.date, 'DD-MM-YYYY')}
+														onChange={d => {
+															handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+														}} renderInput={(params) => {
+											// @ts-ignore
+											params.inputProps.value = grade.date
+											return <TextField {...params} color="primary" title="Date Picker"/>
+										}} renderDay={(day, value, DayComponentProps) => <Badge
+												key={day.toString()}
+												overlap="circular"
+												badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.confirmed ? '✨' : null}>
+											<PickersDay {...DayComponentProps} />
+										</Badge>
+										}/>
+										{grade.date && <IconButton onClick={() => {
+											setGrade({...grade, date: null})
+										}}><ClearIcon/>
+										</IconButton>}
+									</Stack>}
 						</Stack>
 					</Grid>
 					<Grid item xs={12} sm={6} lg={4}>
@@ -364,7 +370,8 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 			}/>
 			<Button component={RLink} to="/overview" type="submit" variant="contained">Close</Button>
 			{grade !== undefined &&
-					<Button component={RLink} to="/overview" onClick={tryCreate} type="submit" variant="contained" color="success">Create</Button>}
+					<Button component={RLink} to="/overview" onClick={tryCreate} type="submit" variant="contained"
+							  color="success">Create</Button>}
 		</DialogActions>
 	</Dialog>
 }

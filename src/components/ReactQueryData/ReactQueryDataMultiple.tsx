@@ -47,8 +47,8 @@ export default function ReactQueryDataMultiple<T extends unknown[]>(props: Props
 
 		if (query.isError) {
 			errors.push(props.error ? props.error(query.error) :
-					<Paper variant="outlined" sx={{borderWidth: 2, padding: 0.5, borderColor: "error.main"}}>
-						<Typography color="error.main" variant="subtitle2">
+					<Paper key={errors.length} variant="outlined" sx={{borderWidth: 2, padding: 0.5, borderColor: "error.main"}}>
+						<Typography color="error.main" variant="subtitle2" fontFamily="monospace">
 							Error: {query.error.toString()}
 						</Typography>
 					</Paper>)
