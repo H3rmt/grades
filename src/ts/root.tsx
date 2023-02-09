@@ -9,6 +9,5 @@ export const rootRoute = new RootRoute({
 		<Box component="main">
 			<Outlet />
 		</Box>
-		{/*<TanStackRouterDevtools position="bottom-right"/>*/}
 	</>,
 })

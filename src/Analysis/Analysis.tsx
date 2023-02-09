@@ -2,7 +2,6 @@ import {Grid, Typography} from "@mui/material"
 import {AnalysisBox} from "../components/AnalysisBox/AnalysisBox"
 import {Chart} from "../components/Chart/Chart"
 import {ReferenceLine} from "recharts"
-import Topbar from "../components/TopBar/Topbar"
 
 type Props = {}
 

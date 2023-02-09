@@ -130,7 +130,7 @@ pub async fn edit_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: 
 								.update(db).await
 								.into_report()
 								.attach_printable("Error editing grade in DB")
-								.attach_printable_lazy(|| format!("edit:{:?} subject:{} type:{} info{} grade:{:?} period:{} weight:{} confirmed:{:?} date:{}",
+								.attach_printable_lazy(|| format!("edit:{:?} subject:{} type:{} info{} grade:{:?} period:{} weight:{} confirmed:{:?} date:{:?}",
 																			 edit, grade.subject, grade.r#type, grade.info, grade.grade, grade.period, grade.weight, grade.confirmed, grade.date))
 								.change_context(DBError)?;
 	
