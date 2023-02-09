@@ -18,8 +18,8 @@ export function OverviewAppBar() {
 	const [gradeModalDefaults] = useGradeModalDefaults()
 
 	useEffect(() => {
-		if (period === undefined && gradeModalDefaults !== undefined)
-			setPeriod((gradeModalDefaults.period_default || "-1").toString())
+		if (period === null && gradeModalDefaults !== undefined)
+			setPeriod((gradeModalDefaults.period_default ?? "-1").toString())
 	}, [gradeModalDefaults])
 
 	const handlePeriodSelectChange = (event: SelectChangeEvent) => {

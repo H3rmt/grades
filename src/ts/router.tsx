@@ -1,10 +1,10 @@
-import {ReactRouter} from '@tanstack/react-router'
+import {createBrowserHistory, Navigate, ReactRouter, Route} from '@tanstack/react-router'
 import {overviewRoute} from "../Overview/route"
 import {newGradeRoute} from "../Overview/NewGradeModal/route"
 import {analysisRoute} from "../Analysis/route"
 import {settingsRoute} from "../Settings/route"
 import {rootRoute} from "./root"
-import {Navigate, Route, createBrowserHistory} from '@tanstack/react-router'
+import {navBarOpen} from "../atoms"
 
 // <Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)} closeText="Continue Edit">
 // 			<Button variant="contained" onClick={() => {
@@ -35,7 +35,10 @@ const routeTree = rootRoute.addChildren([
 const history = createBrowserHistory()
 const router = new ReactRouter({
 	history: history,
-	routeTree
+	routeTree,
+	onRouteChange: () => {
+		navBarOpen.setState({open: false})
+	}
 })
 
 declare module '@tanstack/react-router' {
