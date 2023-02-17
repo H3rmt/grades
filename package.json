@@ -42,7 +42,7 @@
 		"vite": "4.0.4",
 		"@vitejs/plugin-react-swc": "3.0.1",
 
-		"@tauri-apps/cli": "1.2.2",
+		"@tauri-apps/cli": "1.2.3",
 		"@tauri-apps/api": "1.2.0"
 	},
 	"devDependencies": {
