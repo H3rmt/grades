@@ -1,6 +1,6 @@
 [package]
 name = "grades"
-version = "0.3.3"
+version = "0.3.2"
 description = "tauri app to manage grades in school"
 authors = ["H3rmt"]
 edition = "2021"
@@ -9,7 +9,8 @@ repository = "https://github.com/H3rmt/grades/"
 
 [build-dependencies]
 tauri-build = { version = "1.2.1", features = [] }
-built = { version = "^0.6", features = ["git2", "chrono"] }
+#built = { version = "^0.5.2", features = ["git2", "chrono"] }
+built = { git = "https://github.com/lukaslueg/built", branch = "master", features = ["git2", "chrono"] }
 
 [workspace]
 members = [".", "entity", "migrations"]
