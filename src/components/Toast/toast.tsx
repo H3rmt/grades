@@ -2,7 +2,7 @@ import {OptionsObject, SnackbarKey, SnackbarMessage} from "notistack"
 import {Button, IconButton, Stack} from "@mui/material"
 import {useState} from "react"
 import CloseIcon from '@mui/icons-material/Close'
-import {Info} from "../components/Info/Info"
+import {Info} from "../Info/Info"
 
 type variant = "error" | "success" | "warning" | "info"
 

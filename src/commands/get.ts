@@ -1,7 +1,7 @@
 import {Grade, Info, Period, Subject, Type, Weight} from "../entity"
 import {GradeModalDefaults, NoteRange} from "../entity/config"
 import {query} from "./commands"
-import {errorToast} from "../ts/toast"
+import {errorToast} from "../components/Toast/toast"
 import {UseQueryResult} from "@tanstack/react-query"
 import {useSnackbar} from "notistack"
 

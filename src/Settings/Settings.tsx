@@ -42,6 +42,15 @@ export default function Component() {
 
 	const [info, , infoS] = useInfo()
 
+	// usePromptWithNextLocation(
+	// 	"Defaults for new Grade not saved, are you sure you want to leave?",
+	// 	gradeModalDefaultsEdited
+	// )
+	//
+	// usePromptWithNextLocation(
+	// 	"NoteRange not saved, are you sure you want to leave?",
+	// 	noteRangeEdited
+	// )
 
 	const handleCreateType = async (types: Type[]) => {
 		addType({

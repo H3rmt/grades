@@ -25,7 +25,9 @@ describe('Overview', () => {
 	test('Table renders no Grades', async () => {
 		mockIPC(mockData)
 
-		render(<Component/>, {atoms: [[selectedPeriod, null]]})
+		selectedPeriod.setState({period: null})
+
+		render(<Component/>)
 		await act(async () => {
 			await sleep(500)
 		})
@@ -39,7 +41,9 @@ describe('Overview', () => {
 	test('Table renders Grades', async () => {
 		mockIPC(mockData)
 
-		render(<Component/>, {atoms: [[selectedPeriod, "-1"]]})
+		selectedPeriod.setState({period: "-1"})
+
+		render(<Component/>)
 		await act(async () => {
 			await sleep(500)
 		})
