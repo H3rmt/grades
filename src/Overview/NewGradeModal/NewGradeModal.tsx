@@ -284,20 +284,29 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 							<Typography variant="h6" fontWeight="normal">Date</Typography>
 							{grade !== undefined &&
 									<Stack direction="row" spacing={1} alignItems="center">
-										<DatePicker value={dayjs(grade.date, 'DD-MM-YYYY')}
+										<DatePicker value={grade.date ? dayjs(grade.date, 'DD-MM-YYYY') : ''}
 														onChange={d => {
 															handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
 														}} renderInput={(params) => {
 											// @ts-ignore
-											params.inputProps.value = grade.date
+											params.inputProps.value = grade.date ?? ""
 											return <TextField {...params} color="primary" title="Date Picker"/>
-										}} renderDay={(day, value, DayComponentProps) => <Badge
-												key={day.toString()}
-												overlap="circular"
-												badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.confirmed ? '✨' : null}>
-											<PickersDay {...DayComponentProps} />
-										</Badge>
-										}/>
+										}} renderDay={(day, value, DayComponentProps) => {
+											const period = periods.find(p => p.id == grade?.period)
+											if (period !== undefined && period !== null) {
+												if (dayjs(period.to, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) < 0)
+													DayComponentProps.disabled = true
+												if (dayjs(period.from, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
+													DayComponentProps.disabled = true
+											}
+
+											return <Badge
+													key={day.toString()}
+													overlap="circular"
+													badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.confirmed ? '✨' : null}>
+												<PickersDay {...DayComponentProps} />
+											</Badge>
+										}}/>
 										{grade.date && <IconButton onClick={() => {
 											setGrade({...grade, date: null})
 										}}><ClearIcon/>
@@ -308,31 +317,32 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 					<Grid item xs={12} sm={6} lg={4}>
 						<Stack spacing={2}>
 							<Typography variant="h6" fontWeight="normal">Confirmed Date</Typography>
-							{grade !== undefined &&
-									<Stack direction="row" spacing={1} alignItems="center">
-										<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : null}
-														onChange={d => {
-															handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
-														}} renderInput={(params) => {
-											// @ts-ignore
-											params.inputProps.value = grade.confirmed ? grade.confirmed : ""
-											return <TextField {...params} color="primary" title="Confirmed Date Picker"/>
-										}} renderDay={(day, value, DayComponentProps) => {
-											if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
-												DayComponentProps.disabled = true
-											return <Badge
-													key={day.toString()}
-													overlap="circular"
-													badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.date ? '✨' : null}>
-												<PickersDay {...DayComponentProps} />
-											</Badge>
-										}
-										}/>
-										{grade.confirmed && <IconButton onClick={() => {
-											setGrade({...grade, confirmed: null})
-										}}><ClearIcon/>
-										</IconButton>}
-									</Stack>}
+							<ReactQueryData isError={grade === undefined} query={periodsS} data={periods} display={(periods) => {
+								return grade !== undefined &&
+										<Stack direction="row" spacing={1} alignItems="center">
+											<DatePicker value={grade.confirmed ? dayjs(grade.confirmed, 'DD-MM-YYYY') : ""}
+															onChange={d => {
+																handleGradeConfirmedDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+															}} renderInput={(params) => {
+												// @ts-ignore
+												params.inputProps.value = grade.confirmed ?? ""
+												return <TextField {...params} color="primary" title="Confirmed Date Picker"/>
+											}} renderDay={(day, value, DayComponentProps) => {
+												if (dayjs(grade.date, 'DD-MM-YYYY').diff((day as unknown as Dayjs)) > 0)
+													DayComponentProps.disabled = true
+												return <Badge
+														key={day.toString()}
+														overlap="circular"
+														badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == grade.date ? '✨' : null}>
+													<PickersDay {...DayComponentProps} />
+												</Badge>
+											}}/>
+											{grade.confirmed && <IconButton onClick={() => {
+												setGrade({...grade, confirmed: null})
+											}}><ClearIcon/>
+											</IconButton>}
+										</Stack>
+							}}/>
 						</Stack>
 					</Grid>
 					<Grid item xs={12} sm={8} lg={9}>
