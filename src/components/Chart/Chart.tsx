@@ -15,6 +15,9 @@ type Props = {
 	data: Data[],
 	lines: LineT[]
 	extra?: ReactNode
+	width?: number
+	height?: number
+	YAxisDomain?: [number, number]
 };
 
 const getAxisYDomain = (data: Data[], from: number, to: number, refs: string[], offset = 0.05) => {
@@ -87,7 +90,7 @@ export function Chart(props: Props) {
 		if (event.button == 2)
 			setState(initialState)
 		else
-			setState({...state, zoomingAreaStart: Number(nextState.activeLabel) || undefined})
+			setState({...state, zoomingAreaStart: Number(nextState?.activeLabel ?? undefined)})
 	}
 
 	const {zoomLeft, zoomRight, zoomingAreaStart, zoomingAreaEnd, zoomTop, zoomBottom} = state
@@ -99,18 +102,18 @@ export function Chart(props: Props) {
 		</Fab>}
 
 		<LineChart
-				width={900}
-				height={400}
+				width={props.width || 800}
+				height={props.height || 400}
 				data={props.data}
 				style={{backgroundColor: 'transparent'}}
 				onMouseDown={click}
 				onMouseMove={(e) => setState({...state, zoomingAreaEnd: Number(e.activeLabel) || undefined})}
 				onMouseUp={() => zoom()}
 		>
-			<CartesianGrid stroke={theme.palette.primary.main} strokeDasharray="5 5"/>
+			{/*<CartesianGrid stroke={theme.palette.secondary.main} strokeDasharray="5 5"/>*/}
 
-			<XAxis stroke={theme.palette.primary.main} allowDataOverflow domain={[zoomLeft, zoomRight]} dataKey="name" type="number"/>
-			<YAxis stroke={theme.palette.primary.main} allowDataOverflow domain={[zoomBottom, zoomTop]} type="number"/>
+			<XAxis stroke={theme.palette.secondary.main} allowDataOverflow domain={[zoomLeft, zoomRight]} dataKey="x" type="category"/>
+			<YAxis stroke={theme.palette.secondary.main} allowDataOverflow domain={props?.YAxisDomain ?? [0, 15]} type="number"/> {/*domain={[zoomBottom, zoomTop]}*/}
 
 			{props.extra}
 
@@ -123,7 +126,7 @@ export function Chart(props: Props) {
 			<Legend/>
 
 			{props.lines.map((line, i) =>
-					<Line key={i} type="monotone" dataKey={line.name} stroke={line.color} strokeWidth={2}/>
+					<Line animationDuration={500} key={i} type="monotone" dataKey={line.name} stroke={line.color} strokeWidth={4}/>
 			)}
 
 			{zoomingAreaStart && zoomingAreaEnd &&
