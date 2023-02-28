@@ -70,7 +70,7 @@ export default function Component(props: Props) {
 					</AnalysisBox>
 				</Grid>
 				*/}
-				<Grid item xs={12} sm={12} md={12} xl={12}>
+				{/*<Grid item xs={12} sm={12} md={12} xl={12}>
 					<AnalysisBox top={[
 						<Typography variant="h6" color="inherit">
 							FEF
@@ -89,7 +89,7 @@ export default function Component(props: Props) {
 							<ReferenceLine y={6000} label="Avg"/>
 						}></Chart>
 					</AnalysisBox>
-				</Grid>
+				</Grid>*/}
 			</Grid>
 	)
 }
