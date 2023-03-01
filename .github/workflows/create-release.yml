@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ macos-latest, ubuntu-20.04, windows-latest ]
+        platform: [ macos-latest, ubuntu-20.04, windows-latest, ubuntu-latest ]
     runs-on: ${{ matrix.platform }}
     env:
       CARGO_TERM_COLOR: always
@@ -65,9 +65,9 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
       - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-20.04'
+        if: matrix.platform == 'ubuntu-20.04' || matrix.platform == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
-      - uses: h3rmt/tauri-action@v0
+      - uses: h3rmt/tauri-action@v1
         id: build
         env:
           TOKEN: ${{ secrets.PAT }}
@@ -77,6 +77,8 @@ jobs:
           releaseId: ${{ needs.create-release.outputs.release-id }}
           version: ${{ needs.create-release.outputs.version }}
           name: ${{ github.event.repository.name }}
+          addVendorSsl: true
+          checkOpenSslVersion: true
 
   update-release:
     runs-on: ubuntu-latest
@@ -107,7 +109,7 @@ jobs:
 
     steps:
       - name: update-update-json
-        uses: h3rmt/tauri-action@v0
+        uses: h3rmt/tauri-action@v1
         env:
           TOKEN: ${{ secrets.PAT }}
         with:
