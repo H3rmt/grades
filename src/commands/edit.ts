@@ -33,7 +33,7 @@ function edit<T>(key: string, name: string): [T | undefined, Dispatch<SetStateAc
 			toastMessage("success", `Saved ${name}`, toast)
 		},
 		onError: (error) => {
-			errorToast("Error saving ${name}", toast, error)
+			errorToast(`Error saving ${name}`, toast, error)
 		}
 	})
 
