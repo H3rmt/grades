@@ -39,6 +39,7 @@ import { errorToast } from '../ts/toast'
 import { useSnackbar } from 'notistack'
 import { useAtom } from 'jotai';
 import { updateStatus } from './atoms';
+import { update } from './update';
 
 export default function Component() {
 	const [noteRange, setNoteRange, noteRangeS, noteRangeEdited, resetNoteRange, reloadNoteRange, saveNoteRange] = useEditNoteRange()
@@ -145,36 +146,7 @@ export default function Component() {
 			}
 		}
 	}
-
-	const update = async () => {
-		console.log("update");
-		setAskUpdate(false)
-		console.log("ADD onUpdaterEvent");
-		listen('tauri://update-status', function (res) {
-			console.log('New status: ', res)
-		})
-		const unlisten = await onUpdaterEvent(({ error, status }) => {
-			console.log(status);
-			if (status === "ERROR") {
-				console.log("ERROR TOAST");
-				errorToast('Error updating', toast, error as string | Error)
-				console.log("unlisten");
-				unlisten();
-			}
-			if (status === "DONE") {
-				console.log("unlisten");
-				unlisten();
-			}
-			setUpdateState(status)
-		});
-		try {
-			console.log("TRY install");
-			emit('tauri://update-install')
-		} catch (e) {
-			console.error(e);
-		}
-	}
-
+	
 	useEffect(() => {
 		const check = async () => {
 			const { shouldUpdate, manifest } = await checkUpdate()
@@ -413,7 +385,7 @@ export default function Component() {
 			</Grid>
 		</Grid>
 		<Info open={askUpdate} info={updateManifest?.body ?? ''} title="Update" setOpen={() => setAskUpdate(false)}>
-			<Button variant="contained" color='success' onClick={update} >
+			<Button variant="contained" color='success' onClick={() => update({setAskUpdate, setUpdateState, toast})} >
 				Update
 			</Button>
 		</Info>
