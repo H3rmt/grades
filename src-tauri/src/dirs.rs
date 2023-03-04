@@ -75,7 +75,7 @@ pub fn create_conf_toml() -> Result<PathBuf, DirError> {
 	Ok(conf_path)
 }
 
-fn create_cache_folder() -> Result<PathBuf, DirError> {
+pub fn create_cache_folder() -> Result<PathBuf, DirError> {
 	let dir = dirs::cache_dir()
 			.ok_or_else(|| StrError("Could not find cache directory".to_string()))
 			.into_report()
