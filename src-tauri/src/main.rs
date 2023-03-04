@@ -85,6 +85,10 @@ async fn main() {
 			.setup(|app| {
 				if let Ok(matches) = app.get_cli_matches() {
 					println!();
+					let mut terminate_after_cli = true;
+					
+					println!("CLI args: {:?}", matches.args);
+					
 					for m in matches.args {
 						match (m.0.as_ref(), m.1) {
 							("update", d) => {
@@ -110,21 +114,50 @@ async fn main() {
 													log::error!("Error checking for update: {}", e);
 												}
 											}
-											tx.send(()).unwrap();
+											tx.send(()).expect("Error sending message (update)");
 										});
 										
-										rx.recv().unwrap();
+										rx.recv().expect("Error receiving message (update)");
 									}
 								}
 							}
 							("help", d) => {
-								println!("{}", d.value.as_str().unwrap());
+								println!("{}", d.value.as_str().expect("help value is not a string"));
 							}
-							("version", _) => {
-								println!("{}:{}", built_info::PKG_NAME, built_info::PKG_VERSION);
+							("version", d) => {
+//								if let Value::Bool(b) = d.value {
+								// tauri filters all other args, and sets this to Null if -v is passed
+								if let Value::Null = d.value {
+//									if b {
+										println!("{}: {}", built_info::PKG_NAME, built_info::PKG_VERSION);
+//									}
+								}
+							}
+							("config", d) => {
+								if let Value::Bool(b) = d.value {
+									if b {
+										println!("{}", dirs::create_conf_folder().expect("Error creating config folder").display());
+									}
+								}
+							}
+							("data", d) => {
+								if let Value::Bool(b) = d.value {
+									if b {
+										println!("{}", dirs::create_data_folder().expect("Error creating data folder").display());
+									}
+								}
+							}
+							("run", d) => {
+								if let Value::Bool(b) = d.value {
+									if b {
+										terminate_after_cli = false;
+									}
+								}
 							}
 							_ => {}
 						};
+					}
+					if terminate_after_cli {
 						let handle = app.handle();
 						handle.exit(0)
 					}
