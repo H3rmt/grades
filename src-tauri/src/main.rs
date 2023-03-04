@@ -3,7 +3,11 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
+use std::sync::mpsc::channel;
+
 use error_stack::{IntoReport, ResultExt};
+use serde_json::Value;
+use tauri::Manager;
 use tokio::sync::Mutex;
 
 use commands::{
@@ -37,6 +41,7 @@ async fn main() {
 				eprintln!("{:?}", e);
 			}).expect("Error initializing logger");
 	
+	#[cfg(not(debug_assertions))]
 	log::info!("version:{}; target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}, build_on:{}",
 	         built_info::PKG_VERSION, built_info::TARGET, built_info::HOST, built_info::PROFILE, built_info::GIT_COMMIT_HASH.unwrap_or("GIT_COMMIT_HASH MISSING"), built_info::CFG_OS, built_info::CI_PLATFORM.unwrap_or("local"));
 	
@@ -48,6 +53,7 @@ async fn main() {
 				log::error!("{:?}", e);
 			}).expect("Error connecting to DB");
 	
+	// TODO move into setup
 	Migrator::up(&connection, None)
 			.await
 			.into_report()
@@ -70,33 +76,59 @@ async fn main() {
 			.setup(|_app| {
 				#[cfg(debug_assertions)]
 				{
-					use tauri::Manager;
 					let window = _app.get_window("main").unwrap();
 					window.open_devtools();
 					window.close_devtools();
 				}
-//
-//				#[cfg(not(debug_assertions))] {
-//					let handle = _app.handle();
-//					tauri::async_runtime::spawn(async move {
-//						match tauri::updater::builder(handle).check().await {
-//							Ok(update) => {
-//								if update.is_update_available() {
-//									log::info!("Update available: {}", update.latest_version());
-//									if let Err(e) = update.download_and_install().await {
-//										log::error!("Error downloading update: {}", e);
-//									}
-//								} else {
-//									log::info!("No update available");
-//								}
-//							}
-//							Err(e) => {
-//								log::error!("Error checking for update: {}", e);
-//							}
-//						}
-//					});
-//				}
-				
+				Ok(())
+			})
+			.setup(|app| {
+				if let Ok(matches) = app.get_cli_matches() {
+					println!();
+					for m in matches.args {
+						match (m.0.as_ref(), m.1) {
+							("update", d) => {
+								if let Value::Bool(b) = d.value {
+									if b {
+										let (tx, rx) = channel();
+										let handle = app.handle();
+										tauri::async_runtime::spawn(async move {
+											match handle.updater().check().await {
+												Ok(update) => {
+													if update.is_update_available() {
+														log::info!("Update available: {}", update.latest_version());
+														if let Err(e) = update.download_and_install().await {
+															log::error!("Error downloading update: {}", e);
+														} else {
+															log::info!("Update successfully");
+														}
+													} else {
+														log::error!("No update available");
+													}
+												}
+												Err(e) => {
+													log::error!("Error checking for update: {}", e);
+												}
+											}
+											tx.send(()).unwrap();
+										});
+										
+										rx.recv().unwrap();
+									}
+								}
+							}
+							("help", d) => {
+								println!("{}", d.value.as_str().unwrap());
+							}
+							("version", _) => {
+								println!("{}:{}", built_info::PKG_NAME, built_info::PKG_VERSION);
+							}
+							_ => {}
+						};
+						let handle = app.handle();
+						handle.exit(0)
+					}
+				}
 				Ok(())
 			})
 			.manage(connection)
