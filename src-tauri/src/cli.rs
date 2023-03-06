@@ -1,11 +1,14 @@
 use std::sync::mpsc::channel;
+use error_stack::{IntoReport, ResultExt};
+use sea_orm::DatabaseConnection;
 
 use serde_json::Value;
 use tauri::{App, Wry};
+use migrations::{Migrator, MigratorTrait};
 
 use crate::built_info;
 
-pub fn cli(app: &mut App<Wry>) {
+pub fn cli(app: &mut App<Wry>, connection: DatabaseConnection) {
 	if let Ok(matches) = app.get_cli_matches() {
 		println!();
 		let mut terminate_after_cli = true;
@@ -94,24 +97,66 @@ pub fn cli(app: &mut App<Wry>) {
 				("migrations", m) => {
 					for m in m.args {
 						match (m.0.as_ref(), m.1) {
-							("revert", d) => {
-								if let Value::Bool(b) = d.value {
-									if b {
-										println!("Reverting migrations");
-									}
-								}
-							}
 							("list", d) => {
 								if let Value::Bool(b) = d.value {
 									if b {
-										println!("Listing migrations");
+										let (tx, rx) = channel();
+										
+										let conn = connection.clone();
+										tauri::async_runtime::spawn(async move {
+											let vec = Migrator::get_migration_with_status(&conn)
+													.await
+													.into_report()
+													.attach_printable("Error running migrations")
+													.map_err(|e| {
+														log::error!("{:?}", e);
+													}).expect("Error running migrations");
+											tx.send(vec).expect("Error sending message (update)");
+										});
+										
+										let vec = rx.recv().expect("Error receiving message (update)");
+									}
+								}
+							}
+							("revert", d) => {
+								if let Value::Bool(b) = d.value {
+									if b {
+										let (tx, rx) = channel();
+										
+										let conn = connection.clone();
+										tauri::async_runtime::spawn(async move {
+											Migrator::down(&conn, Some(1))
+													.await
+													.into_report()
+													.attach_printable("Error running migrations")
+													.map_err(|e| {
+														log::error!("{:?}", e);
+													}).expect("Error running migrations");
+											tx.send(()).expect("Error sending message (revert)");
+										});
+										
+										rx.recv().expect("Error receiving message (revert)");
 									}
 								}
 							}
 							("apply", d) => {
 								if let Value::Bool(b) = d.value {
 									if b {
-										println!("Applying migrations");
+										let (tx, rx) = channel();
+										
+										let conn = connection.clone();
+										tauri::async_runtime::spawn(async move {
+											Migrator::up(&conn, Some(1))
+													.await
+													.into_report()
+													.attach_printable("Error running migrations")
+													.map_err(|e| {
+														log::error!("{:?}", e);
+													}).expect("Error running migrations");
+											tx.send(()).expect("Error sending message (apply)");
+										});
+										
+										rx.recv().expect("Error receiving message (apply)");
 									}
 								}
 							}
