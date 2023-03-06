@@ -6,7 +6,7 @@ windows_subsystem = "windows"
 use std::sync::mpsc::channel;
 
 use error_stack::{IntoReport, ResultExt};
-use serde_json::Value;
+
 use tauri::Manager;
 use tokio::sync::Mutex;
 
@@ -55,6 +55,7 @@ async fn main() {
 				log::error!("{:?}", e);
 			}).expect("Error connecting to DB");
 	let conn = connection.clone();
+	let conn2 = connection.clone();
 	
 	let cache = Mutex::new(cache::create()
 			.map_err(|e| {
@@ -93,7 +94,7 @@ async fn main() {
 				Ok(())
 			})
 			.setup(|app| {
-				cli(app);
+				cli(app, conn2);
 				Ok(())
 			})
 			.manage(connection)
