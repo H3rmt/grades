@@ -1,10 +1,10 @@
-import {CartesianGrid, Legend, Line, LineChart, ReferenceArea, Tooltip, XAxis, YAxis} from "recharts"
-import {ReactNode, useState} from "react"
-import {Fab, Paper, useTheme} from "@mui/material"
+import {Legend, Line, LineChart, ReferenceArea, Tooltip, XAxis, YAxis} from 'recharts'
+import {ReactNode, useState} from 'react'
+import {Fab, Paper, useTheme} from '@mui/material'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
-import {CategoricalChartState} from "recharts/types/chart/generateCategoricalChart"
+import {CategoricalChartState} from 'recharts/types/chart/generateCategoricalChart'
 
-type Data = { [key: string]: number }
+export type Data = { x: string | number, data: { [key: string]: number } }
 
 type LineT = {
 	name: string
@@ -20,28 +20,26 @@ type Props = {
 	YAxisDomain?: [number, number]
 };
 
-const getAxisYDomain = (data: Data[], from: number, to: number, refs: string[], offset = 0.05) => {
-	const refData = data.slice(from - 1, to)
-
-	let [bottom, top] = [Infinity, -Infinity]
-
-	refs.forEach(ref => {
-		refData.map(d => d[ref]).forEach((d: number) => {
-			if (d > top) top = d
-			if (d < bottom) bottom = d
-		})
-	})
-
-	return [Math.round(bottom - ((top - bottom) * offset)), Math.round(top + ((top - bottom) * offset))]
-}
+// const getAxisYDomain = (data: Data[], from: number, to: number, refs: string[], offset = 0.05) => {
+// 	const refData = data.slice(from - 1, to)
+//
+// 	let [bottom, top] = [Infinity, -Infinity]
+//
+// 	refs.forEach(ref => {
+// 		refData.map(d => d[ref]).forEach((d) => {
+// 			if (d > top) top = d
+// 			if (d < bottom) bottom = d
+// 		})
+// 	})
+//
+// 	return [Math.round(bottom - ((top - bottom) * offset)), Math.round(top + ((top - bottom) * offset))]
+// }
 
 type State = {
 	zoomingAreaStart: number | undefined
 	zoomingAreaEnd: number | undefined
 	zoomLeft: number | string
 	zoomRight: number | string
-	zoomTop: number | string
-	zoomBottom: number | string
 }
 
 const initialState = {
@@ -74,15 +72,11 @@ export function Chart(props: Props) {
 			[zoomingAreaEnd, zoomingAreaStart] = [zoomingAreaStart, zoomingAreaEnd]
 		}
 
-		const [bottom, top] = getAxisYDomain(props.data, Number(zoomingAreaStart), Number(zoomingAreaEnd), ['uv', 'pv'])
-
 		setState({
 			zoomingAreaStart: undefined,
 			zoomingAreaEnd: undefined,
 			zoomLeft: zoomingAreaStart,
 			zoomRight: zoomingAreaEnd,
-			zoomBottom: bottom,
-			zoomTop: top
 		})
 	}
 
@@ -93,9 +87,11 @@ export function Chart(props: Props) {
 			setState({...state, zoomingAreaStart: Number(nextState?.activeLabel ?? undefined)})
 	}
 
-	const {zoomLeft, zoomRight, zoomingAreaStart, zoomingAreaEnd, zoomTop, zoomBottom} = state
+	const {zoomLeft, zoomRight, zoomingAreaStart, zoomingAreaEnd} = state
 
-	return <Paper sx={{userSelect: 'none', overflow: "auto", padding: 1, position: 'relative'}} variant="outlined">
+	const data = props.data.map(d => ({x: d.x, ...d.data}))
+
+	return <Paper sx={{userSelect: 'none', overflow: 'auto', padding: 1, position: 'relative'}} variant="outlined">
 		{zoomLeft !== 'dataMin' && zoomRight !== 'dataMax' && <Fab size="small" color="primary" sx={{position: 'absolute', top: 35, left: 20}}
 																					  onClick={() => setState(initialState)}>
 			<ZoomOutMapIcon/>
@@ -104,7 +100,7 @@ export function Chart(props: Props) {
 		<LineChart
 				width={props.width || 800}
 				height={props.height || 400}
-				data={props.data}
+				data={data}
 				style={{backgroundColor: 'transparent'}}
 				onMouseDown={click}
 				onMouseMove={(e) => setState({...state, zoomingAreaEnd: Number(e.activeLabel) || undefined})}
@@ -113,12 +109,14 @@ export function Chart(props: Props) {
 			{/*<CartesianGrid stroke={theme.palette.secondary.main} strokeDasharray="5 5"/>*/}
 
 			<XAxis stroke={theme.palette.secondary.main} allowDataOverflow domain={[zoomLeft, zoomRight]} dataKey="x" type="category"/>
-			<YAxis stroke={theme.palette.secondary.main} allowDataOverflow domain={props?.YAxisDomain ?? [0, 15]} type="number"/> {/*domain={[zoomBottom, zoomTop]}*/}
+			<YAxis stroke={theme.palette.secondary.main} allowDataOverflow domain={props?.YAxisDomain ?? [0, 15]} type="number"/>
+
+			{/*domain={[zoomBottom, zoomTop]}*/}
 
 			{props.extra}
 
 			<Tooltip animationDuration={100} wrapperStyle={{minWidth: 100, color: '#fff'}} contentStyle={{
-				color: theme.palette.primary.main,
+				color: theme.palette.info.main,
 				backgroundColor: theme.palette.background.default,
 				borderColor: theme.palette.secondary.main
 			}}/>
