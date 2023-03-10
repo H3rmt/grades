@@ -125,10 +125,10 @@ export function mockIPC(args: { periods?: Period[], types?: Type[], subjects?: S
 			case "get_weights_js":
 				// @ts-ignore
 				return window[`_${g.callback}`](JSON.stringify([
-					{"name": "Normal", "value": "{}*1"},
-					{"name": "Double", "value": "{}*2"},
-					{"name": "Half", "value": "{}/2"},
-					{"name": "Ignore", "value": "{}*0"}]))
+					{"name": "Normal", "value": "1"},
+					{"name": "Double", "value": "2"},
+					{"name": "Half", "value": "0.5"},
+					{"name": "Ignore", "value": "0"}]))
 			default:
 				// @ts-ignore
 				window[`_${g.error}`]("Unknown command: " + g.cmd)
