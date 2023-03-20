@@ -27,9 +27,10 @@ export function AnalysisBox(props: Props) {
 						{open ? <KeyboardArrowUp/> : <KeyboardArrowDown/>}
 					</Fab>
 					<Menu anchorEl={anchor.current} open={open} onClose={() => setOpen(false)} sx={{marginTop: 1}}>
-						{props.top.map((item: ReactNode, index: number) =>
+						{props.top}
+						{/*{props.top.map((item: ReactNode, index: number) =>
 								<MenuItem onClick={() => setOpen(false)} key={index}>{item}</MenuItem>)
-						}
+						}*/}
 					</Menu>
 				</>
 			} else if (props.title) {

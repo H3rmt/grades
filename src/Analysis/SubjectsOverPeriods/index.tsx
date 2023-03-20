@@ -4,7 +4,7 @@ import {useEffect, useState} from 'react'
 import ReactQueryDataMultiple from '../../components/ReactQueryData/ReactQueryDataMultiple'
 import {NoteRange} from '../../entity/config'
 import {AnalysisBox} from '../../components/AnalysisBox/AnalysisBox'
-import {Typography} from '@mui/material'
+import {Checkbox, FormControlLabel, FormGroup} from '@mui/material'
 import {Chart, Data} from '../../components/Chart/Chart'
 
 export default function SubjectsOverPeriods() {
@@ -104,17 +104,20 @@ export default function SubjectsOverPeriods() {
 				const subjects = d[0]
 				const noteRange = d[1]
 
-				return <AnalysisBox title="Subjects over Periods" top={
-					subjects.map((subject, index) =>
-							<Typography onClick={() => {
-								if (subjectsSelected.find(s => s.id === subject.id) !== undefined)
-									setSubjectsSelected(subjectsSelected.filter(s => s.id !== subject.id))
-								else
-									setSubjectsSelected([...subjectsSelected, subject])
-							}} key={index} variant="h6" sx={{color: subject.color}}>
-								{subject.name}
-							</Typography>)
-				}>{subjects.length !== 0 && data !== null &&
+				return <AnalysisBox title="Subjects over Periods" top={[
+					<FormGroup>{
+						subjects.map((subject, index) =>
+								<FormControlLabel control={
+									<Checkbox checked={subjectsSelected.find(s => s.id === subject.id) !== undefined} onClick={() => {
+										if (subjectsSelected.find(s => s.id === subject.id) !== undefined)
+											setSubjectsSelected(subjectsSelected.filter(s => s.id !== subject.id))
+										else
+											setSubjectsSelected([...subjectsSelected, subject])
+									}} key={index} sx={{color: subject.color, '&.Mui-checked': {color: subject.color}}}/>
+								} label={subject.name} sx={{color: subject.color, padding: 1}}/>)
+					}
+					</FormGroup>
+				]}>{subjects.length !== 0 && data !== null &&
 						<Chart YAxisDomain={[noteRange.from, noteRange.to]} data={data} lines={
 							subjectsSelected.map(subject => ({
 								name: subject.name,
