@@ -3,7 +3,11 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
+use std::sync::mpsc::channel;
+
 use error_stack::{IntoReport, ResultExt};
+use serde_json::Value;
+use tauri::Manager;
 use tokio::sync::Mutex;
 
 use commands::{
@@ -37,6 +41,7 @@ async fn main() {
 				eprintln!("{:?}", e);
 			}).expect("Error initializing logger");
 	
+	#[cfg(not(debug_assertions))]
 	log::info!("version:{}; target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}, build_on:{}",
 	         built_info::PKG_VERSION, built_info::TARGET, built_info::HOST, built_info::PROFILE, built_info::GIT_COMMIT_HASH.unwrap_or("GIT_COMMIT_HASH MISSING"), built_info::CFG_OS, built_info::CI_PLATFORM.unwrap_or("local"));
 	
@@ -48,6 +53,7 @@ async fn main() {
 				log::error!("{:?}", e);
 			}).expect("Error connecting to DB");
 	
+	// TODO move into setup
 	Migrator::up(&connection, None)
 			.await
 			.into_report()
@@ -70,33 +76,92 @@ async fn main() {
 			.setup(|_app| {
 				#[cfg(debug_assertions)]
 				{
-					use tauri::Manager;
 					let window = _app.get_window("main").unwrap();
 					window.open_devtools();
 					window.close_devtools();
 				}
-//
-//				#[cfg(not(debug_assertions))] {
-//					let handle = _app.handle();
-//					tauri::async_runtime::spawn(async move {
-//						match tauri::updater::builder(handle).check().await {
-//							Ok(update) => {
-//								if update.is_update_available() {
-//									log::info!("Update available: {}", update.latest_version());
-//									if let Err(e) = update.download_and_install().await {
-//										log::error!("Error downloading update: {}", e);
+				Ok(())
+			})
+			.setup(|app| {
+				if let Ok(matches) = app.get_cli_matches() {
+					println!();
+					let mut terminate_after_cli = true;
+					
+					println!("CLI args: {:?}", matches.args);
+					
+					for m in matches.args {
+						match (m.0.as_ref(), m.1) {
+							("update", d) => {
+								if let Value::Bool(b) = d.value {
+									if b {
+										let (tx, rx) = channel();
+										let handle = app.handle();
+										tauri::async_runtime::spawn(async move {
+											match handle.updater().check().await {
+												Ok(update) => {
+													if update.is_update_available() {
+														log::info!("Update available: {}", update.latest_version());
+														if let Err(e) = update.download_and_install().await {
+															log::error!("Error downloading update: {}", e);
+														} else {
+															log::info!("Update successfully");
+														}
+													} else {
+														log::error!("No update available");
+													}
+												}
+												Err(e) => {
+													log::error!("Error checking for update: {}", e);
+												}
+											}
+											tx.send(()).expect("Error sending message (update)");
+										});
+										
+										rx.recv().expect("Error receiving message (update)");
+									}
+								}
+							}
+							("help", d) => {
+								println!("{}", d.value.as_str().expect("help value is not a string"));
+							}
+							("version", d) => {
+//								if let Value::Bool(b) = d.value {
+								// tauri filters all other args, and sets this to Null if -v is passed
+								if let Value::Null = d.value {
+//									if b {
+										println!("{}: {}", built_info::PKG_NAME, built_info::PKG_VERSION);
 //									}
-//								} else {
-//									log::info!("No update available");
-//								}
-//							}
-//							Err(e) => {
-//								log::error!("Error checking for update: {}", e);
-//							}
-//						}
-//					});
-//				}
-				
+								}
+							}
+							("config", d) => {
+								if let Value::Bool(b) = d.value {
+									if b {
+										println!("{}", dirs::create_conf_folder().expect("Error creating config folder").display());
+									}
+								}
+							}
+							("data", d) => {
+								if let Value::Bool(b) = d.value {
+									if b {
+										println!("{}", dirs::create_data_folder().expect("Error creating data folder").display());
+									}
+								}
+							}
+							("run", d) => {
+								if let Value::Bool(b) = d.value {
+									if b {
+										terminate_after_cli = false;
+									}
+								}
+							}
+							_ => {}
+						};
+					}
+					if terminate_after_cli {
+						let handle = app.handle();
+						handle.exit(0)
+					}
+				}
 				Ok(())
 			})
 			.manage(connection)
