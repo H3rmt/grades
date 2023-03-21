@@ -48,7 +48,6 @@
 				},
 				{
 					"name": "version",
-					"short": "v",
 					"description": "Print version information"
 				}
 			],

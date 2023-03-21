@@ -10,11 +10,13 @@ use crate::built_info;
 
 pub fn cli(app: &mut App<Wry>, connection: DatabaseConnection) {
 	if let Ok(matches) = app.get_cli_matches() {
-		println!();
-		let mut terminate_after_cli = true;
+		log::debug!("");
 		
-		println!("CLI args: {:?}", matches.args);
-		println!("CLI sub: {:?}", matches.subcommand);
+		let mut terminate_after_cli = matches.subcommand.is_some() || matches.args.contains_key("help") || matches.args.contains_key("version") || matches.args.iter().any(|m| m.1.occurrences > 0);
+		
+		log::debug!("terminate_after_cli: {:?}", terminate_after_cli);
+		log::debug!("CLI args: {:?}", matches.args);
+		log::debug!("CLI sub: {:?}", matches.subcommand);
 		
 		for m in matches.args {
 			match (m.0.as_ref(), m.1) {
@@ -53,7 +55,7 @@ pub fn cli(app: &mut App<Wry>, connection: DatabaseConnection) {
 				}
 				("version", d) => {
 //								if let Value::Bool(b) = d.value {
-					// tauri filters all other args, and sets this to Null if -v is passed
+					// tauri/clap filters all other args, and sets this to Null if -v is passed
 					if let Value::Null = d.value {
 //									if b {
 						println!("{}: {}", built_info::PKG_NAME, built_info::PKG_VERSION);
@@ -114,7 +116,7 @@ pub fn cli(app: &mut App<Wry>, connection: DatabaseConnection) {
 											tx.send(vec).expect("Error sending message (update)");
 										});
 										
-										let vec = rx.recv().expect("Error receiving message (update)");
+										rx.recv().expect("Error receiving message (update)");
 									}
 								}
 							}
@@ -164,7 +166,7 @@ pub fn cli(app: &mut App<Wry>, connection: DatabaseConnection) {
 						}
 					}
 				}
-				("fef", m) => {}
+				("fef", _m) => {}
 				_ => {}
 			}
 		}
