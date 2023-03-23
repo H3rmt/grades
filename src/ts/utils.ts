@@ -1,3 +1,4 @@
+import { checkUpdate } from "@tauri-apps/api/updater"
 import {useState} from "react"
 
 export function useUndefinedState<T>() {
@@ -24,4 +25,8 @@ export function nextFree(arr: string[], name: string) {
 
 export function randColor() {
 	return "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
+}
+
+export function sleep(time: number) {
+	return new Promise((resolve) => setTimeout(resolve, time))
 }

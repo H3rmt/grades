@@ -3,21 +3,23 @@ extern crate dirs;
 use std::fmt;
 use std::path::PathBuf;
 
+use const_format::formatcp;
 use error_stack::{IntoReport, Result, ResultExt};
 
+use crate::built_info;
 use crate::utils::StrError;
 
 #[cfg(not(debug_assertions))]
-const APPLICATION_NAME: &str = "grades";
+const APPLICATION_NAME: &str = built_info::PKG_NAME;
 #[cfg(debug_assertions)]
-const APPLICATION_NAME: &str = "grades-dev";
+const APPLICATION_NAME: &str = formatcp!("{}-dev", built_info::PKG_NAME);
 
 const DB_NAME: &str = "db.db";
 const CONF_NAME: &str = "conf.toml";
 const CACHE_NAME: &str = "cache.json";
 const LOG_NAME: &str = "log.txt";
 
-fn create_data_folder() -> Result<PathBuf, DirError> {
+pub fn create_data_folder() -> Result<PathBuf, DirError> {
 	let dir = dirs::data_dir()
 			.ok_or_else(|| StrError("Could not find data directory".to_string()))
 			.into_report()
@@ -45,7 +47,7 @@ pub fn create_data_db() -> Result<PathBuf, DirError> {
 	Ok(db_path)
 }
 
-fn create_conf_folder() -> Result<PathBuf, DirError> {
+pub fn create_conf_folder() -> Result<PathBuf, DirError> {
 	let dir = dirs::preference_dir()
 			.ok_or_else(|| StrError("Could not find config directory".to_string()))
 			.into_report()
@@ -68,12 +70,12 @@ pub fn create_conf_toml() -> Result<PathBuf, DirError> {
 				.attach_printable("error creating conf file")
 				.attach_printable_lazy(|| format!("path: {:?}", conf_path))
 				.change_context(DirError)?;
-        log::warn!("created conf toml: {:?}", conf_path);
+		log::warn!("created conf toml: {:?}", conf_path);
 	}
 	Ok(conf_path)
 }
 
-fn create_cache_folder() -> Result<PathBuf, DirError> {
+pub fn create_cache_folder() -> Result<PathBuf, DirError> {
 	let dir = dirs::cache_dir()
 			.ok_or_else(|| StrError("Could not find cache directory".to_string()))
 			.into_report()
@@ -96,7 +98,7 @@ pub fn create_cache_json() -> Result<PathBuf, DirError> {
 				.attach_printable("error creating cache file")
 				.attach_printable_lazy(|| format!("path: {:?}", cache_path))
 				.change_context(DirError)?;
-        log::warn!("created cache json: {:?}", cache_path);
+		log::warn!("created cache json: {:?}", cache_path);
 	}
 	Ok(cache_path)
 }

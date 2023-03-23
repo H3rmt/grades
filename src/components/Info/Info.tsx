@@ -3,6 +3,7 @@ import {ReactNode} from "react"
 
 type Props = {
 	info: string
+	title?: string
 	open: boolean
 	setOpen: (open: boolean) => void
 	closeText?: string
@@ -11,9 +12,9 @@ type Props = {
 
 export function Info(props: Props) {
 	return <Dialog open={props.open}>
-		<DialogTitle>Info</DialogTitle>
+		<DialogTitle>{props?.title ?? "Info"}</DialogTitle>
 		<DialogContent>
-			<DialogContentText>
+			<DialogContentText sx={{whiteSpace: 'pre-wrap'}}>
 				{props.info}
 			</DialogContentText>
 		</DialogContent>
