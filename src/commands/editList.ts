@@ -1,25 +1,25 @@
-import {useUndefinedState} from "../ts/utils"
-import {errorToast, toastMessage} from "../components/Toast/toast"
-import {UseMutateFunction, useQueryClient, UseQueryResult} from "@tanstack/react-query"
-import {createMutation, deleteMutation, editMutation, query, resetMutation} from "./commands"
-import {Dispatch, SetStateAction} from "react"
-import {Grade, Period, Subject, Type} from "../entity"
-import {useSnackbar} from "notistack"
+import {useUndefinedState} from '../ts/utils'
+import {errorToast, toastMessage} from '../components/Toast/toast'
+import {UseMutateFunction, useQueryClient, UseQueryResult} from '@tanstack/react-query'
+import {createMutation, deleteMutation, editMutation, query, resetMutation} from './commands'
+import {Dispatch, SetStateAction} from 'react'
+import {Grade, Period, Subject, Type} from '../entity'
+import {useSnackbar} from 'notistack'
 
 export function useEditGrades() {
-	return editList<Grade>("grade", "grades", "Grades")
+	return editList<Grade>('grade', 'grades', 'Grades')
 }
 
 export function useEditTypes() {
-	return editList<Type>("type", "types", "Types")
+	return editList<Type>('type', 'types', 'Types')
 }
 
 export function useEditSubjects() {
-	return editList<Subject>("subject", "subjects", "Subjects")
+	return editList<Subject>('subject', 'subjects', 'Subjects')
 }
 
 export function useEditPeriods() {
-	return editList<Period>("period", "periods", "Periods")
+	return editList<Period>('period', 'periods', 'Periods')
 }
 
 function editList<T>(cmd: string, key: string, name: string): [T[] | undefined, Dispatch<SetStateAction<T[] | undefined>>, UseQueryResult<T[], string | Error>, () => void, UseMutateFunction<void, string | Error, T>, (t: T) => void, (t: number) => void] {
@@ -37,7 +37,7 @@ function editList<T>(cmd: string, key: string, name: string): [T[] | undefined, 
 
 	const resetServer = resetMutation(queryClient, key, {
 		onSuccess: () => {
-			toastMessage("success", `Reset ${name}`, toast)
+			toastMessage('success', `Reset ${name}`, toast)
 		},
 		onError: (error) => {
 			errorToast(`Error resting ${name}`, toast, error)
@@ -50,15 +50,15 @@ function editList<T>(cmd: string, key: string, name: string): [T[] | undefined, 
 		resetServer.mutate()
 		const undo = () => {
 			setList(old)
-			toastMessage("success", `Undid clear ${name}`, toast)
+			toastMessage('success', `Undid clear ${name}`, toast)
 			closeClear()
 		}
-		const closeClear = toastMessage("warning", `Cleared ${name}`, toast, undo)
+		const closeClear = toastMessage('warning', `Cleared ${name}`, toast, undo)
 	}
 
 	const add = createMutation<T>(queryClient, cmd, {
 		onSuccess: () => {
-			toastMessage("success", `Created ${name}`, toast)
+			toastMessage('success', `Created ${name}`, toast)
 		},
 		onError: (error) => {
 			errorToast(`Error creating ${name}`, toast, error)
@@ -67,7 +67,7 @@ function editList<T>(cmd: string, key: string, name: string): [T[] | undefined, 
 
 	const edit = editMutation<T>(queryClient, cmd, {
 		onSuccess: () => {
-			toastMessage("success", `Edited ${name}`, toast)
+			toastMessage('success', `Edited ${name}`, toast)
 		},
 		onError: (error) => {
 			errorToast(`Error editing ${name}`, toast, error)
@@ -76,7 +76,7 @@ function editList<T>(cmd: string, key: string, name: string): [T[] | undefined, 
 
 	const remove = deleteMutation(queryClient, cmd, {
 		onSuccess: () => {
-			toastMessage("success", `Removed ${name}`, toast)
+			toastMessage('success', `Removed ${name}`, toast)
 		},
 		onError: (error) => {
 			errorToast(`Error removing ${name}`, toast, error)

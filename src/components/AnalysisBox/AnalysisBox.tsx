@@ -1,7 +1,7 @@
-import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp"
-import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown"
-import {Fab, Menu, MenuItem, Paper, Typography} from "@mui/material"
-import {ReactNode, useRef, useState} from "react"
+import KeyboardArrowUp from '@mui/icons-material/KeyboardArrowUp'
+import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
+import {Fab, Menu, MenuItem, Paper, Typography} from '@mui/material'
+import {ReactNode, useRef, useState} from 'react'
 
 type Props = {
 	children: ReactNode,
@@ -15,7 +15,7 @@ export function AnalysisBox(props: Props) {
 	const [open, setOpen] = useState(false)
 
 	return <Paper variant="outlined"
-					  sx={{borderRadius: 4, padding: 1, borderColor: "primary.main", borderWidth: 3, position: 'relative', minHeight: 70}}>
+					  sx={{borderRadius: 4, padding: 1, borderColor: 'primary.main', borderWidth: 3, position: 'relative', minHeight: 70}}>
 		{(() => {
 			if (props.title && props.top) {
 				return <>
@@ -45,7 +45,7 @@ export function AnalysisBox(props: Props) {
 					</Fab>
 					<Menu anchorEl={anchor.current} open={open} onClose={() => setOpen(false)} sx={{marginTop: 1}}>
 						{props.top.map((item: ReactNode, index: number) =>
-								<MenuItem onClick={() => setOpen(false)} key={index}>{item}</MenuItem>)
+							<MenuItem onClick={() => setOpen(false)} key={index}>{item}</MenuItem>)
 						}
 					</Menu>
 				</>

@@ -1,7 +1,7 @@
-import {AppBar, IconButton, Toolbar, Typography} from "@mui/material"
-import MenuIcon from "@mui/icons-material/Menu"
-import {navBarOpen} from "../../atoms"
-import {ReactNode} from "react"
+import {AppBar, IconButton, Toolbar, Typography} from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu'
+import {navBarOpen} from '../../atoms'
+import {ReactNode} from 'react'
 
 type Props = {
 	name: string,

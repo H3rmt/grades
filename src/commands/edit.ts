@@ -1,18 +1,18 @@
-import {useUndefinedState} from "../ts/utils"
-import {errorToast, toastMessage} from "../components/Toast/toast"
-import {useQueryClient, UseQueryResult} from "@tanstack/react-query"
-import {editMutation, query, resetMutation} from "./commands"
-import {Dispatch, SetStateAction} from "react"
-import {GradeModalDefaults, NoteRange} from "../entity/config"
-import {useSnackbar} from "notistack"
+import {useUndefinedState} from '../ts/utils'
+import {errorToast, toastMessage} from '../components/Toast/toast'
+import {useQueryClient, UseQueryResult} from '@tanstack/react-query'
+import {editMutation, query, resetMutation} from './commands'
+import {Dispatch, SetStateAction} from 'react'
+import {GradeModalDefaults, NoteRange} from '../entity/config'
+import {useSnackbar} from 'notistack'
 
 
 export function useEditGradeModalDefaults() {
-	return edit<GradeModalDefaults>("grade_modal_defaults", "New Grade Defaults")
+	return edit<GradeModalDefaults>('grade_modal_defaults', 'New Grade Defaults')
 }
 
 export function useEditNoteRange() {
-	return edit<NoteRange>("note_range", "Note Range")
+	return edit<NoteRange>('note_range', 'Note Range')
 }
 
 function edit<T>(key: string, name: string): [T | undefined, Dispatch<SetStateAction<T | undefined>>, UseQueryResult<T, string | Error>, boolean, () => void, () => void, () => void] {
@@ -30,7 +30,7 @@ function edit<T>(key: string, name: string): [T | undefined, Dispatch<SetStateAc
 
 	const editServer = editMutation<T>(queryClient, key, {
 		onSuccess: () => {
-			toastMessage("success", `Saved ${name}`, toast)
+			toastMessage('success', `Saved ${name}`, toast)
 		},
 		onError: (error) => {
 			errorToast(`Error saving ${name}`, toast, error)
@@ -39,7 +39,7 @@ function edit<T>(key: string, name: string): [T | undefined, Dispatch<SetStateAc
 
 	const resetServer = resetMutation(queryClient, key, {
 		onSuccess: () => {
-			toastMessage("success", `Reset ${name}`, toast)
+			toastMessage('success', `Reset ${name}`, toast)
 		},
 		onError: (error) => {
 			errorToast(`Error resting ${name}`, toast, error)
@@ -52,10 +52,10 @@ function edit<T>(key: string, name: string): [T | undefined, Dispatch<SetStateAc
 		resetServer.mutate()
 		const undo = () => {
 			setEdit(old)
-			toastMessage("success", `Undid reset ${name}`, toast)
+			toastMessage('success', `Undid reset ${name}`, toast)
 			closeClear()
 		}
-		const closeClear = toastMessage("info", `Reset ${name}`, toast, undo)
+		const closeClear = toastMessage('info', `Reset ${name}`, toast, undo)
 	}
 
 	const reload = () => {
@@ -65,18 +65,18 @@ function edit<T>(key: string, name: string): [T | undefined, Dispatch<SetStateAc
 
 		const undo = () => {
 			setEdit(old)
-			toastMessage("success", `Undid reload ${name}`, toast)
+			toastMessage('success', `Undid reload ${name}`, toast)
 			closeClear()
 		}
 
-		const closeClear = toastMessage("warning", `Reloaded ${name}`, toast, undo)
+		const closeClear = toastMessage('warning', `Reloaded ${name}`, toast, undo)
 	}
 
 	const save = () => {
 		if (edit !== undefined) {
 			editServer.mutate(edit)
 		} else {
-			errorToast(`Error saving ${name}`, toast, "No data to save")
+			errorToast(`Error saving ${name}`, toast, 'No data to save')
 		}
 	}
 

@@ -1,7 +1,7 @@
-import { rootRoute } from "../ts/root"
-import { lazy, Suspense } from "react"
-import { Route } from "@tanstack/react-router"
-import Topbar from "../components/TopBar/Topbar"
+import { rootRoute } from '../ts/root'
+import { lazy, Suspense } from 'react'
+import { Route } from '@tanstack/react-router'
+import Topbar from '../components/TopBar/Topbar'
 
 function Analysis() {
 	const Component = lazy(() => import('./Analysis'))

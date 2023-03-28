@@ -1,6 +1,6 @@
-import {UseQueryResult} from "@tanstack/react-query"
-import {Paper, Typography} from "@mui/material"
-import {loadingSkeleton} from "./loadings"
+import {UseQueryResult} from '@tanstack/react-query'
+import {Paper, Typography} from '@mui/material'
+import {loadingSkeleton} from './loadings'
 
 type Props<T> = {
 	query: UseQueryResult<T, string | Error>;
@@ -19,11 +19,11 @@ export default function ReactQueryData<T>(props: Props<T>) {
 
 	if (props.query.isError || props.isError) {
 		return props.error ? props.error(props.query.error ?? 'Error') :
-				<Paper variant="outlined" sx={{borderWidth: 2, padding: 0.5, borderColor: "error.main"}}>
-					<Typography color="error.main" variant="subtitle2" fontFamily="monospace">
+			<Paper variant="outlined" sx={{borderWidth: 2, padding: 0.5, borderColor: 'error.main'}}>
+				<Typography color="error.main" variant="subtitle2" fontFamily="monospace">
 						Error: {(props.query.error ?? 'Error').toString()}
-					</Typography>
-				</Paper>
+				</Typography>
+			</Paper>
 	}
 
 	if (props.data === undefined) {

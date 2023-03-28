@@ -1,10 +1,10 @@
-import { OptionsObject, SnackbarKey, SnackbarMessage } from "notistack"
-import { Button, IconButton, Stack } from "@mui/material"
-import { ReactNode, useState } from "react"
+import { OptionsObject, SnackbarKey, SnackbarMessage } from 'notistack'
+import { Button, IconButton, Stack } from '@mui/material'
+import { ReactNode, useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
-import {Info} from "../Info/Info"
+import {Info} from '../Info/Info'
 
-type variant = "error" | "success" | "warning" | "info"
+type variant = 'error' | 'success' | 'warning' | 'info'
 
 export function errorToast(
 	message: string,
@@ -12,7 +12,7 @@ export function errorToast(
 	error: string | Error,
 	opts?: OptionsObject
 ): () => void {
-	return toastMessage("error", message, toast, undefined, error.toString(), opts)
+	return toastMessage('error', message, toast, undefined, error.toString(), opts)
 }
 
 export function toastMessage(
@@ -24,7 +24,7 @@ export function toastMessage(
 	opts?: OptionsObject,
 	extra?: ReactNode,
 ): () => void {
-	console.debug("toastMessage", variant, message, undo)
+	console.debug('toastMessage', variant, message, undo)
 
 	const key = toast.enqueueSnackbar(message,
 		Object.assign({
@@ -34,8 +34,8 @@ export function toastMessage(
 				horizontal: 'right'
 			},
 			action: action(variant, toast.closeSnackbar, undo, info, extra),
-			persist: variant == "error",
-			autoHideDuration: variant == "warning" ? 4500 : (variant == "info" ? 4000 : 2500)
+			persist: variant == 'error',
+			autoHideDuration: variant == 'warning' ? 4500 : (variant == 'info' ? 4000 : 2500)
 		}, opts)
 	)
 	return () => toast.closeSnackbar(key)

@@ -98,13 +98,13 @@ export function Chart(props: Props) {
 		</Fab>}
 
 		<LineChart
-				width={props.width || 800}
-				height={props.height || 400}
-				data={data}
-				style={{backgroundColor: 'transparent'}}
-				onMouseDown={click}
-				onMouseMove={(e) => setState({...state, zoomingAreaEnd: Number(e.activeLabel) || undefined})}
-				onMouseUp={() => zoom()}
+			width={props.width || 800}
+			height={props.height || 400}
+			data={data}
+			style={{backgroundColor: 'transparent'}}
+			onMouseDown={click}
+			onMouseMove={(e) => setState({...state, zoomingAreaEnd: Number(e.activeLabel) || undefined})}
+			onMouseUp={() => zoom()}
 		>
 			{/*<CartesianGrid stroke={theme.palette.secondary.main} strokeDasharray="5 5"/>*/}
 
@@ -124,7 +124,7 @@ export function Chart(props: Props) {
 			<Legend/>
 
 			{props.lines.map((line, i) =>
-					<Line animationDuration={500} key={i} type="monotone" dataKey={line.name} stroke={line.color} strokeWidth={4}/>
+				<Line animationDuration={500} key={i} type="monotone" dataKey={line.name} stroke={line.color} strokeWidth={4}/>
 			)}
 
 			{zoomingAreaStart && zoomingAreaEnd &&

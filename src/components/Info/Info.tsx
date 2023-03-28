@@ -1,5 +1,5 @@
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@mui/material"
-import {ReactNode} from "react"
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material'
+import {ReactNode} from 'react'
 
 type Props = {
 	info: string
@@ -12,7 +12,7 @@ type Props = {
 
 export function Info(props: Props) {
 	return <Dialog open={props.open}>
-		<DialogTitle>{props?.title ?? "Info"}</DialogTitle>
+		<DialogTitle>{props?.title ?? 'Info'}</DialogTitle>
 		<DialogContent>
 			<DialogContentText sx={{whiteSpace: 'pre-wrap'}}>
 				{props.info}
@@ -20,7 +20,7 @@ export function Info(props: Props) {
 		</DialogContent>
 		<DialogActions>
 			<Button variant="contained" onClick={() => props.setOpen(false)}>
-				{props.closeText ?? "Close"}
+				{props.closeText ?? 'Close'}
 			</Button>
 			{props.children}
 		</DialogActions>
