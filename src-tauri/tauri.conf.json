@@ -32,7 +32,7 @@
 				{
 					"name": "run",
 					"short": "r",
-					"description": "Continue to run app after executing cli command"
+					"description": "Continue to run app after executing cli command (not available for help and version)"
 				},
 				{
 					"name": "config",
@@ -45,10 +45,6 @@
 				{
 					"name": "cache",
 					"description": "Print path to cache directory"
-				},
-				{
-					"name": "version",
-					"description": "Print version information"
 				}
 			],
 			"subcommands": {
