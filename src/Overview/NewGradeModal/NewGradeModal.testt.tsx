@@ -1,10 +1,10 @@
 import {describe, expect, test} from 'vitest'
-import {mockIPC, render, screen, sleep, trimAll} from "../../ts/testingUtils"
-import {Grade, Period, Subject, Type} from "../../entity"
-import {GradeModalDefaults, NoteRange} from "../../entity/config"
-import {act, findByRole, queryByDisplayValue} from "@testing-library/react"
-import dayjs from "dayjs"
-import NewGradeModal from "./NewGradeModal"
+import {mockIPC, render, screen, sleep, trimAll} from '../../ts/testingUtils'
+import {Period, Subject, Type} from '../../entity'
+import {GradeModalDefaults, NoteRange} from '../../entity/config'
+import {act, findByRole, queryByDisplayValue} from '@testing-library/react'
+import dayjs from 'dayjs'
+import NewGradeModal from './NewGradeModal'
 
 describe('NewGradeModal', () => {
 	test('NewGradeModal opens and renders', async () => {
@@ -83,12 +83,12 @@ describe('NewGradeModal', () => {
 
 			const dateInput = await screen.findByTitle('Date Picker')
 			expect(dateInput).to.exist
-			const dateInputInput = queryByDisplayValue(dateInput, dayjs().format("DD-MM-YYYY"), {})
+			const dateInputInput = queryByDisplayValue(dateInput, dayjs().format('DD-MM-YYYY'), {})
 			expect(dateInputInput).to.exist
 
 			const confirmedDateInput = await screen.findByTitle('Confirmed Date Picker')
 			expect(confirmedDateInput).to.exist
-			const confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
+			const confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format('DD-MM-YYYY'), {})
 			expect(confirmedDateInputInput).not.to.exist
 
 			const infoInput = await screen.findByTitle('Info Input')
@@ -135,12 +135,12 @@ describe('NewGradeModal', () => {
 
 			const dateInput = await screen.findByTitle('Date Picker')
 			expect(dateInput).to.exist
-			const dateInputInput = queryByDisplayValue(dateInput, dayjs().format("DD-MM-YYYY"), {})
+			const dateInputInput = queryByDisplayValue(dateInput, dayjs().format('DD-MM-YYYY'), {})
 			expect(dateInputInput).to.exist
 
 			const confirmedDateInput = await screen.findByTitle('Confirmed Date Picker')
 			expect(confirmedDateInput).to.exist
-			const confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
+			const confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format('DD-MM-YYYY'), {})
 			expect(confirmedDateInputInput).not.to.exist
 			const confirmedDateInputInput2 = queryByDisplayValue(confirmedDateInput, '', {})
 			expect(confirmedDateInputInput2).to.exist
@@ -192,12 +192,12 @@ describe('NewGradeModal', () => {
 
 			const dateInput = await screen.findByTitle('Date Picker')
 			expect(dateInput).to.exist
-			const dateInputInput = queryByDisplayValue(dateInput, dayjs().add(-7, "day").format("DD-MM-YYYY"), {})
+			const dateInputInput = queryByDisplayValue(dateInput, dayjs().add(-7, 'day').format('DD-MM-YYYY'), {})
 			expect(dateInputInput).to.exist
 
 			const confirmedDateInput = await screen.findByTitle('Confirmed Date Picker')
 			expect(confirmedDateInput).to.exist
-			const confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
+			const confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format('DD-MM-YYYY'), {})
 			expect(confirmedDateInputInput).to.exist
 
 			const infoInput = await screen.findByTitle('Info Input')
@@ -242,12 +242,12 @@ describe('NewGradeModal', () => {
 
 			const dateInput = await screen.findByTitle('Date Picker')
 			expect(dateInput).to.exist
-			const dateInputInput = queryByDisplayValue(dateInput, dayjs().add(-7, "day").format("DD-MM-YYYY"), {})
+			const dateInputInput = queryByDisplayValue(dateInput, dayjs().add(-7, 'day').format('DD-MM-YYYY'), {})
 			expect(dateInputInput).to.exist
 
 			const confirmedDateInput = await screen.findByTitle('Confirmed Date Picker')
 			expect(confirmedDateInput).to.exist
-			const confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format("DD-MM-YYYY"), {})
+			const confirmedDateInputInput = queryByDisplayValue(confirmedDateInput, dayjs().format('DD-MM-YYYY'), {})
 			expect(confirmedDateInputInput).to.exist
 
 			const infoInput = await screen.findByTitle('Info Input')
@@ -263,49 +263,30 @@ describe('NewGradeModal', () => {
 
 const mockData = {
 	types: [{
-		id: 1, name: 'Type1', color: "#2f2f2f"
+		id: 1, name: 'Type1', color: '#2f2f2f'
 	}, {
-		id: 2, name: 'Type2', color: "#ffffff"
-	}],
-	subjects: [{
-		id: 1, name: 'Subject1', color: "#111111"
+		id: 2, name: 'Type2', color: '#ffffff'
+	}], subjects: [{
+		id: 1, name: 'Subject1', color: '#111111'
 	}, {
-		id: 2, name: 'Subject2', color: "#222222"
-	}],
-	periods: [{
-		id: 1, name: 'Period1', from: "2021-01-01", to: "2021-01-02"
+		id: 2, name: 'Subject2', color: '#222222'
+	}], periods: [{
+		id: 1, name: 'Period1', from: '2021-01-01', to: '2021-01-02'
 	}, {
-		id: 2, name: 'Period2', from: "2021-01-03", to: "2021-01-04"
-	}],
-	noteRange: {
+		id: 2, name: 'Period2', from: '2021-01-03', to: '2021-01-04'
+	}], noteRange: {
 		from: 5, to: 15
-	},
-	gradeModalDefaults: {
-		grade_default: 12,
-		type_default: 1,
-		subject_default: 2,
-		period_default: 1
+	}, gradeModalDefaults: {
+		grade_default: 12, type_default: 1, subject_default: 2, period_default: 1
 	} satisfies GradeModalDefaults
 } satisfies {
-	types: Type[],
-	subjects: Subject[],
-	periods: Period[],
-	noteRange: NoteRange,
-	gradeModalDefaults: GradeModalDefaults
+	types: Type[], subjects: Subject[], periods: Period[], noteRange: NoteRange, gradeModalDefaults: GradeModalDefaults
 }
 
 const mockData2 = {
-	...mockData,
-	gradeModalDefaults: {
-		grade_default: 10,
-		type_default: null,
-		subject_default: null,
-		period_default: null
+	...mockData, gradeModalDefaults: {
+		grade_default: 10, type_default: null, subject_default: null, period_default: null
 	}
 } satisfies {
-	types: Type[],
-	subjects: Subject[],
-	periods: Period[],
-	noteRange: NoteRange,
-	gradeModalDefaults: GradeModalDefaults
+	types: Type[], subjects: Subject[], periods: Period[], noteRange: NoteRange, gradeModalDefaults: GradeModalDefaults
 }

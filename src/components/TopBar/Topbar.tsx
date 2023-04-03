@@ -1,17 +1,16 @@
-import {AppBar, IconButton, Toolbar, Typography} from "@mui/material"
-import MenuIcon from "@mui/icons-material/Menu"
-import {useState} from "react"
-import {useAtom} from "jotai"
-import {navBarOpen} from "../../atoms"
-import {useMatch} from "@tanstack/react-router"
+import {AppBar, IconButton, Toolbar, Typography} from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu'
+import {navBarOpen} from '../../atoms'
+import {ReactNode} from 'react'
 
 type Props = {
 	name: string,
-	children?: React.ReactNode,
+	children?: ReactNode,
 }
 
 export default function Topbar(props: Props) {
-	const [openNav, setOpenNav] = useAtom(navBarOpen)
+	const openNav = navBarOpen((state) => state.open)
+	const setOpenNav = navBarOpen((state) => state.set)
 
 	return <AppBar component="nav" position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
 		<Toolbar>

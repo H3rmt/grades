@@ -1,4 +1,12 @@
-import { UpdateStatus } from '@tauri-apps/api/updater'
-import {atom} from 'jotai'
+import {UpdateStatus} from '@tauri-apps/api/updater'
+import {create} from 'zustand'
 
-export const updateStatus = atom<UpdateStatus | 'NONE'>('NONE')
+type UpdateState = {
+	status: UpdateStatus | 'NONE'
+	set: (by: UpdateStatus | 'NONE') => void
+}
+
+export const updateStatus = create<UpdateState>(set => ({
+	status: 'NONE',
+	set: (by: UpdateStatus | 'NONE') => set({status: by})
+}))

@@ -1,7 +1,7 @@
 import {describe, expect, test} from 'vitest'
-import {Period} from "../entity"
-import {createMatchMedia, getByRole, mockIPC, render, screen} from "../ts/testingUtils"
-import userEvent from "@testing-library/user-event"
+import {Period} from '../entity'
+import {createMatchMedia, getByRole, mockIPC, render, screen} from '../ts/testingUtils'
+import userEvent from '@testing-library/user-event'
 import {OverviewAppBar} from './OverviewAppBar'
 
 describe('OverviewAppBar', () => {
@@ -9,7 +9,7 @@ describe('OverviewAppBar', () => {
 		mockIPC(mockData)
 
 		test('renders 1000px Buttons', async () => {
-			window.matchMedia = createMatchMedia("1000px")
+			window.matchMedia = createMatchMedia('1000px')
 			render(<OverviewAppBar/>)
 
 			expect(await screen.findByText('New Confirmed Grade')).to.exist
@@ -20,7 +20,7 @@ describe('OverviewAppBar', () => {
 			console.info('2 Buttons on 1000px rendered')
 		})
 		test('renders 600px Buttons', async () => {
-			window.matchMedia = createMatchMedia("600px")
+			window.matchMedia = createMatchMedia('600px')
 			render(<OverviewAppBar/>)
 
 			expect(await screen.findByText('New Grade')).to.exist
@@ -30,7 +30,7 @@ describe('OverviewAppBar', () => {
 			console.info('1 Button on 600px rendered')
 		})
 		test('renders 300px Buttons', async () => {
-			window.matchMedia = createMatchMedia("300px")
+			window.matchMedia = createMatchMedia('300px')
 			render(<OverviewAppBar/>)
 
 			expect(await screen.queryByText('New Grade')).not.to.exist
@@ -55,7 +55,7 @@ describe('OverviewAppBar', () => {
 		expect(periodSelect).to.exist
 		periodSelect = periodSelect as HTMLSelectElement
 
-		const periodSelectButton = getByRole(periodSelect, "button")
+		const periodSelectButton = getByRole(periodSelect, 'button')
 
 		for (const period of mockData.periods) {
 			await userEvent.click(periodSelectButton)
@@ -74,10 +74,10 @@ const mockData: {
 	periods: Period[],
 } = {
 	periods: [{
-		id: 1, name: 'Period1', from: "2021-01-01", to: "2021-01-02"
+		id: 1, name: 'Period1', from: '2021-01-01', to: '2021-01-02'
 	}, {
-		id: 2, name: 'Period2', from: "2022-01-01", to: "2022-01-02"
+		id: 2, name: 'Period2', from: '2022-01-01', to: '2022-01-02'
 	}, {
-		id: 3, name: 'TEST', from: "2023-01-01", to: "2023-01-02"
+		id: 3, name: 'TEST', from: '2023-01-01', to: '2023-01-02'
 	}],
 }
