@@ -17,6 +17,16 @@
         "semi": [
             2,
             "never"
-        ]
+        ],
+        "quotes": [
+            2,
+            "single"
+        ],
+        "indent": [
+            2,
+            "tab"
+        ],
+        "no-mixed-spaces-and-tabs": "off",
+        "@typescript-eslint/ban-ts-comment": "off"
     }
 }

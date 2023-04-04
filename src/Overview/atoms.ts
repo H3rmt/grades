@@ -1,4 +1,11 @@
-import {atom} from 'jotai'
+import {create} from 'zustand'
 
-export const selectedPeriod = atom<string | undefined>(undefined)
+interface PeriodsState {
+	period: string | null
+	set: (by: string) => void
+}
 
+export const selectedPeriod = create<PeriodsState>(set => ({
+	period: null,
+	set: (by: string) => set({period: by})
+}))

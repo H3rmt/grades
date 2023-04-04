@@ -20,6 +20,56 @@
 				"all": true
 			}
 		},
+		"cli": {
+			"description": "App to manage grades in school",
+			"longDescription": "A desktop app to manage grades in school",
+			"args": [
+				{
+					"name": "update",
+					"short": "u",
+					"description": "Update app if a new version is available"
+				},
+				{
+					"name": "run",
+					"short": "r",
+					"description": "Continue to run app after executing cli command (not available for help and version)"
+				},
+				{
+					"name": "config",
+					"description": "Print path to config directory"
+				},
+				{
+					"name": "data",
+					"description": "Print path to data directory"
+				},
+				{
+					"name": "cache",
+					"description": "Print path to cache directory"
+				}
+			],
+			"subcommands": {
+				"migrations": {
+					"description": "Manage migrations",
+					"args": [
+						{
+							"name": "apply",
+							"short": "a",
+							"description": "Run migrations"
+						},
+						{
+							"name": "revert",
+							"short": "r",
+							"description": "Revert migrations"
+						},
+						{
+							"name": "list",
+							"short": "l",
+							"description": "List migrations"
+						}
+					]
+				}
+			}
+		},
 		"bundle": {
 			"active": true,
 			"category": "DeveloperTool",
@@ -61,7 +111,7 @@
 			"endpoints": [
 				"https://gist.githubusercontent.com/H3rmt/9f0a67b7ad425e9fb74b32f6afcab111/raw/"
 			],
-			"dialog": true,
+			"dialog": false,
 			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQ0ODhFRDEwQkFCODgyMTgKUldRWWdyaTZFTzJJUkd1VWQvZEt5eVFxRXViYnBnMkRUNUFwd3VmalU1bDBTU2RqL1dad29XVEQK",
 			"windows": {
 				"installMode": "basicUi"

@@ -1,6 +1,6 @@
-import { RootRoute, Outlet } from "@tanstack/react-router"
-import { Box, Toolbar } from "@mui/material"
-import Navbar from "../components/Navbar/Navbar"
+import { RootRoute, Outlet } from '@tanstack/react-router'
+import { Box, Toolbar } from '@mui/material'
+import Navbar from '../components/Navbar/Navbar'
 
 export const rootRoute = new RootRoute({
 	component: () => <>
@@ -9,6 +9,5 @@ export const rootRoute = new RootRoute({
 		<Box component="main">
 			<Outlet />
 		</Box>
-		{/*<TanStackRouterDevtools position="bottom-right"/>*/}
 	</>,
 })

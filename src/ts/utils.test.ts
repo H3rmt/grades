@@ -1,8 +1,8 @@
 import {expect, test} from 'vitest'
-import {capitalizeFirstLetter, map, nextFree, randColor} from "./utils"
+import {capitalizeFirstLetter, map, nextFree, randColor} from './utils'
 
 test('capitalizeFirstLetter', () => {
-	expect(capitalizeFirstLetter("test")).to.equal("Test")
+	expect(capitalizeFirstLetter('test')).to.equal('Test')
 })
 
 test('map', () => {
@@ -12,8 +12,8 @@ test('map', () => {
 })
 
 test('nextFree', () => {
-	expect(nextFree(["test", "test 1", "test 2"], "test")).to.equal("test 3")
-	expect(nextFree(["grade 1", "grade 2"], "grade")).to.equal("grade")
+	expect(nextFree(['test', 'test 1', 'test 2'], 'test')).to.equal('test 3')
+	expect(nextFree(['grade 1', 'grade 2'], 'grade')).to.equal('grade')
 })
 
 test('randColor', () => {

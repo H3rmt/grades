@@ -23,7 +23,7 @@ pub struct Model {
 	pub grade: Option<i32>,
 	pub period: i32,
 	pub confirmed: Option<String>,
-	pub date: String,
+	pub date: Option<String>,
 	pub weight: String,
 }
 

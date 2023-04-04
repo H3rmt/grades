@@ -3,7 +3,11 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
+use std::sync::mpsc::channel;
+
 use error_stack::{IntoReport, ResultExt};
+
+use tauri::Manager;
 use tokio::sync::Mutex;
 
 use commands::{
@@ -20,6 +24,7 @@ use commands::{
 };
 use logging::logger;
 use migrations::{Migrator, MigratorTrait};
+use crate::cli::cli;
 
 mod db;
 mod commands;
@@ -28,6 +33,7 @@ mod cache;
 mod config;
 mod utils;
 mod logging;
+mod cli;
 
 #[tokio::main]
 async fn main() {
@@ -37,6 +43,7 @@ async fn main() {
 				eprintln!("{:?}", e);
 			}).expect("Error initializing logger");
 	
+	#[cfg(not(debug_assertions))]
 	log::info!("version:{}; target:{}; host:{}; profile:{}; commit_hash:{}; OS:{}, build_on:{}",
 	         built_info::PKG_VERSION, built_info::TARGET, built_info::HOST, built_info::PROFILE, built_info::GIT_COMMIT_HASH.unwrap_or("GIT_COMMIT_HASH MISSING"), built_info::CFG_OS, built_info::CI_PLATFORM.unwrap_or("local"));
 	
@@ -47,14 +54,8 @@ async fn main() {
 			.map_err(|e| {
 				log::error!("{:?}", e);
 			}).expect("Error connecting to DB");
-	
-	Migrator::up(&connection, None)
-			.await
-			.into_report()
-			.attach_printable("Error running migrations")
-			.map_err(|e| {
-				log::error!("{:?}", e);
-			}).expect("Error running migrations");
+	let conn = connection.clone();
+	let conn2 = connection.clone();
 	
 	let cache = Mutex::new(cache::create()
 			.map_err(|e| {
@@ -70,33 +71,30 @@ async fn main() {
 			.setup(|_app| {
 				#[cfg(debug_assertions)]
 				{
-					use tauri::Manager;
 					let window = _app.get_window("main").unwrap();
 					window.open_devtools();
 					window.close_devtools();
 				}
-//
-//				#[cfg(not(debug_assertions))] {
-//					let handle = _app.handle();
-//					tauri::async_runtime::spawn(async move {
-//						match tauri::updater::builder(handle).check().await {
-//							Ok(update) => {
-//								if update.is_update_available() {
-//									log::info!("Update available: {}", update.latest_version());
-//									if let Err(e) = update.download_and_install().await {
-//										log::error!("Error downloading update: {}", e);
-//									}
-//								} else {
-//									log::info!("No update available");
-//								}
-//							}
-//							Err(e) => {
-//								log::error!("Error checking for update: {}", e);
-//							}
-//						}
-//					});
-//				}
+				Ok(())
+			})
+			.setup(|_| {
+				let (tx, rx) = channel();
+				tauri::async_runtime::spawn(async move {
+					Migrator::up(&conn, None)
+							.await
+							.into_report()
+							.attach_printable("Error running migrations")
+							.map_err(|e| {
+								log::error!("{:?}", e);
+							}).expect("Error running migrations");
+					tx.send(()).expect("Error sending message (update)");
+				});
 				
+				rx.recv().expect("Error receiving message (update)");
+				Ok(())
+			})
+			.setup(|app| {
+				cli(app, conn2);
 				Ok(())
 			})
 			.manage(connection)
