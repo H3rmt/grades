@@ -8,6 +8,7 @@
 
 		"tauri dev": "tauri dev",
 		"tauri build": "tauri build",
+		"tauri build ssl": "tauri build --features vendored_ssl",
 		"build ts entity": "cd src-tauri/entity && cargo test && cd .. && cargo test",
 
 		"test": "vitest",
