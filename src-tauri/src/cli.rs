@@ -1,9 +1,10 @@
 use std::sync::mpsc::channel;
+
 use error_stack::{IntoReport, ResultExt};
 use sea_orm::DatabaseConnection;
-
 use serde_json::Value;
 use tauri::{App, Wry};
+
 use migrations::{Migrator, MigratorTrait};
 
 use crate::built_info;
@@ -106,17 +107,19 @@ pub fn cli(app: &mut App<Wry>, connection: DatabaseConnection) {
 										
 										let conn = connection.clone();
 										tauri::async_runtime::spawn(async move {
-											let vec = Migrator::get_migration_with_status(&conn)
+											let vec = Migrator::get_migration_models(&conn)
 													.await
 													.into_report()
-													.attach_printable("Error running migrations")
+													.attach_printable("Error loading migrations")
 													.map_err(|e| {
 														log::error!("{:?}", e);
-													}).expect("Error running migrations");
+													}).expect("Error loading migrations");
+											
 											tx.send(vec).expect("Error sending message (update)");
 										});
 										
-										rx.recv().expect("Error receiving message (update)");
+										let vec = rx.recv().expect("Error receiving message (update)");
+										println!("{:#?}", vec);
 									}
 								}
 							}
@@ -138,6 +141,7 @@ pub fn cli(app: &mut App<Wry>, connection: DatabaseConnection) {
 										});
 										
 										rx.recv().expect("Error receiving message (revert)");
+										println!("Reverted migration");
 									}
 								}
 							}
@@ -159,6 +163,7 @@ pub fn cli(app: &mut App<Wry>, connection: DatabaseConnection) {
 										});
 										
 										rx.recv().expect("Error receiving message (apply)");
+										println!("Applied migration");
 									}
 								}
 							}

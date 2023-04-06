@@ -1,5 +1,4 @@
-import {Grid, Typography} from '@mui/material'
-import {AnalysisBox} from '../components/AnalysisBox/AnalysisBox'
+import {Grid} from '@mui/material'
 import SubjectsOverPeriods from './SubjectsOverPeriods'
 
 export default function Component() {
@@ -8,7 +7,7 @@ export default function Component() {
 			<SubjectsOverPeriods/>
 		</Grid>
 
-		<Grid item xs={12} sm={12} md={6} xl={6}>
+		{/*<Grid item xs={12} sm={12} md={6} xl={6}>
 			<AnalysisBox title="TITLE">
 						INTERN
 			</AnalysisBox>
@@ -29,7 +28,7 @@ export default function Component() {
 				</Typography>
 			]}>
 			</AnalysisBox>
-		</Grid>
+		</Grid>*/}
 	</Grid>
 	)
 }

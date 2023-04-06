@@ -142,9 +142,7 @@ export default function Component() {
 
 	const toast = useSnackbar()
 
-	const handleClickUpdate = () => {
-		console.log('handleClickUpdate')
-		switch (updateState) {
+	const handleClickUpdate = () => {switch (updateState) {
 		case 'NONE':
 		case 'ERROR': {
 			setAskUpdate(true)
@@ -347,7 +345,10 @@ export default function Component() {
 						{(() => {
 							switch (updateState) {
 							case 'NONE':
-								return <BrowserUpdatedIcon color="info"/>
+								if (updateAvailable)
+									return <BrowserUpdatedIcon color="info"/>
+								else
+									return <BrowserUpdatedIcon color="disabled"/>
 							case 'DONE':
 								return <CheckCircleOutlineIcon color="success"/>
 							case 'PENDING':
