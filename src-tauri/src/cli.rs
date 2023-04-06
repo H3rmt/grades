@@ -30,18 +30,18 @@ pub fn cli(app: &mut App<Wry>, connection: DatabaseConnection) {
 								match handle.updater().check().await {
 									Ok(update) => {
 										if update.is_update_available() {
-											log::info!("Update available: {}", update.latest_version());
+											println!("Update available: {}", update.latest_version());
 											if let Err(e) = update.download_and_install().await {
-												log::error!("Error downloading update: {}", e);
+												println!("Error downloading update: {}", e);
 											} else {
-												log::info!("Update successfully");
+												println!("Update successfully");
 											}
 										} else {
-											log::error!("No update available");
+											println!("No update available");
 										}
 									}
 									Err(e) => {
-										log::error!("Error checking for update: {}", e);
+										println!("Error checking for update: {}", e);
 									}
 								}
 								tx.send(()).expect("Error sending message (update)");
