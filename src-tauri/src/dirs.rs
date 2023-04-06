@@ -3,6 +3,7 @@ extern crate dirs;
 use std::fmt;
 use std::path::PathBuf;
 
+#[cfg(debug_assertions)]
 use const_format::formatcp;
 use error_stack::{IntoReport, Result, ResultExt};
 
