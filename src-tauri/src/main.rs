@@ -6,8 +6,6 @@ windows_subsystem = "windows"
 use std::sync::mpsc::channel;
 
 use error_stack::{IntoReport, ResultExt};
-
-use tauri::Manager;
 use tokio::sync::Mutex;
 
 use commands::{
@@ -24,6 +22,7 @@ use commands::{
 };
 use logging::logger;
 use migrations::{Migrator, MigratorTrait};
+
 use crate::cli::cli;
 
 mod db;
@@ -68,16 +67,9 @@ async fn main() {
 			}).expect("Error connecting to config"));
 	
 	tauri::Builder::default()
-			.setup(|_app| {
-				#[cfg(debug_assertions)]
-				{
-					let window = _app.get_window("main").unwrap();
-					window.open_devtools();
-					window.close_devtools();
-				}
-				Ok(())
-			})
-			.setup(|_| {
+			.setup(|app| {
+				cli(app, conn2);
+				
 				let (tx, rx) = channel();
 				tauri::async_runtime::spawn(async move {
 					Migrator::up(&conn, None)
@@ -89,12 +81,18 @@ async fn main() {
 							}).expect("Error running migrations");
 					tx.send(()).expect("Error sending message (update)");
 				});
-				
 				rx.recv().expect("Error receiving message (update)");
-				Ok(())
-			})
-			.setup(|app| {
-				cli(app, conn2);
+				
+				
+				#[cfg(debug_assertions)]
+				{
+					use tauri::Manager;
+					
+					let window = app.get_window("main").unwrap();
+					window.open_devtools();
+					window.close_devtools();
+				}
+				
 				Ok(())
 			})
 			.manage(connection)
