@@ -1,10 +1,12 @@
-import { OptionsObject, SnackbarKey, SnackbarMessage } from 'notistack'
-import { Button, IconButton, Stack } from '@mui/material'
-import { ReactNode, useState } from 'react'
+import {OptionsObject, SnackbarKey, SnackbarMessage} from 'notistack'
+import {Button, IconButton, Stack} from '@mui/material'
+import {ReactNode, useState} from 'react'
 import CloseIcon from '@mui/icons-material/Close'
-import {Info} from '../Info/Info'
+import {Info, Props as InfoProps} from '../Info/Info'
 
 type variant = 'error' | 'success' | 'warning' | 'info'
+
+type info = Pick<InfoProps, 'info' | 'children' | 'closeText' | 'title'>
 
 export function errorToast(
 	message: string,
@@ -12,7 +14,7 @@ export function errorToast(
 	error: string | Error,
 	opts?: OptionsObject
 ): () => void {
-	return toastMessage('error', message, toast, undefined, error.toString(), opts)
+	return toastMessage('error', message, toast, undefined, {title: 'Error', info: error.toString()}, opts)
 }
 
 export function toastMessage(
@@ -20,7 +22,7 @@ export function toastMessage(
 	message: string,
 	toast: Toast,
 	undo?: (id: SnackbarKey) => void,
-	info?: string,
+	info?: info | string,
 	opts?: OptionsObject,
 	extra?: ReactNode,
 ): () => void {
@@ -33,7 +35,7 @@ export function toastMessage(
 				vertical: 'bottom',
 				horizontal: 'right'
 			},
-			action: action(variant, toast.closeSnackbar, undo, info, extra),
+			action: action(variant, toast.closeSnackbar, undo, typeof info === 'string' ? {info} : info, extra),
 			persist: variant == 'error',
 			autoHideDuration: variant == 'warning' ? 4500 : (variant == 'info' ? 4000 : 2500)
 		}, opts)
@@ -50,7 +52,7 @@ function action(
 	variant: variant,
 	close: (id: SnackbarKey) => void,
 	undo?: (id: SnackbarKey) => void,
-	info?: string,
+	info?: info,
 	extra?: ReactNode
 ): (id: SnackbarKey) => JSX.Element {
 	return (id: SnackbarKey) => {
@@ -68,9 +70,9 @@ function action(
 			{extra}
 			<IconButton onClick={() => {
 				close(id)
-			}}><CloseIcon />
+			}}><CloseIcon/>
 			</IconButton>
-			{info && <Info open={open} info={info} setOpen={setOpen} />}
+			{info && <Info {...info} open={open} setOpen={setOpen}/>}
 		</Stack>
 	}
 }
