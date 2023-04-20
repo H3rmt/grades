@@ -141,7 +141,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 				message: 'Type is required',
 			}),
 			info: z.string(),
-			grade: z.number().positive().nullable(),
+			grade: z.number().nonnegative().nullable(),
 			period: z.number().positive({
 				message: 'Period is required',
 			}),
