@@ -7,22 +7,22 @@ import {Grade, Period, Subject, Type} from '../entity'
 import {useSnackbar} from 'notistack'
 
 export function useEditGrades() {
-	return editList<Grade>('grade', 'grades', 'Grades')
+	return editList<Grade>('grade', 'grades', 'Grades', 'Grade')
 }
 
 export function useEditTypes() {
-	return editList<Type>('type', 'types', 'Types')
+	return editList<Type>('type', 'types', 'Types', 'Type')
 }
 
 export function useEditSubjects() {
-	return editList<Subject>('subject', 'subjects', 'Subjects')
+	return editList<Subject>('subject', 'subjects', 'Subjects', 'Subject')
 }
 
 export function useEditPeriods() {
-	return editList<Period>('period', 'periods', 'Periods')
+	return editList<Period>('period', 'periods', 'Periods', 'Period')
 }
 
-function editList<T>(cmd: string, key: string, name: string): [T[] | undefined, Dispatch<SetStateAction<T[] | undefined>>, UseQueryResult<T[], string | Error>, () => void, UseMutateFunction<void, string | Error, T>, (t: T) => void, (t: number) => void] {
+function editList<T>(cmd: string, key: string, name: string, nameSingular: string): [T[] | undefined, Dispatch<SetStateAction<T[] | undefined>>, UseQueryResult<T[], string | Error>, () => void, UseMutateFunction<void, string | Error, T>, (t: T) => void, (t: number) => void] {
 	const queryClient = useQueryClient()
 	const toast = useSnackbar()
 
@@ -58,28 +58,28 @@ function editList<T>(cmd: string, key: string, name: string): [T[] | undefined, 
 
 	const add = createMutation<T>(queryClient, cmd, {
 		onSuccess: () => {
-			toastMessage('success', `Created ${name}`, toast)
+			toastMessage('success', `Created ${nameSingular}`, toast)
 		},
 		onError: (error) => {
-			errorToast(`Error creating ${name}`, toast, error)
+			errorToast(`Error creating ${nameSingular}`, toast, error)
 		}
 	}, key)
 
 	const edit = editMutation<T>(queryClient, cmd, {
 		onSuccess: () => {
-			toastMessage('success', `Edited ${name}`, toast)
+			toastMessage('success', `Edited ${nameSingular}`, toast)
 		},
 		onError: (error) => {
-			errorToast(`Error editing ${name}`, toast, error)
+			errorToast(`Error editing ${nameSingular}`, toast, error)
 		}
 	}, key)
 
 	const remove = deleteMutation(queryClient, cmd, {
 		onSuccess: () => {
-			toastMessage('success', `Removed ${name}`, toast)
+			toastMessage('success', `Removed ${nameSingular}`, toast)
 		},
 		onError: (error) => {
-			errorToast(`Error removing ${name}`, toast, error)
+			errorToast(`Error removing ${nameSingular}`, toast, error)
 		}
 	}, key)
 

@@ -5,7 +5,7 @@ use crate::db::error::DBError;
 
 pub async fn establish_connection() -> Result<DatabaseConnection, DBError> {
 	let db = crate::dirs::create_data_db()
-			.attach_printable("error in getting path to db")
+			.attach_printable("error getting path to db")
 			.change_context(DBError)?;
 	
 	Database::connect(format!("sqlite:{}", db.display()))
