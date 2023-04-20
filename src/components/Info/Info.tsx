@@ -1,7 +1,7 @@
 import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material'
 import {ReactNode} from 'react'
 
-type Props = {
+export type Props = {
 	info: string
 	title?: string
 	open: boolean

@@ -34,7 +34,7 @@ const indexRoute = new Route({
 				console.log('UPDATE', shouldUpdate)
 
 				if (shouldUpdate) {
-					toastMessage('info', 'Update available', toast, undefined, manifest?.body ?? '', undefined,
+					toastMessage('info', 'Update available', toast, undefined, {info: manifest?.body ?? '', title: `Update available ${manifest?.version}`}, undefined,
 						<Button variant="outlined" color="success" onClick={() => update({toast})}>
 								Update
 						</Button>
