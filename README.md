@@ -10,13 +10,18 @@ UI-Tests with vitest and testing-library
 
 ### Overview: 
 <img src="./img/overview.png">
-<div style="display: flex;gap:10px">
+<div style="display:flex;gap:10px;flex-direction:row;">
 <img src="./img/overview_edit.png" style="width:calc(50% - 5px)">
-<img src="./img/edit.png" style="width:calc(50% - 5px)">
+<img src="./img/overview_edit_2.png" style="width:calc(50% - 5px)">
 </div>
 
 ### New Grade Dialog
-<img src="./img/new.png">
+<img src="./img/new_grade.png">
+
+### Analysis (beta)
+<img src="./img/analysis.png">
+
 
 ### Settings
 <img src="./img/settings.png">
+<img src="./img/settings_2.png">
