@@ -134,19 +134,19 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 
 		const createGradeSchema = z.object({
 			id: z.literal(-1),
-			subject: z.number().positive({
+			subject: z.number().nonnegative({
 				message: 'Subject is required',
 			}),
-			type: z.number().positive({
+			type: z.number().nonnegative({
 				message: 'Type is required',
 			}),
 			info: z.string(),
 			grade: z.number().nonnegative().nullable(),
-			period: z.number().positive({
+			period: z.number().nonnegative({
 				message: 'Period is required',
 			}),
 			confirmed: z.string().nullable(),
-			date: z.string(),//.nullable(),
+			date: z.string().nullable(),
 			weight: z.string(),
 		}).strict()
 
