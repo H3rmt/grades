@@ -53,7 +53,7 @@ export default function SubjectsOverPeriods() {
 			.map(period => {
 				const d: { [key: string]: number } = {}
 
-				subjectsSelected.map(subject => {
+				subjectsSelected.forEach(subject => {
 					const grades = split[subject.id]?.[period.id]
 					if (grades === undefined)
 						return
