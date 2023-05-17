@@ -11,6 +11,7 @@ import {Button} from '@mui/material'
 import {update} from './Settings/update'
 import {navBarOpen} from './atoms'
 import {toastMessage} from './components/Toast/toast'
+import {usePageInCache} from './commands/cache'
 
 // <Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)} closeText="Continue Edit">
 // 			<Button variant="contained" onClick={() => {
@@ -28,23 +29,38 @@ const indexRoute = new Route({
 	component: () => {
 		const toast = useSnackbar()
 
+		const [page] = usePageInCache()
 		useEffect(() => {
 			const check = async () => {
 				const {shouldUpdate, manifest} = await checkUpdate()
 				console.log('UPDATE', shouldUpdate)
 
 				if (shouldUpdate) {
-					toastMessage('info', 'Update available', toast, undefined, {info: manifest?.body ?? '', title: `Update available ${manifest?.version}`}, undefined,
-						<Button variant="outlined" color="success" onClick={() => update({toast})}>
+					toastMessage('info', 'Update available', toast, undefined, {
+						info: manifest?.body ?? '',
+						title: `Update available ${manifest?.version}`
+					}, undefined,
+					<Button variant="outlined" color="success" onClick={() => update({toast})}>
 								Update
-						</Button>
+					</Button>
 					)
 				}
 			}
 			check()
 		}, [])
 		return <>
-			<Navigate to="/overview"></Navigate>
+			{(() => {
+				switch (page) {
+				case undefined:
+					return 'loading...'
+				case null:
+					return <Navigate to="/overview"/>
+				default:
+					console.log('navigate to', {page})
+					// TODO check if valid page
+					return <Navigate to={page.name}/>
+				}
+			})()}
 		</>
 	},
 })
@@ -65,6 +81,8 @@ const router = new ReactRouter({
 	routeTree,
 	onRouteChange: () => {
 		navBarOpen.setState({open: false})
+		// console.log('route change')
+
 	}
 })
 
