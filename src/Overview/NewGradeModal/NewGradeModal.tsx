@@ -162,7 +162,7 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 			setGrade({
 				id: -1,
 				confirmed: dayjs().format('DD-MM-YYYY'),
-				date: dayjs().add(-7, 'day').format('DD-MM-YYYY'),
+				date: dayjs().add(-1, 'week').format('DD-MM-YYYY'),
 				grade: defaults.grade_default,
 				subject: defaults.subject_default ?? null,
 				type: defaults.type_default ?? null,
@@ -285,8 +285,11 @@ export default function NewGradeModal(props: Partial<NewGradeModalSearch> /*only
 									<Stack direction="row" spacing={1} alignItems="center">
 										<DatePicker value={grade.date ? dayjs(grade.date, 'DD-MM-YYYY') : ''}
 											onChange={d => {
-												// TODO set confirmed back
 												handleGradeDateChange((d as unknown as Dayjs)?.format('DD-MM-YYYY'), grade)
+												// changes without user input (just show that must be updated instead of updating it automatically)
+												// if (grade?.confirmed && dayjs(grade.confirmed, 'DD-MM-YYYY').diff((d as unknown as Dayjs)) < 0) {
+												// 	handleGradeConfirmedDateChange((d as unknown as Dayjs)?.add(1, 'week')?.format('DD-MM-YYYY'), grade)
+												// }
 											}}
 											minDate={dayjs(periods.find(p => p.id == grade?.period)?.from ?? 0, 'DD-MM-YYYY')}
 											maxDate={dayjs(periods.find(p => p.id == grade?.period)?.to ?? Infinity, 'DD-MM-YYYY')}
