@@ -113,16 +113,16 @@ export default function Component() {
 		})
 	}
 
-	const handlePeriodSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
-		setGradeModalDefaults({...gradeModalDefaults, period_default: Number(event.target.value)})
+	const handlePeriodSelectChange = (event: SelectChangeEvent<number>, gradeModalDefaults: GradeModalDefaults) => {
+		setGradeModalDefaults({...gradeModalDefaults, period_default: Number(event.target.value) === -1 ? null : Number(event.target.value)})
 	}
 
-	const handleTypeSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
-		setGradeModalDefaults({...gradeModalDefaults, type_default: Number(event.target.value)})
+	const handleTypeSelectChange = (event: SelectChangeEvent<number>, gradeModalDefaults: GradeModalDefaults) => {
+		setGradeModalDefaults({...gradeModalDefaults, type_default: Number(event.target.value) === -1 ? null : Number(event.target.value)})
 	}
 
-	const handleSubjectSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
-		setGradeModalDefaults({...gradeModalDefaults, subject_default: Number(event.target.value)})
+	const handleSubjectSelectChange = (event: SelectChangeEvent<number>, gradeModalDefaults: GradeModalDefaults) => {
+		setGradeModalDefaults({...gradeModalDefaults, subject_default: Number(event.target.value) === -1 ? null : Number(event.target.value)})
 	}
 
 	const handleGradeSliderChange = (event: Event, newValue: number | number[], gradeModalDefaults: GradeModalDefaults) => {
@@ -142,13 +142,14 @@ export default function Component() {
 
 	const toast = useSnackbar()
 
-	const handleClickUpdate = () => {switch (updateState) {
-	case 'NONE':
-	case 'ERROR': {
-		setAskUpdate(true)
-		break
-	}
-	}
+	const handleClickUpdate = () => {
+		switch (updateState) {
+		case 'NONE':
+		case 'ERROR': {
+			setAskUpdate(true)
+			break
+		}
+		}
 	}
 
 	useEffect(() => {
@@ -228,9 +229,10 @@ export default function Component() {
 								<Typography variant="h6" fontWeight="normal">Subject</Typography>
 								<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
 									<ReactQueryData query={subjectsS} data={subjects} display={(subjects) =>
-										<Select color="secondary" value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none"
+										<Select color="secondary" value={gradeModalDefaults.subject_default ?? -1} margin="none"
 													  fullWidth
 													  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
+											<MenuItem value={-1} key={-1}>---</MenuItem>
 											{subjects.map((subject) => {
 												return <MenuItem value={subject.id} key={subject.id}
 																		  sx={{color: subject.color}}>{subject.name}</MenuItem>
@@ -245,8 +247,9 @@ export default function Component() {
 								<Typography variant="h6" fontWeight="normal">Type</Typography>
 								<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
 									<ReactQueryData query={typesS} data={types} display={(types) =>
-										<Select color="secondary" value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
+										<Select color="secondary" value={gradeModalDefaults.type_default ?? -1} margin="none" fullWidth
 													  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
+											<MenuItem value={-1} key={-1}>---</MenuItem>
 											{types.map((type) => {
 												return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
 											})}
@@ -260,9 +263,10 @@ export default function Component() {
 								<Typography variant="h6" fontWeight="normal">Period</Typography>
 								<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
 									<ReactQueryData query={periodsS} data={periods} display={(periods) =>
-										<Select color="secondary" value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none"
+										<Select color="secondary" value={gradeModalDefaults.period_default ?? -1} margin="none"
 													  fullWidth
 													  onChange={(e) => handlePeriodSelectChange(e, gradeModalDefaults)}>
+											<MenuItem value={-1} key={-1}>---</MenuItem>
 											{periods.map((period) => {
 												return <MenuItem value={period.id} key={period.id}>
 													<Stack>
@@ -292,7 +296,6 @@ export default function Component() {
 									}/>
 								}/>
 							</Stack>
-
 						</Grid>
 					</Grid>
 				</SettingsBox>
