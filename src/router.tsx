@@ -54,11 +54,19 @@ const indexRoute = new Route({
 				case undefined:
 					return 'loading...'
 				case null:
-					return <Navigate to="/overview"/>
+					return <Navigate to="/overview"></Navigate>
 				default:
 					console.log('navigate to', {page})
-					// TODO check if valid page
-					return <Navigate to={page.name}/>
+					switch (page.name) {
+					case '/overview':
+						return <Navigate to="/overview"></Navigate>
+					case '/analysis':
+						return <Navigate to="/analysis"></Navigate>
+					case '/settings':
+						return <Navigate to="/settings"></Navigate>
+					default:
+						return <></>
+					}
 				}
 			})()}
 		</>
