@@ -25,7 +25,7 @@
 		"@mui/icons-material": "~5.11",
 		"@mui/material": "~5.13",
 		"@mui/system": "~5.12",
-		"@mui/x-date-pickers": "~6.4,
+		"@mui/x-date-pickers": "~6.4",
 
 		"notistack": "^3.0",
 		"dayjs": "^1.11",
