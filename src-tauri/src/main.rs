@@ -9,7 +9,7 @@ use error_stack::{IntoReport, ResultExt};
 use tokio::sync::Mutex;
 
 use commands::{
-	cache::{edit_page_in_cache_js, get_page_from_cache_js},
+	cache::{edit_page_in_cache_js, get_page_from_cache_js, edit_skip_version_in_cache_js, get_skip_version_in_cache_js},
 	config::{edit_grade_modal_defaults_js, edit_note_range_js, get_grade_modal_defaults_js, get_note_range_js, reset_grade_modal_defaults_js, reset_note_range_js},
 	db::{
 		grades::{create_grade_js, delete_grade_js, edit_grade_js, get_grades_js},
@@ -105,7 +105,7 @@ async fn main() {
 				get_subjects_js, create_subject_js, edit_subject_js, delete_subject_js,
 				edit_page_in_cache_js,get_page_from_cache_js, get_info_js, get_weights_js,
 				get_note_range_js, get_grade_modal_defaults_js, edit_note_range_js, edit_grade_modal_defaults_js,
-				reset_grade_modal_defaults_js,reset_note_range_js
+				reset_grade_modal_defaults_js,reset_note_range_js, get_skip_version_in_cache_js, edit_skip_version_in_cache_js
         ])
 			.run(tauri::generate_context!())
 			.into_report()

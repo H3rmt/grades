@@ -35,7 +35,7 @@ import {checkUpdate, UpdateManifest} from '@tauri-apps/api/updater'
 import {Info} from '../components/Info/Info'
 import {useSnackbar} from 'notistack'
 import {updateStatus} from './atoms'
-import {update} from './update'
+import {skipUpdate, update} from './update'
 
 export default function Component() {
 	const [noteRange, setNoteRange, noteRangeS, noteRangeEdited, resetNoteRange, reloadNoteRange, saveNoteRange] = useEditNoteRange()
@@ -344,23 +344,28 @@ export default function Component() {
 
 			<Grid item xs={12} sm={6} md={6} xl={6}>
 				<SettingsBox title="Info" top={
-					<IconButton onClick={handleClickUpdate} disabled={!updateAvailable}>
-						{(() => {
-							switch (updateState) {
-							case 'NONE':
-								if (updateAvailable)
-									return <BrowserUpdatedIcon color="info"/>
-								else
-									return <BrowserUpdatedIcon color="disabled"/>
-							case 'DONE':
-								return <CheckCircleOutlineIcon color="success"/>
-							case 'PENDING':
-								return <DownloadingIcon color="info"/>
-							case 'ERROR':
-								return <ReportGmailerrorredIcon color="error"/>
-							}
-						})()}
-					</IconButton>
+					<Stack direction="row">
+						<IconButton onClick={handleClickUpdate} disabled={!updateAvailable}>
+							{(() => {
+								switch (updateState) {
+								case 'NONE':
+									if (updateAvailable)
+										return <BrowserUpdatedIcon color="info"/>
+									else
+										return <BrowserUpdatedIcon color="disabled"/>
+								case 'DONE':
+									return <CheckCircleOutlineIcon color="success"/>
+								case 'PENDING':
+									return <DownloadingIcon color="info"/>
+								case 'ERROR':
+									return <ReportGmailerrorredIcon color="error"/>
+								}
+							})()}
+						</IconButton>
+						{/*<IconButton onClick={handleClickSkipUpdate} disabled={!updateAvailable}>*/}
+						{/*	<GitHubIcon/>*/}
+						{/*</IconButton>*/}
+					</Stack>
 				}><ReactQueryData query={infoS} data={info} display={(info) =>
 						<Paper sx={{padding: 1, overflow: 'auto'}} variant="outlined">
 							<Stack spacing={1} direction="column">
@@ -401,6 +406,10 @@ export default function Component() {
 		<Info open={askUpdate} info={updateManifest?.body ?? ''} title="Update" setOpen={() => setAskUpdate(false)}>
 			<Button variant="contained" color="success" onClick={() => update({setAskUpdate, setUpdateState, toast})}>
 				Update
+			</Button>
+			<Button variant="contained" color="error"
+					  onClick={() => skipUpdate({setAskUpdate, toast, nextVersion: {version: updateManifest?.version ?? '0.0.0'}})}>
+				Skip Update
 			</Button>
 		</Info>
 	</>

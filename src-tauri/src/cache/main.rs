@@ -6,11 +6,12 @@ use error_stack::{IntoReport, ResultExt};
 use serde::{Deserialize, Serialize};
 
 use crate::cache::error::CacheError;
-use crate::cache::types::Page;
+use crate::cache::types::{Page, Version};
 
 #[derive(Deserialize, Serialize, Default, Debug)]
 pub struct Data {
 	pub page: Option<Page>,
+	pub version: Option<Version>,
 }
 
 #[derive(Debug)]
