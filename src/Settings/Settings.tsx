@@ -181,7 +181,7 @@ export default function Component() {
 					}/>
 				}><ReactQueryData query={typesS} data={types} display={(types) =>
 						<CTable data={types} cols={getTypeCols()} delete={(id) => removeType(id)}
-								  edit={(type) => editType(type)}/>
+								  edit={(type) => editType(type)} title="Grade Type"/>
 					} loadingHeight={100}/>
 				</SettingsBox>
 			</Grid>
@@ -192,7 +192,7 @@ export default function Component() {
 					}/>
 				}><ReactQueryData query={subjectsS} data={subjects} display={(subjects) =>
 						<CTable data={subjects} cols={getSubjectCols()} delete={(id) => removeSubject(id)}
-								  edit={(subject) => editSubject(subject)}/>
+								  edit={(subject) => editSubject(subject)} title="Subject"/>
 					} loadingHeight={100}/>
 				</SettingsBox>
 			</Grid>
@@ -203,7 +203,7 @@ export default function Component() {
 					}/>
 				}><ReactQueryData query={periodsS} data={periods} display={(periods) =>
 						<CTable data={periods} cols={getPeriodCols()} delete={(id) => removePeriod(id)}
-								  edit={(period) => editPeriod(period)}/>
+								  edit={(period) => editPeriod(period)} title="Period"/>
 					} loadingHeight={100}/>
 				</SettingsBox>
 			</Grid>

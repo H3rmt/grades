@@ -46,7 +46,7 @@ export default function Component() {
 					cols={getCols(noteRange, subjects, types, weights, periods)}
 					delete={removeGrade}
 					edit={editGrade}
-					title="OverviewTable"
+					title="Grade"
 				/>
 			}}
 			loading={loadingSpinner}/>

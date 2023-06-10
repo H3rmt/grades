@@ -137,7 +137,7 @@ export function CTable<Row extends IRow>(props: Props<Row>) {
 										col.dialogOpen = false
 										setData(new Map(data))
 									}} fullWidth>
-										<DialogTitle variant="h5">Edit Grade</DialogTitle>
+										<DialogTitle variant="h5">Edit {props.title}</DialogTitle>
 										<DialogContent>
 											<Paper elevation={4} variant="elevation" sx={{padding: 2, marginTop: 2}} square>
 												<Grid container spacing={4} padding={2}>
