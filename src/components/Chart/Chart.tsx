@@ -55,8 +55,6 @@ export function Chart(props: Props) {
 	const [state, setState] = useState<State>(initialState)
 	const theme = useTheme()
 
-	console.debug('Chart', props)
-
 	const zoom = () => {
 		let {zoomingAreaStart, zoomingAreaEnd} = state
 
