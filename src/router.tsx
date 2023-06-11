@@ -32,7 +32,7 @@ const indexRoute = new Route({
 	component: () => {
 		const toast = useSnackbar()
 
-		const [page, pageS] = usePageInCache()
+		const [page] = usePageInCache()
 		const [version, versionS] = useSkipVersion()
 
 		// check version
@@ -47,10 +47,7 @@ const indexRoute = new Route({
 		// check if was not skipped
 		if (version !== null && version !== undefined && version.version === manifest?.version) {
 			console.log('skipped version', version.version)
-			return
-		}
-
-		if (shouldUpdate) {
+		} else if (shouldUpdate) {
 			toastMessage('info', 'Update available', toast, undefined, {
 				info: manifest?.body ?? '',
 				title: `Update available ${manifest?.version}`
@@ -62,6 +59,7 @@ const indexRoute = new Route({
 		}
 
 		// redirect
+		console.log('page', page)
 		switch (page) {
 		case undefined:
 			return 'Loading...'
