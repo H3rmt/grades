@@ -13,6 +13,7 @@ import {toastMessage} from './components/Toast/toast'
 import {usePageInCache, useSkipVersion} from './commands/cache'
 import {invoke} from '@tauri-apps/api'
 import {Page} from './entity'
+// @ts-ignore
 import {use} from 'react'
 
 // <Info info={unsavedMessage} open={unsaved} setOpen={() => setUnsaved(false)} closeText="Continue Edit">
