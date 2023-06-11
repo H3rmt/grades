@@ -143,12 +143,12 @@ export default function Component() {
 	const toast = useSnackbar()
 
 	const handleClickUpdate = () => {switch (updateState) {
-		case 'NONE':
-		case 'ERROR': {
-			setAskUpdate(true)
-			break
-		}
-		}
+	case 'NONE':
+	case 'ERROR': {
+		setAskUpdate(true)
+		break
+	}
+	}
 	}
 
 	useEffect(() => {
