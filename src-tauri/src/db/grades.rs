@@ -23,15 +23,15 @@ pub async fn get_grades(db: &DatabaseConnection) -> Result<Vec<Grade>, DBError> 
 }
 
 pub async fn create_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: Grade) -> Result<i32, DBError> {
-	check_fk(db, Subjects::find_by_id(grade.subject), "subject".to_string())
+	check_fk(db, Subjects::find_by_id(grade.subject), "subject")
 			.await
 			.attach_printable("Check if subject exists failed")
 			.attach_printable_lazy(|| format!("subject id: {}", grade.subject))?;
-	check_fk(db, GradeTypes::find_by_id(grade.r#type), "type".to_string())
+	check_fk(db, GradeTypes::find_by_id(grade.r#type), "type")
 			.await
 			.attach_printable("Check if type exists failed")
 			.attach_printable_lazy(|| format!("type id: {}", grade.r#type))?;
-	check_fk(db, Periods::find_by_id(grade.period), "period".to_string())
+	check_fk(db, Periods::find_by_id(grade.period), "period")
 			.await
 			.attach_printable("Check if period exists failed")
 			.attach_printable_lazy(|| format!("period id: {}", grade.period))?;
@@ -90,15 +90,15 @@ pub async fn edit_grade(db: &DatabaseConnection, config: &Mutex<Config>, grade: 
 			.change_context(DBError)?
 			.into();
 	
-	check_fk(db, Subjects::find_by_id(grade.subject), "subject".to_string())
+	check_fk(db, Subjects::find_by_id(grade.subject), "subject")
 			.await
 			.attach_printable("Check if subject exists failed")
 			.attach_printable_lazy(|| format!("subject id: {}", grade.subject))?;
-	check_fk(db, GradeTypes::find_by_id(grade.r#type), "type".to_string())
+	check_fk(db, GradeTypes::find_by_id(grade.r#type), "type")
 			.await
 			.attach_printable("Check if type exists failed")
 			.attach_printable_lazy(|| format!("type id: {}", grade.r#type))?;
-	check_fk(db, Periods::find_by_id(grade.period), "period".to_string())
+	check_fk(db, Periods::find_by_id(grade.period), "period")
 			.await
 			.attach_printable("Check if period exists failed")
 			.attach_printable_lazy(|| format!("period id: {}", grade.period))?;
