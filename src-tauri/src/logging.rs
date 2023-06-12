@@ -1,12 +1,30 @@
 use std::fmt;
 
-use error_stack::{IntoReport, Result, ResultExt};
-use flexi_logger::{DeferredNow, Duplicate, FileSpec, Logger, style, TS_DASHES_BLANK_COLONS_DOT_BLANK, WriteMode};
+use error_stack::{IntoReport, Report, Result, ResultExt};
+use error_stack::fmt::ColorMode;
+use flexi_logger::{DeferredNow, Duplicate, FileSpec, Logger, style, WriteMode};
 use log::Record;
 
 use crate::dirs;
 
-fn format(
+pub fn file_format(
+	w: &mut dyn std::io::Write,
+	now: &mut DeferredNow,
+	record: &Record,
+) -> std::io::Result<()> {
+	write!(
+		w,
+		"[{}] {:<5} ({}:{}) {}",
+		now.format("%Y-%m-%d %H:%M:%S%.3f"),
+		record.level(),
+//		record.module_path().unwrap_or("<unnamed>"),
+		record.file().unwrap_or("<unnamed>"),
+		record.line().unwrap_or(0),
+		&record.args()
+	)
+}
+
+pub fn console_format(
 	w: &mut dyn std::io::Write,
 	now: &mut DeferredNow,
 	record: &Record,
@@ -14,8 +32,8 @@ fn format(
 	let level = record.level();
 	write!(
 		w,
-		"[{}] {} ({}:{}) {}",
-		style(level).paint(now.format(TS_DASHES_BLANK_COLONS_DOT_BLANK).to_string()),
+		"[{}] {:0<8} /{}:{} {}",
+		style(level).paint(now.format("%Y-%m-%d %H:%M:%S").to_string()),
 		style(level).paint(record.level().to_string()),
 		record.file().unwrap_or("<unnamed>"),
 		record.line().unwrap_or(0),
@@ -31,13 +49,10 @@ pub fn logger() -> Result<(), LoggerInitError> {
 	
 	#[cfg(not(debug_assertions))] let logger = {
 		logger.duplicate_to_stderr(Duplicate::Warn)
-				.format_for_stdout(format)
-				.format_for_stderr(flexi_logger::colored_detailed_format)
 	};
 	
 	#[cfg(debug_assertions)] let logger = {
 		logger.duplicate_to_stdout(Duplicate::All)
-				.format_for_stdout(format)
 	};
 	
 	let spec = FileSpec::try_from(dirs::create_cache_log()
@@ -49,13 +64,16 @@ pub fn logger() -> Result<(), LoggerInitError> {
 	
 	let logger = logger.log_to_file(spec)
 							 .write_mode(WriteMode::BufferAndFlush)
-							 .format_for_files(flexi_logger::with_thread);
+							 .format_for_files(file_format)
+							 .format_for_stdout(console_format)
+							 .format_for_stderr(console_format);
 	
 	logger.start()
 			.into_report()
 			.attach_printable("Error starting logger")
 			.change_context_lazy(|| LoggerInitError)?;
 	
+	Report::set_color_mode(ColorMode::None);
 	Ok(())
 }
 

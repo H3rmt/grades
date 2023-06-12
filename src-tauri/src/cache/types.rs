@@ -13,3 +13,15 @@ impl Display for Page {
 		write!(f, "{}", self.name)
 	}
 }
+
+#[derive(TS, Deserialize, Serialize, Debug)]
+#[ts(export, export_to = "../src/entity/cache/version.ts")]
+pub struct Version {
+	pub version: String,
+}
+
+impl Display for Version {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "{}", self.version)
+	}
+}

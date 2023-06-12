@@ -1,11 +1,10 @@
 import {Cols, ColumnDefs} from '../components/Table/defs'
 import {Period, Subject, Type} from '../entity'
-import {Badge, IconButton, Input, Paper, Stack, TextField, Typography} from '@mui/material'
+import {IconButton, Input, Paper, Stack, TextField, Typography} from '@mui/material'
 import dayjs, {Dayjs} from 'dayjs'
-import {DatePicker, PickersDay} from '@mui/x-date-pickers'
+import {DatePicker} from '@mui/x-date-pickers'
 import {randColor} from '../ts/utils'
 import Autorenew from '@mui/icons-material/Autorenew'
-import {PickersDayProps} from '@mui/x-date-pickers/PickersDay/PickersDay'
 
 export const getTypeCols: () => Cols<Type> = () => new Map<keyof Type, ColumnDefs<Type>>(
 	[[
@@ -84,38 +83,42 @@ export const getPeriodCols: () => Cols<Period> = () => new Map<keyof Period, Col
 	], [
 		'from', {
 			sort: true,
-			edit: p => <DatePicker value={dayjs(p.from, 'DD-MM-YYYY')} onChange={d => {
+			edit: (p, update) => <DatePicker value={dayjs(p.from, 'DD-MM-YYYY')} onChange={d => {
 				p.from = (d as unknown as Dayjs)?.format('DD-MM-YYYY')
-			}} // @ts-ignore
-			renderInput={(props: { inputProps: { value: string } }) => {
-				props.inputProps.value = p.from
-				return <TextField {...props} />
+				update()
 			}}
-			renderDay={(day: Dayjs, value: unknown, DayComponentProps: PickersDayProps<unknown>) => <Badge
-				  key={day.toString()}
-				  overlap="circular"
-				  badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == p.to ? '✨' : null}>
-			  <PickersDay {...DayComponentProps} />
-		  </Badge>
-		  }/>,
+				// renderInput={(props: { inputProps: { value: string } }) => {
+				// 	props.inputProps.value = p.from
+				// 	return <TextField {...props} />
+				// }}
+				//   renderDay={(day: Dayjs, value: unknown, DayComponentProps: PickersDayProps<unknown>) => <Badge
+				// 		  key={day.toString()}
+				// 		  overlap="circular"
+				// 		  badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == p.to ? '✨' : null}>
+				// 	  <PickersDay {...DayComponentProps} />
+				//   </Badge>
+				//   }
+			/>,
 			preSort: (p) => dayjs(p.from, 'DD-MM-YYYY').unix()
 		}
 	], [
 		'to', {
 			sort: true,
-			edit: p => <DatePicker value={dayjs(p.to, 'DD-MM-YYYY')} onChange={d => {
+			edit: (p, update) => <DatePicker value={dayjs(p.to, 'DD-MM-YYYY')} onChange={d => {
 				p.to = (d as unknown as Dayjs)?.format('DD-MM-YYYY')
-			}} // @ts-ignore
-			renderInput={(props: { inputProps: { value: string } }) => {
-				props.inputProps.value = p.to
-				return <TextField {...props} />
-			}} renderDay={(day: Dayjs, value: unknown, DayComponentProps: PickersDayProps<unknown>) => <Badge
-				key={day.toString()}
-				overlap="circular"
-				badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == p.from ? '✨' : null}>
-				<PickersDay {...DayComponentProps} />
-			</Badge>
-			}/>,
+				update()
+			}}
+				// renderInput={(props: { inputProps: { value: string } }) => {
+				//   props.inputProps.value = p.to
+				//   return <TextField {...props} />
+				// }} renderDay={(day: Dayjs, value: unknown, DayComponentProps: PickersDayProps<unknown>) => <Badge
+				// 	key={day.toString()}
+				// 	overlap="circular"
+				// 	badgeContent={!DayComponentProps.outsideCurrentMonth && (day as unknown as Dayjs).format('DD-MM-YYYY') == p.from ? '✨' : null}>
+				// 	<PickersDay {...DayComponentProps} />
+				// </Badge>
+				// }
+			/>,
 			preSort: (p) => dayjs(p.to, 'DD-MM-YYYY').unix()
 		}
 	], [
