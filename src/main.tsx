@@ -11,7 +11,7 @@ import {LocalizationProvider} from '@mui/x-date-pickers'
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 import {QueryClient, QueryClientProvider,} from '@tanstack/react-query'
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
-import {StrictMode} from 'react'
+import {StrictMode, Suspense} from 'react'
 import {blue, pink, red} from '@mui/material/colors'
 import {RouterProvider} from '@tanstack/react-router'
 import 'dayjs/locale/de.js'
@@ -50,7 +50,9 @@ createRoot(document.getElementById('root') as HTMLElement).render(
 				<QueryClientProvider client={queryClient}>
 					<CssBaseline enableColorScheme/>
 					<SnackbarProvider maxSnack={5}>
-						<RouterProvider router={router}/>
+						<Suspense fallback="Loading...">
+							<RouterProvider router={router}/>
+						</Suspense>
 					</SnackbarProvider>
 					<ReactQueryDevtools/>
 				</QueryClientProvider>

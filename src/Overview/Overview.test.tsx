@@ -48,7 +48,7 @@ describe('Overview', () => {
 			await sleep(500)
 		})
 
-		expect(await screen.findByTitle('OverviewTable'), 'Table not rendered').to.exist
+		expect(await screen.findByTitle('Grade'), 'Table not rendered').to.exist
 
 		for (const grade of mockData.grades) {
 			expect(await screen.queryAllByText(grade.id), `GradeID ${grade.id} not found on Screen`).length.greaterThanOrEqual(1)

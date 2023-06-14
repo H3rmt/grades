@@ -2,6 +2,8 @@ import {installUpdate, onUpdaterEvent, UpdateStatus} from '@tauri-apps/api/updat
 import {ProviderContext} from 'notistack'
 import {errorToast} from '../components/Toast/toast'
 import {Dispatch, SetStateAction} from 'react'
+import {invoke} from '@tauri-apps/api'
+import {Version} from '../entity/cache'
 
 export const update = async ({setAskUpdate, setUpdateState, toast}: {
 	setAskUpdate?: Dispatch<SetStateAction<boolean>>,
@@ -23,4 +25,21 @@ export const update = async ({setAskUpdate, setUpdateState, toast}: {
 	} finally {
 		unlisten()
 	}
+}
+
+export const skipUpdate = async ({setAskUpdate, toast, nextVersion}: {
+	setAskUpdate?: Dispatch<SetStateAction<boolean>>,
+	toast: ProviderContext,
+	nextVersion: Version
+}) => {
+	setAskUpdate?.(false)
+
+	return await invoke<string>('edit_' + 'skip_version_in_cache' + '_js', {json: JSON.stringify(nextVersion)}).then((data) => {
+		console.debug('edit_' + 'skip_version', 'success', data)
+		return JSON.parse(data)
+	}).catch((e) => {
+		console.debug('edit_' + 'skip_version', 'fail', e)
+		errorToast('Error skipping update', toast, e as string | Error)
+		throw e as string | Error
+	})
 }

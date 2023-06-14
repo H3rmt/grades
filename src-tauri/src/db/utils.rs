@@ -5,7 +5,7 @@ use sea_orm::EntityTrait;
 use crate::db::error::DBError;
 
 
-pub async fn check_fk<E: EntityTrait>(db: &DatabaseConnection, select: sea_orm::Select<E>, name: String) -> Result<(), DBError> {
+pub async fn check_fk<E: EntityTrait>(db: &DatabaseConnection, select: sea_orm::Select<E>, name: &str) -> Result<(), DBError> {
     select.clone().one(db).await
     .into_report()
     .attach_printable("Error checking for fk in DB")

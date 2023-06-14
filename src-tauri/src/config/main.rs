@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::config::error::ConfigError;
 use crate::config::types::{GradeModalDefaults, NoteRange};
 
-#[derive(Deserialize, Serialize, Default, Debug)]
+#[derive(Deserialize, Serialize, Default, Debug, Clone, Eq, PartialEq)]
 pub struct Data {
 	pub note_range: NoteRange,
 	pub grade_modal_defaults: GradeModalDefaults,

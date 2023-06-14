@@ -8,6 +8,7 @@ use crate::{
 	},
 	commands::utils::{CommandError, LogAndString},
 };
+use crate::cache::types::Version;
 
 #[tauri::command]
 pub async fn get_page_from_cache_js(cache: tauri::State<'_, Mutex<Cache>>) -> Result<Option<String>, String> {
@@ -55,4 +56,53 @@ pub async fn edit_page_in_cache_js(cache: tauri::State<'_, Mutex<Cache>>, json: 
 	}
 	
 	Ok(())
+}
+
+#[tauri::command]
+pub async fn edit_skip_version_in_cache_js(cache: tauri::State<'_, Mutex<Cache>>, json: String) -> Result<(), String> {
+	log::debug!("edit_skip_version_js json: {}", json);
+	
+	let json: Version = serde_json::from_str(&json)
+			.into_report()
+			.attach_printable("Error deserializing Version from json")
+			.attach_printable_lazy(|| format!("json: {}", json))
+			.change_context(CommandError)
+			.log_and_to_string()?;
+	
+	{
+		let mut c = cache.lock().await;
+		c.set(|data| {
+			data.version = Some(json);
+		})
+		 .attach_printable("Error setting skipVersion in cache")
+		 .change_context(CommandError)
+		 .log_and_to_string()?;
+	}
+	
+	Ok(())
+}
+
+
+#[tauri::command]
+pub async fn get_skip_version_in_cache_js(cache: tauri::State<'_, Mutex<Cache>>) -> Result<Option<String>, String>  {
+	let data = {
+		let mutex = cache.lock().await;
+		let page = match &mutex.get().version {
+			Some(version) => version,
+			None => {
+				log::debug!("no skipVersion in cache");
+				return Ok(None);
+			}
+		};
+		
+		serde_json::to_string(&page)
+				.into_report()
+				.attach_printable("Error serializing Version to json")
+				.attach_printable_lazy(|| format!("page: {}", page))
+				.change_context(CommandError)
+				.log_and_to_string()?
+	};
+	
+	log::debug!("get_skip_version_js json: {}", data);
+	Ok(Some(data))
 }

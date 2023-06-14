@@ -1,5 +1,6 @@
 use error_stack::{IntoReport, ResultExt};
 use sea_orm::DatabaseConnection;
+use tokio::sync::Mutex;
 
 use entity::prelude::GradeType;
 
@@ -8,6 +9,8 @@ use crate::{
 	db::types::{create_type, delete_type, edit_type, get_types},
 };
 use crate::commands::utils::Delete;
+use crate::config::main::Config;
+use crate::utils::StrError;
 
 #[tauri::command]
 pub async fn get_types_js(connection: tauri::State<'_, DatabaseConnection>) -> Result<String, String> {
@@ -66,7 +69,7 @@ pub async fn edit_type_js(connection: tauri::State<'_, DatabaseConnection>, json
 }
 
 #[tauri::command]
-pub async fn delete_type_js(connection: tauri::State<'_, DatabaseConnection>, json: String) -> Result<(), String> {
+pub async fn delete_type_js(connection: tauri::State<'_, DatabaseConnection>, config: tauri::State<'_, Mutex<Config>>, json: String) -> Result<(), String> {
 	log::debug!("delete_type_js json: {}", json);
 	
 	let delete: Delete = serde_json::from_str(&json)
@@ -75,6 +78,18 @@ pub async fn delete_type_js(connection: tauri::State<'_, DatabaseConnection>, js
 			.attach_printable_lazy(|| format!("json: {}", json))
 			.change_context(CommandError)
 			.log_and_to_string()?;
+	
+	let grade_modal_defaults = {
+		let mutex = config.lock().await;
+		mutex.get().grade_modal_defaults.clone()
+	};
+	
+	if grade_modal_defaults.type_default == Some(delete.id) {
+		return Err(StrError("Cannot delete default type".to_string()))
+				.into_report()
+				.change_context(CommandError)
+				.log_and_to_string();
+	}
 	
 	delete_type(&connection, delete.id)
 			.await

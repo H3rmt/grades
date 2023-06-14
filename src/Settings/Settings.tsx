@@ -35,7 +35,7 @@ import {checkUpdate, UpdateManifest} from '@tauri-apps/api/updater'
 import {Info} from '../components/Info/Info'
 import {useSnackbar} from 'notistack'
 import {updateStatus} from './atoms'
-import {update} from './update'
+import {skipUpdate, update} from './update'
 
 export default function Component() {
 	const [noteRange, setNoteRange, noteRangeS, noteRangeEdited, resetNoteRange, reloadNoteRange, saveNoteRange] = useEditNoteRange()
@@ -113,16 +113,16 @@ export default function Component() {
 		})
 	}
 
-	const handlePeriodSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
-		setGradeModalDefaults({...gradeModalDefaults, period_default: Number(event.target.value)})
+	const handlePeriodSelectChange = (event: SelectChangeEvent<number>, gradeModalDefaults: GradeModalDefaults) => {
+		setGradeModalDefaults({...gradeModalDefaults, period_default: Number(event.target.value) === -1 ? null : Number(event.target.value)})
 	}
 
-	const handleTypeSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
-		setGradeModalDefaults({...gradeModalDefaults, type_default: Number(event.target.value)})
+	const handleTypeSelectChange = (event: SelectChangeEvent<number>, gradeModalDefaults: GradeModalDefaults) => {
+		setGradeModalDefaults({...gradeModalDefaults, type_default: Number(event.target.value) === -1 ? null : Number(event.target.value)})
 	}
 
-	const handleSubjectSelectChange = (event: SelectChangeEvent, gradeModalDefaults: GradeModalDefaults) => {
-		setGradeModalDefaults({...gradeModalDefaults, subject_default: Number(event.target.value)})
+	const handleSubjectSelectChange = (event: SelectChangeEvent<number>, gradeModalDefaults: GradeModalDefaults) => {
+		setGradeModalDefaults({...gradeModalDefaults, subject_default: Number(event.target.value) === -1 ? null : Number(event.target.value)})
 	}
 
 	const handleGradeSliderChange = (event: Event, newValue: number | number[], gradeModalDefaults: GradeModalDefaults) => {
@@ -142,13 +142,14 @@ export default function Component() {
 
 	const toast = useSnackbar()
 
-	const handleClickUpdate = () => {switch (updateState) {
-	case 'NONE':
-	case 'ERROR': {
-		setAskUpdate(true)
-		break
-	}
-	}
+	const handleClickUpdate = () => {
+		switch (updateState) {
+		case 'NONE':
+		case 'ERROR': {
+			setAskUpdate(true)
+			break
+		}
+		}
 	}
 
 	useEffect(() => {
@@ -180,7 +181,7 @@ export default function Component() {
 					}/>
 				}><ReactQueryData query={typesS} data={types} display={(types) =>
 						<CTable data={types} cols={getTypeCols()} delete={(id) => removeType(id)}
-								  edit={(type) => editType(type)}/>
+								  edit={(type) => editType(type)} title="Grade Type"/>
 					} loadingHeight={100}/>
 				</SettingsBox>
 			</Grid>
@@ -191,7 +192,7 @@ export default function Component() {
 					}/>
 				}><ReactQueryData query={subjectsS} data={subjects} display={(subjects) =>
 						<CTable data={subjects} cols={getSubjectCols()} delete={(id) => removeSubject(id)}
-								  edit={(subject) => editSubject(subject)}/>
+								  edit={(subject) => editSubject(subject)} title="Subject"/>
 					} loadingHeight={100}/>
 				</SettingsBox>
 			</Grid>
@@ -202,7 +203,7 @@ export default function Component() {
 					}/>
 				}><ReactQueryData query={periodsS} data={periods} display={(periods) =>
 						<CTable data={periods} cols={getPeriodCols()} delete={(id) => removePeriod(id)}
-								  edit={(period) => editPeriod(period)}/>
+								  edit={(period) => editPeriod(period)} title="Period"/>
 					} loadingHeight={100}/>
 				</SettingsBox>
 			</Grid>
@@ -228,9 +229,10 @@ export default function Component() {
 								<Typography variant="h6" fontWeight="normal">Subject</Typography>
 								<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
 									<ReactQueryData query={subjectsS} data={subjects} display={(subjects) =>
-										<Select color="secondary" value={gradeModalDefaults.subject_default?.toString() ?? ''} margin="none"
+										<Select color="secondary" value={gradeModalDefaults.subject_default ?? -1} margin="none"
 													  fullWidth
 													  onChange={(e) => handleSubjectSelectChange(e, gradeModalDefaults)}>
+											<MenuItem value={-1} key={-1}>---</MenuItem>
 											{subjects.map((subject) => {
 												return <MenuItem value={subject.id} key={subject.id}
 																		  sx={{color: subject.color}}>{subject.name}</MenuItem>
@@ -245,8 +247,9 @@ export default function Component() {
 								<Typography variant="h6" fontWeight="normal">Type</Typography>
 								<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
 									<ReactQueryData query={typesS} data={types} display={(types) =>
-										<Select color="secondary" value={gradeModalDefaults.type_default?.toString() ?? ''} margin="none" fullWidth
+										<Select color="secondary" value={gradeModalDefaults.type_default ?? -1} margin="none" fullWidth
 													  onChange={(e) => handleTypeSelectChange(e, gradeModalDefaults)}>
+											<MenuItem value={-1} key={-1}>---</MenuItem>
 											{types.map((type) => {
 												return <MenuItem value={type.id} key={type.id} sx={{color: type.color}}>{type.name}</MenuItem>
 											})}
@@ -260,9 +263,10 @@ export default function Component() {
 								<Typography variant="h6" fontWeight="normal">Period</Typography>
 								<ReactQueryData query={gradeModalDefaultsS} data={gradeModalDefaults} display={(gradeModalDefaults) =>
 									<ReactQueryData query={periodsS} data={periods} display={(periods) =>
-										<Select color="secondary" value={gradeModalDefaults.period_default?.toString() ?? ''} margin="none"
+										<Select color="secondary" value={gradeModalDefaults.period_default ?? -1} margin="none"
 													  fullWidth
 													  onChange={(e) => handlePeriodSelectChange(e, gradeModalDefaults)}>
+											<MenuItem value={-1} key={-1}>---</MenuItem>
 											{periods.map((period) => {
 												return <MenuItem value={period.id} key={period.id}>
 													<Stack>
@@ -292,7 +296,6 @@ export default function Component() {
 									}/>
 								}/>
 							</Stack>
-
 						</Grid>
 					</Grid>
 				</SettingsBox>
@@ -341,23 +344,28 @@ export default function Component() {
 
 			<Grid item xs={12} sm={6} md={6} xl={6}>
 				<SettingsBox title="Info" top={
-					<IconButton onClick={handleClickUpdate} disabled={!updateAvailable}>
-						{(() => {
-							switch (updateState) {
-							case 'NONE':
-								if (updateAvailable)
-									return <BrowserUpdatedIcon color="info"/>
-								else
-									return <BrowserUpdatedIcon color="disabled"/>
-							case 'DONE':
-								return <CheckCircleOutlineIcon color="success"/>
-							case 'PENDING':
-								return <DownloadingIcon color="info"/>
-							case 'ERROR':
-								return <ReportGmailerrorredIcon color="error"/>
-							}
-						})()}
-					</IconButton>
+					<Stack direction="row">
+						<IconButton onClick={handleClickUpdate} disabled={!updateAvailable}>
+							{(() => {
+								switch (updateState) {
+								case 'NONE':
+									if (updateAvailable)
+										return <BrowserUpdatedIcon color="info"/>
+									else
+										return <BrowserUpdatedIcon color="disabled"/>
+								case 'DONE':
+									return <CheckCircleOutlineIcon color="success"/>
+								case 'PENDING':
+									return <DownloadingIcon color="info"/>
+								case 'ERROR':
+									return <ReportGmailerrorredIcon color="error"/>
+								}
+							})()}
+						</IconButton>
+						{/*<IconButton onClick={handleClickSkipUpdate} disabled={!updateAvailable}>*/}
+						{/*	<GitHubIcon/>*/}
+						{/*</IconButton>*/}
+					</Stack>
 				}><ReactQueryData query={infoS} data={info} display={(info) =>
 						<Paper sx={{padding: 1, overflow: 'auto'}} variant="outlined">
 							<Stack spacing={1} direction="column">
@@ -398,6 +406,10 @@ export default function Component() {
 		<Info open={askUpdate} info={updateManifest?.body ?? ''} title="Update" setOpen={() => setAskUpdate(false)}>
 			<Button variant="contained" color="success" onClick={() => update({setAskUpdate, setUpdateState, toast})}>
 				Update
+			</Button>
+			<Button variant="contained" color="error"
+					  onClick={() => skipUpdate({setAskUpdate, toast, nextVersion: {version: updateManifest?.version ?? '0.0.0'}})}>
+				Skip Update
 			</Button>
 		</Info>
 	</>
