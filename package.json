@@ -30,7 +30,7 @@
 		"notistack": "^3.0",
 		"dayjs": "^1.11",
 		"zustand": "^4.3",
-		"zod": "^3.21",
+		"zod": "^3.22.3",
 		"@tanstack/react-query": "^4.29",
 		"@tanstack/react-query-devtools": "^4.29",
 		"@tanstack/react-router": "0.0.1-beta.83",
